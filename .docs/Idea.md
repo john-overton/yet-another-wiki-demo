@@ -95,7 +95,7 @@ To start with this an application that will allow contracting companies an easie
   - 1 RFP per month included
   - Up to 50 questions per RFP
   - $10 for each additional RFP
-  - Slow processing - RFP processing is throttled approx (15 minute process time)
+  - Slow processing - RFP processing is throttled approx (up to 15 minute process time)
 - Business Tier - $99 per month
   - 15 RFPs included per month
   - up to 150 questions per RFP
