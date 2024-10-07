@@ -1,0 +1,152 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "indexes": [
+        "CREATE INDEX idx_users_email ON users (email)",
+        "CREATE INDEX idx_users_name ON users (name)",
+        "CREATE INDEX idx_users_role ON users (role)",
+        "CREATE INDEX idx_users_current_active_company ON users (current_active_company)"
+      ]
+    },
+    {
+      "name": "companies",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_companies_name ON companies (name)",
+        "CREATE INDEX idx_companies_domain ON companies (domain)",
+        "CREATE INDEX idx_companies_subscription_level ON companies (subscription_level)"
+      ]
+    },
+    {
+      "name": "departments",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_departments_name ON departments (name)",
+        "CREATE INDEX idx_departments_parent_company ON departments (parent_company)",
+        "CREATE INDEX idx_departments_parent_sub_company ON departments (parent_sub_company)"
+      ]
+    },
+    {
+      "name": "sub_companies",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_sub_companies_name ON sub_companies (name)",
+        "CREATE INDEX idx_sub_companies_parent_company ON sub_companies (parent_company)"
+      ]
+    },
+    {
+      "name": "rfps",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_rfps_name ON rfps (name)",
+        "CREATE INDEX idx_rfps_organization ON rfps (organization)",
+        "CREATE INDEX idx_rfps_status ON rfps (status)",
+        "CREATE INDEX idx_rfps_due_date ON rfps (due_date)",
+        "CREATE INDEX idx_rfps_fit_score ON rfps (fit_score)"
+      ]
+    },
+    {
+      "name": "files",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_files_name ON files (name)",
+        "CREATE INDEX idx_files_uploaded_by ON files (uploaded_by)",
+        "CREATE INDEX idx_files_rfp ON files (rfp)"
+      ]
+    },
+    {
+      "name": "questions",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_questions_rfp ON questions (rfp)",
+        "CREATE INDEX idx_questions_is_answered ON questions (is_answered)",
+        "CREATE INDEX idx_questions_category ON questions (category)"
+      ]
+    },
+    {
+      "name": "comments",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_comments_user ON comments (user)",
+        "CREATE INDEX idx_comments_rfp ON comments (rfp)",
+        "CREATE INDEX idx_comments_created_at ON comments (created_at)"
+      ]
+    },
+    {
+      "name": "tasks",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_tasks_assigned_to ON tasks (assigned_to)",
+        "CREATE INDEX idx_tasks_rfp ON tasks (rfp)",
+        "CREATE INDEX idx_tasks_status ON tasks (status)",
+        "CREATE INDEX idx_tasks_due_date ON tasks (due_date)"
+      ]
+    },
+    {
+      "name": "milestones",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_milestones_rfp ON milestones (rfp)",
+        "CREATE INDEX idx_milestones_date ON milestones (date)"
+      ]
+    },
+    {
+      "name": "votes",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_votes_user ON votes (user)",
+        "CREATE INDEX idx_votes_rfp ON votes (rfp)",
+        "CREATE INDEX idx_votes_decision ON votes (decision)"
+      ]
+    },
+    {
+      "name": "notifications",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_notifications_user ON notifications (user)",
+        "CREATE INDEX idx_notifications_is_read ON notifications (is_read)",
+        "CREATE INDEX idx_notifications_created_at ON notifications (created_at)"
+      ]
+    },
+    {
+      "name": "api_usage",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_api_usage_company ON api_usage (company)",
+        "CREATE INDEX idx_api_usage_date ON api_usage (date)"
+      ]
+    },
+    {
+      "name": "feedback",
+      "type": "base",
+      "indexes": [
+        "CREATE INDEX idx_feedback_user ON feedback (user)",
+        "CREATE INDEX idx_feedback_rating ON feedback (rating)",
+        "CREATE INDEX idx_feedback_created_at ON feedback (created_at)"
+      ]
+    },
+    {
+      "name": "user_companies",
+      "type": "base",
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_companies_user_company ON user_companies (user, company)"
+      ]
+    },
+    {
+      "name": "user_departments",
+      "type": "base",
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_departments_user_department ON user_departments (user, department)"
+      ]
+    },
+    {
+      "name": "rfp_followers",
+      "type": "base",
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_rfp_followers_rfp_user ON rfp_followers (rfp, user)"
+      ]
+    }
+  ]
+}
