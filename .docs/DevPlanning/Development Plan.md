@@ -11,12 +11,12 @@
    - Confirm the use of Next.js, PocketBase, and Google Generative AI
    - Evaluate any additional libraries or tools needed
 
-3. **Architecture Design** [ ]
+3. **Architecture Design** [X]
    - Design the overall system architecture
    - Plan the database schema based on the provided data objects
    - Design the API structure
 
-4. **Project Setup** [ ]
+4. **Project Setup** [X]
    - Set up the development environment
    - Initialize the Next.js project
    - Set up version control with Git and GitHub

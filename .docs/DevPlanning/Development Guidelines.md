@@ -72,6 +72,7 @@ Future considerations for Linux deployment will be documented here.
 3. Use Prettier for consistent code formatting.
 4. Maximum line length: 100 characters.
 5. Use 2 spaces for indentation.
+6. Other scripts or files referenced in the code should be in the comments at the top of the document.
 
 ### Naming Conventions
 
@@ -443,11 +444,13 @@ By focusing on these areas, we can ensure that our RFP application leverages Nex
 ### 1. Data Encryption
 
 #### In Transit
+
 - Implement SSL/TLS encryption for all data in transit.
 - Use HTTPS for all communications between the client and server.
 - Configure secure SSL/TLS protocols and ciphers.
 
 #### At Rest
+
 - Encrypt sensitive data before storing in PocketBase.
 - Use strong encryption algorithms (e.g., AES-256) for data at rest.
 - Securely manage encryption keys, potentially using a key management service.
