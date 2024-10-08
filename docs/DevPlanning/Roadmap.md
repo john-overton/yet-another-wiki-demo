@@ -11,10 +11,9 @@
    - Set up basic folder structure
    - Configure essential Next.js settings
 
-3. PocketBase Setup [ ]
-   - Install and configure PocketBase
-   - Set up initial database schema
-   - Configure basic authentication
+3. Postgresql Setup [X]
+   - Modify docker-compose.yaml to project specifications
+   - Install docker and follow the Database Deployment.md guidelines
 
 4. CI/CD Pipeline Setup [ ]
    - Set up GitHub Actions for CI/CD
@@ -23,9 +22,9 @@
 ## Milestone 2: Authentication and User Management [ ]
 
 1. Authentication Implementation [ ]
-   - Implement email/password authentication
-   - Integrate Microsoft SSO
-   - Integrate Google SSO
+   - Implement email/password authentication (phase 1)
+   - Integrate Microsoft SSO (phase 2)
+   - Integrate Google SSO (phase 2)
 
 2. User Management Backend [ ]
    - Implement user registration API
