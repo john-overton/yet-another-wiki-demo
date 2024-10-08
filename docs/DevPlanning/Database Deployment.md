@@ -1,129 +1,138 @@
-# PostgreSQL Setup and Database Initialization Guide
+# Database Setup Documentation
 
-## NOTES
-- Ensure that PostgreSQL is installed and running before executing these scripts.
-- The setup script assumes you have sudo access to run commands as the postgres user. Adjust if necessary for your environment.
-- Always backup your database before running schema updates.
-- These scripts are basic and don't handle all error cases. In a production environment, you'd want to add more error checking and possibly use a more robust migration tool.
-- Keep your `.env` file secure and never commit it to version control.
+## PostgreSQL Setup and Database Initialization Guide
 
-## 1. PostgreSQL Installation
+### 1. Prerequisites
 
-### Windows Installation
+- Docker and Docker Compose installed on your system
+- Git (to clone the project repository)
 
-1. Download the PostgreSQL installer from the official website: https://www.postgresql.org/download/windows/
-2. Run the installer and follow the installation wizard.
-3. Choose the components you want to install (at minimum, select the PostgreSQL Server and pgAdmin).
-4. Choose an installation directory.
-5. Set a password for the default PostgreSQL superuser (postgres).
-6. Keep the default port (5432) unless you have a specific reason to change it.
-7. Choose the default locale.
-8. Complete the installation.
+### 2. Docker-based PostgreSQL Setup
 
-### Linux Installation (Ubuntu/Debian)
+We now use Docker to set up and run PostgreSQL. This method provides easier setup, better portability, and simplified management.
 
-1. Update your package list:
-   ```
-   sudo apt update
-   ```
-2. Install PostgreSQL and contrib package:
-   ```
-   sudo apt install postgresql postgresql-contrib
-   ```
-3. Verify the installation:
-   ```
-   sudo -u postgres psql -c "SELECT version();"
-   ```
+#### Step 1: Prepare the Docker Compose file
 
-## 2. Database Setup Script
+Ensure the `docker-compose.yml` file is in your project root directory. It should contain the following:
 
-Create a file named `setup_db.sh` in your project's root directory:
+```yaml
+version: '3.8'
+
+services:
+  postgresql:
+    image: bitnami/postgresql:latest
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+      - '.db:/docker-entrypoint-initdb.d'
+    environment:
+      - POSTGRESQL_USERNAME=rfp_user
+      - POSTGRESQL_PASSWORD=rfp_password
+      - POSTGRESQL_DATABASE=rfp_application
+      - POSTGRESQL_POSTGRES_PASSWORD=admin_password
+      - POSTGRESQL_EXTRA_FLAGS=--max_connections=100 --shared_buffers=256MB
+      - POSTGRESQL_ENABLE_LDAP=no
+      - POSTGRESQL_ENABLE_TLS=no
+      - POSTGRESQL_LOG_HOSTNAME=yes
+      - POSTGRESQL_LOG_CONNECTIONS=yes
+      - POSTGRESQL_LOG_DISCONNECTIONS=yes
+      - POSTGRESQL_PGAUDIT_LOG=ALL
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "rfp_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgresql_data:
+    driver: local
+```
+
+#### Step 2: Prepare the schema file
+
+Ensure your `DatabaseSchema0.01.sql` file is located in the `.db` directory of your project.
+
+#### Step 3: Start the PostgreSQL container
+
+Run the following command in your project root directory:
 
 ```bash
-#!/bin/bash
-
-# Load environment variables
-source .env
-
-# Default values
-DB_NAME=${DB_NAME:-"rfp_application"}
-DB_USER=${DB_USER:-"rfp_user"}
-DB_PASSWORD=${DB_PASSWORD:-"password"}
-DB_HOST=${DB_HOST:-"localhost"}
-DB_PORT=${DB_PORT:-"5432"}
-
-# Create user and database
-sudo -u postgres psql << EOF
-CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';
-CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;
-GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;
-EOF
-
-# Connect to the database and run the schema file
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f docs/schema/DatabaseSchema0.01.sql
-
-echo "Database setup complete."
+docker-compose up -d
 ```
 
-## 3. Environment File
+This command will download the PostgreSQL image (if not already present), create a container, and start it in detached mode.
 
-Create a `.env` file in your project's root directory:
+#### Step 4: Verify the setup
 
-```
-DB_NAME=rfp_application
-DB_USER=rfp_user
-DB_PASSWORD=your_secure_password
-DB_HOST=localhost
-DB_PORT=5432
-```
-
-## 4. Schema Update Script
-
-Create a file named `update_schema.sh` in your project's root directory:
+You can check if the container is running with:
 
 ```bash
-#!/bin/bash
-
-# Load environment variables
-source .env
-
-# Default values
-DB_NAME=${DB_NAME:-"rfp_application"}
-DB_USER=${DB_USER:-"rfp_user"}
-DB_PASSWORD=${DB_PASSWORD:-"password"}
-DB_HOST=${DB_HOST:-"localhost"}
-DB_PORT=${DB_PORT:-"5432"}
-
-# Check if a schema file is provided
-if [ -z "$1" ]; then
-    echo "Please provide the path to the new schema file."
-    exit 1
-fi
-
-# Run the new schema file
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f $1
-
-echo "Schema update complete."
+docker-compose ps
 ```
 
-## Usage Instructions
+To view the logs:
 
-1. Install PostgreSQL using the instructions provided for your operating system.
+```bash
+docker-compose logs postgresql
+```
 
-2. Set up your environment variables by editing the `.env` file with your desired database name, user, password, and other configurations.
+### 3. Connecting to the Database
 
-3. Make the scripts executable:
-   ```
-   chmod +x setup_db.sh update_schema.sh
-   ```
+You can connect to the PostgreSQL database using any PostgreSQL client. Use the following credentials:
 
-4. To set up the initial database, run:
-   ```
-   ./setup_db.sh
-   ```
+- Host: localhost
+- Port: 5432
+- Database: rfp_application
+- Username: rfp_user
+- Password: rfp_password
 
-5. To update the schema in the future, create a new schema file (e.g., `docs/schema/DatabaseSchema0.02.sql`) and run:
-   ```
-   ./update_schema.sh docs/schema/DatabaseSchema0.02.sql
-   ```
+For example, using psql:
 
+```bash
+psql -h localhost -p 5432 -U rfp_user -d rfp_application
+```
+
+### 4. Stopping the Database
+
+To stop the PostgreSQL container:
+
+```bash
+docker-compose down
+```
+
+To stop the container and remove the volume (this will delete all data):
+
+```bash
+docker-compose down -v
+```
+
+### 5. Updating the Schema
+
+If you need to update the database schema:
+
+1. Modify the `DatabaseSchema0.01.sql` file in the `.db` directory.
+2. Restart the container:
+
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+Note: This method will recreate the database. For production environments, consider using a database migration tool.
+
+### 6. Backup and Restore
+
+To backup the database:
+
+```bash
+docker-compose exec postgresql pg_dump -U rfp_user rfp_application > backup.sql
+```
+
+To restore from a backup:
+
+```bash
+cat backup.sql | docker-compose exec -T postgresql psql -U rfp_user -d rfp_application
+```
+
+Remember to replace sensitive information like passwords with environment variables in a production setup.

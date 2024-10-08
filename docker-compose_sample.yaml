@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: bitnami/postgresql:latest
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+      - './db:/docker-entrypoint-initdb.d'
+    environment:
+      - POSTGRESQL_USERNAME=rfp_user
+      - POSTGRESQL_PASSWORD=rfp_password
+      - POSTGRESQL_DATABASE=rfp_application
+      - POSTGRESQL_POSTGRES_PASSWORD=admin_password
+      - POSTGRESQL_EXTRA_FLAGS=--max_connections=100 --shared_buffers=256MB
+      - POSTGRESQL_ENABLE_LDAP=no
+      - POSTGRESQL_ENABLE_TLS=no
+      - POSTGRESQL_LOG_HOSTNAME=yes
+      - POSTGRESQL_LOG_CONNECTIONS=yes
+      - POSTGRESQL_LOG_DISCONNECTIONS=yes
+      - POSTGRESQL_PGAUDIT_LOG=ALL
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "rfp_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgresql_data:
+    driver: local
