@@ -2,13 +2,13 @@
 
 ## 1. Overall System Architecture
 
-The RFP Application will follow a modern, scalable architecture leveraging Next.js, PocketBase, and Google Generative AI. Here's an overview of the system components:
+The RFP Application will follow a modern, scalable architecture leveraging Next.js, PostgresSQL, and Google Generative AI. Here's an overview of the system components:
 
 ```mermaid
 graph TD
     A[Client Browser] -->|HTTPS| B[Next.js Frontend]
     B -->|API Calls| C[Next.js API Routes]
-    C -->|Database Queries| D[PocketBase]
+    C -->|Database Queries| D[PostgresSQL]
     C -->|AI Requests| E[Google Generative AI]
     F[Authentication Providers] -->|OAuth| B
     G[File Storage] --- D
@@ -18,7 +18,7 @@ graph TD
 
 1. **Next.js Frontend**: Server-side rendered React application
 2. **Next.js API Routes**: Serverless functions for backend logic
-3. **PocketBase**: Database and authentication system
+3. **PostgresSQL**: Database and authentication system
 4. **Google Generative AI**: AI service for natural language processing tasks
 5. **Authentication Providers**: Email, Microsoft SSO, Google SSO
 6. **File Storage**: For storing RFP documents and attachments
@@ -107,6 +107,6 @@ The API will be implemented using Next.js API routes. Here's a proposed structur
 
 This API structure covers the main functionalities of the RFP application as described in the project documents. It provides endpoints for managing organizations, users, RFPs, voting, AI integration, billing, notifications, search, and reporting.
 
-The actual implementation of these endpoints will be done using Next.js API routes, which will interact with PocketBase for data storage and retrieval, and with Google Generative AI for AI-powered features.
+The actual implementation of these endpoints will be done using Next.js API routes, which will interact with PostgresSQL for data storage and retrieval, and with Google Generative AI for AI-powered features.
 
 Remember to implement proper authentication and authorization checks for each endpoint to ensure data security and access control based on user roles and permissions.

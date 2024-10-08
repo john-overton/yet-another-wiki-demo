@@ -10,7 +10,7 @@
 - React-based framework for building user interfaces
 - Provides server-side rendering and static site generation capabilities
 
-2.  **Backend Database**: PocketBase
+2.  **Backend Database**: Postgres
 
 - Open-source backend for building applications with real-time capabilities
 - Provides a built-in database, authentication, and file storage
@@ -46,7 +46,7 @@ As the development progresses, this section will be updated with other libraries
 1. Ensure Node.js is installed (version X.X.X or higher)
 2. Clone the repository: `git clone [repository-url]`
 3. Install dependencies: `npm install`
-4. Set up PocketBase (instructions to be added)
+4. Set up PostgresSQL (instructions to be added)
 5. Configure Google Generative AI API keys (instructions to be added)
 
 ### Running the Application
@@ -158,40 +158,10 @@ throw  error;
 }
 ```
 
-### PocketBase Integration
+### PostgresSQL Integration
 
-1. Create a separate file for PocketBase configuration and initialization.
-2. Use PocketBase's TypeScript support for better type checking.
-3. Wrap PocketBase calls in custom hooks or utility functions for reusability.
+(To be updated later... )
 
-Example:
-
-```typescript
-// pocketbase.ts
-import  PocketBase  from  'pocketbase';
-
-export  const  pb = new  PocketBase('http://127.0.0.1:8090');
-
-// hooks/use-records.ts
-
-import { useState, useEffect } from  'react';
-
-import { pb } from  '../pocketbase';
-
-export  function  useRecords(collection: string) {
-
-const [records, setRecords] = useState([]);
-
-useEffect(() => {
-
-pb.collection(collection).getFullList().then(setRecords);
-
-}, [collection]);
-
-return  records;
-}
-
-```
 ### Google Generative AI Integration
 
 1. Keep API keys and sensitive information in environment variables.
@@ -451,7 +421,7 @@ By focusing on these areas, we can ensure that our RFP application leverages Nex
 
 #### At Rest
 
-- Encrypt sensitive data before storing in PocketBase.
+- Encrypt sensitive data before storing in PostgresSQL.
 - Use strong encryption algorithms (e.g., AES-256) for data at rest.
 - Securely manage encryption keys, potentially using a key management service.
 
@@ -729,7 +699,7 @@ By following these standards and guidelines, we can ensure that our RFP applicat
 - Use Vercel for production hosting
 
 #### 4.3 Database Updates
-- Implement a strategy for PocketBase schema migrations
+- Implement a strategy for PostgresSQL schema migrations (needed?)
 - Test database migrations in the staging environment before production
 
 ### 5. CI/CD Pipeline Configuration

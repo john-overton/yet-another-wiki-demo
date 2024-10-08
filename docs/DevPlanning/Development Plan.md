@@ -7,8 +7,8 @@
    - Identify any gaps or ambiguities in the requirements
    - Create a detailed functional specification document
 
-2. **Technology Stack Confirmation** [X]
-   - Confirm the use of Next.js, PocketBase, and Google Generative AI
+2. **Technology Stack Confirmation** [ ]
+   - Confirm the use of Next.js, Postgres, and Google Generative AI
    - Evaluate any additional libraries or tools needed
 
 3. **Architecture Design** [X]
@@ -30,7 +30,7 @@
 ## Phase 2: Core Development
 
 1. **Backend Development** [ ]
-   - Set up PocketBase and configure the database
+   - Set up PostgresSQL and configure the database
    - Implement user authentication (Email, Microsoft SSO, Google SSO)
    - Develop API endpoints for core functionality
 
@@ -115,7 +115,7 @@
 
 1. **Infrastructure Setup** [ ]
    - Set up the production environment on Vercel
-   - Configure PocketBase for production use
+   - Configure PostgresSQL for production use
 
 2. **Deployment Pipeline** [ ]
    - Set up the CI/CD pipeline using GitHub Actions
