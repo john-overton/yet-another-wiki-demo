@@ -160,32 +160,81 @@ export default function PasswordResetForm() {
                 value={secretAnswer}
                 onChange={(e) => setSecretAnswer(e.target.value)}
                 required
-                />
-                <p className="text-xs text-gray-500 mt-1">Answer is case sensitive</p>
-              </div>
-            ))}
+              />
+              <p className="text-xs text-gray-500 mt-1">Answer is case sensitive</p>
+            </div>
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200 flex items-center justify-center"
               disabled={loading}
             >
               {loading ? (
-              <>
-                <div className="spinner mr-2"></div>
-                <span>Registering...</span>
-              </>
-            ) : (
-              'Register'
-            )}
+                <>
+                  <div className="spinner mr-2"></div>
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                'Submit Answer'
+              )}
             </button>
           </form>
         )}
-        <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
-          <Link href="/login" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
-            Log in here
-          </Link>
-        </p>
+        {step === 3 && (
+          <form onSubmit={handlePasswordReset}>
+            <div className="mb-4">
+              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            {newPassword !== confirmPassword && (
+              <p className="text-red-500 text-sm mb-4">Passwords do not match</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200 flex items-center justify-center"
+              disabled={loading || newPassword !== confirmPassword}
+            >
+              {loading ? (
+                <>
+                  <div className="spinner mr-2"></div>
+                  <span>Resetting Password...</span>
+                </>
+              ) : (
+                'Reset Password'
+              )}
+            </button>
+          </form>
+        )}
+        {/* Commented out scaffolding for email-based reset */}
+        {/* 
+        // TODO: Implement email-based password reset
+        <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+          <button onClick={() => {/* Implement email reset logic */}/* } className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+            Reset password via email
+        </div></div>  </button>
+        </div>
+        */}
       </div>
     </div>
   );
