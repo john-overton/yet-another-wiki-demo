@@ -8,7 +8,7 @@
   --color-primary: #076bf8;
   --color-primary-hover: #0555c7;
   --color-background-light: #f6f6f6;
-  --color-input-border: #4a4a4a;
+  --color-input-border: #374151;
   --color-text-gray: #374151;
 }
 
@@ -19,7 +19,7 @@
     --color-primary: #076bf8;
     --color-primary-hover: #0555c7;
     --color-background-light: #f6f6f6;
-    --color-input-border: #4a4a4a;
+    --color-input-border: #374151;
     --color-text-gray: #374151;
   }
 }
@@ -47,13 +47,19 @@ body {
 
 .input-primary {
   border-color: var(--color-input-border);
+  border-width: 1px;
+  color: var(--color-text-gray);
 }
 
 .input-primary:focus {
   outline: none;
   ring-color: var(--color-primary);
   border-color: var(--color-primary);
-  font-style: var(--color-text-gray);
+}
+
+.input-label {
+  color: var(--color-text-gray);
+  font-weight: 500;
 }
 
 .text-primary {

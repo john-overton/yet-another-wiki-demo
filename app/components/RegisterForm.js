@@ -41,35 +41,35 @@ export default function RegisterForm() {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray">Name</label>
+            <label htmlFor="name" className="block text-sm input-label">Name</label>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary"
               required
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray">Email</label>
+            <label htmlFor="email" className="block text-sm input-label">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray">Password</label>
+            <label htmlFor="password" className="block text-sm input-label">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary"
               required
             />
           </div>
