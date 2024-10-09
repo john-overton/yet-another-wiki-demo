@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./components/Providers";
-import dynamic from 'next/dynamic';
-
-const AnimationWrapper = dynamic(() => import('./components/AnimationWrapper'), { ssr: false });
+import { ClientLayout } from "./components/ClientLayout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,18 +22,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <AnimationWrapper>
+          <ClientLayout>
             {children}
-          </AnimationWrapper>
+          </ClientLayout>
         </Providers>
       </body>
     </html>

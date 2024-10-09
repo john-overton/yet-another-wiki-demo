@@ -1,4 +1,3 @@
-// app/components/LoginForm.js
 'use client';
 
 import { useState } from 'react';
@@ -10,13 +9,13 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError('');
-    setIsLoading(true);
 
     try {
       const result = await signIn('credentials', {
@@ -28,73 +27,63 @@ export default function LoginForm() {
       if (result.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/success');
+        router.push('/');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+      setError('An error occurred. Please try again.');
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-light">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center text-primary">Login</h2>
-        {error && (
-          <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm input-label">Email</label>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-white">Login</h2>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
             <input
-              id="email"
               type="email"
+              id="email"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary"
               required
+              autoComplete="username"
             />
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm input-label">Password</label>
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
             <input
-              id="password"
               type="password"
+              id="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary"
               required
+              autoComplete="current-password"
             />
           </div>
-          <div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="spinner mr-2"></div>
-                  Logging in...
-                </div>
-              ) : (
-                'Log In'
-              )}
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Log In'}
+          </button>
         </form>
-        
-        <div className="mt-4 text-center">
-          <Link href="/register" className="text-sm text-primary hover:text-primary-hover">
-            Don't have an account? Register here
+        <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+          Don't have an account?{' '}
+          <Link href="/register" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+            Register here
           </Link>
-        </div>
-
-        {/* SSO options commented out for now */}
+        </p>
       </div>
     </div>
   );

@@ -36,10 +36,11 @@ export default function RegisterForm() {
         body: JSON.stringify({ name, email, password }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setSuccess('Registration successful!');
       } else {
-        const data = await response.json();
         setError(data.message || 'Registration failed');
       }
     } catch (error) {
