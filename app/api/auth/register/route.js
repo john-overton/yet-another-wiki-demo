@@ -22,8 +22,12 @@ export async function POST(request) {
         auth_type: 'Email',
         role: 'User',
         is_active: true,
+        avatar: null, // Optional field, set to null by default
+        current_active_company_id: null, // Optional field, set to null by default
+        notification_preferences: {}, // Empty object as default
         voting_rights: false,
-        notification_preferences: {},
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     });
 

@@ -1,7 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-// import GoogleProvider from 'next-auth/providers/google';
-// import AzureADProvider from 'next-auth/providers/azure-ad';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+
+const prisma = new PrismaClient();
 
 const handler = NextAuth({
   providers: [
@@ -12,11 +14,35 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // TODO: Replace this with actual database lookup
-        if (credentials.email === "user@example.com" && credentials.password === "password") {
-          return { id: "1", email: credentials.email, name: "Test User" };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
-        return null;
+
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          });
+
+          if (!user) {
+            return null;
+          }
+
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+          };
+        } catch (error) {
+          console.error('Error during authentication:', error);
+          return null;
+        }
       }
     }),
     // Commented out OAuth providers
@@ -34,11 +60,13 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
+      session.user.role = token.role;
       return session;
     },
   },
