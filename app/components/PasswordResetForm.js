@@ -230,9 +230,9 @@ export default function PasswordResetForm() {
         {/* 
         // TODO: Implement email-based password reset
         <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-          <button onClick={() => {/* Implement email reset logic */}/* } className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+          <button onClick={() => {/* Implement email reset logic */}{/*  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
             Reset password via email
-        </div></div>  </button>
+          </button>
         </div>
         */}
       </div>
