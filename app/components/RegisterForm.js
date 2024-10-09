@@ -10,23 +10,32 @@ export default function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    if (response.ok) {
-      router.push('/login?registered=true');
-    } else {
-      const data = await response.json();
-      setError(data.message || 'Registration failed');
+      if (response.ok) {
+        router.push('/login?registered=true');
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,8 +86,16 @@ export default function RegisterForm() {
             <button
               type="submit"
               className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              disabled={isLoading}
             >
-              Register
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="spinner mr-2"></div>
+                  Registering...
+                </div>
+              ) : (
+                'Register'
+              )}
             </button>
           </div>
         </form>

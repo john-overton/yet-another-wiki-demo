@@ -10,11 +10,13 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
       const result = await signIn('credentials', {
@@ -31,6 +33,8 @@ export default function LoginForm() {
     } catch (error) {
       console.error('Login error:', error);
       setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,8 +74,16 @@ export default function LoginForm() {
             <button
               type="submit"
               className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              disabled={isLoading}
             >
-              Log In
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="spinner mr-2"></div>
+                  Logging in...
+                </div>
+              ) : (
+                'Log In'
+              )}
             </button>
           </div>
         </form>
