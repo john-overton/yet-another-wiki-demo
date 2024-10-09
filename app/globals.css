@@ -10,6 +10,7 @@
   --color-background-light: #f6f6f6;
   --color-input-border: #374151;
   --color-text-gray: #374151;
+  --color-success: #10b981;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,13 +22,23 @@
     --color-background-light: #f6f6f6;
     --color-input-border: #374151;
     --color-text-gray: #374151;
+    --color-success: #10b981;
   }
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+#__next {
+  height: 100%;
 }
 
 @layer utilities {
@@ -91,4 +102,17 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Success message styles */
+.bg-green-100 {
+  background-color: #d1fae5;
+}
+
+.border-green-400 {
+  border-color: var(--color-success);
+}
+
+.text-green-700 {
+  color: #047857;
 }

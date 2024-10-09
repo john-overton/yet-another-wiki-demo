@@ -1,7 +1,7 @@
 // app/components/RegisterForm.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,12 +10,23 @@ export default function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [success, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setIsLoading(true);
 
     try {
@@ -26,7 +37,7 @@ export default function RegisterForm() {
       });
 
       if (response.ok) {
-        router.push('/login?registered=true');
+        setSuccess('Registration successful!');
       } else {
         const data = await response.json();
         setError(data.message || 'Registration failed');
@@ -46,6 +57,11 @@ export default function RegisterForm() {
         {error && (
           <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 p-2 bg-green-100 border border-green-400 text-green-700 rounded">
+            {success}
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,7 +102,7 @@ export default function RegisterForm() {
             <button
               type="submit"
               className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-              disabled={isLoading}
+              disabled={isLoading || success !== ''}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./components/Providers";
+import dynamic from 'next/dynamic';
+
+const AnimationWrapper = dynamic(() => import('./components/AnimationWrapper'), { ssr: false });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <AnimationWrapper>
+            {children}
+          </AnimationWrapper>
+        </Providers>
       </body>
     </html>
   );
