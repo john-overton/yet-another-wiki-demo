@@ -1,15 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import AzureADProvider from 'next-auth/providers/azure-ad';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-
-const prisma = new PrismaClient();
+// import GoogleProvider from 'next-auth/providers/google';
+// import AzureADProvider from 'next-auth/providers/azure-ad';
 
 const handler = NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -18,25 +12,23 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
-
-        if (user && bcrypt.compareSync(credentials.password, user.password)) {
-          return { id: user.id, email: user.email, name: user.name };
+        // TODO: Replace this with actual database lookup
+        if (credentials.email === "user@example.com" && credentials.password === "password") {
+          return { id: "1", email: credentials.email, name: "Test User" };
         }
         return null;
       }
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID,
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-      tenantId: process.env.AZURE_AD_TENANT_ID,
-    }),
+    // Commented out OAuth providers
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
+    // AzureADProvider({
+    //   clientId: process.env.AZURE_AD_CLIENT_ID,
+    //   clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+    //   tenantId: process.env.AZURE_AD_TENANT_ID,
+    // }),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -51,7 +43,7 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/login',
   },
 });
 

@@ -4,13 +4,23 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #ededed;
+  --color-primary: #076bf8;
+  --color-primary-hover: #0555c7;
+  --color-background-light: #f6f6f6;
+  --color-input-border: #4a4a4a;
+  --color-text-gray: #374151;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #ededed;
     --foreground: #ededed;
+    --color-primary: #076bf8;
+    --color-primary-hover: #0555c7;
+    --color-background-light: #f6f6f6;
+    --color-input-border: #4a4a4a;
+    --color-text-gray: #374151;
   }
 }
 
@@ -24,4 +34,40 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.input-primary {
+  border-color: var(--color-input-border);
+}
+
+.input-primary:focus {
+  outline: none;
+  ring-color: var(--color-primary);
+  border-color: var(--color-primary);
+  font-style: var(--color-text-gray);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-primary:hover {
+  color: var(--color-primary-hover);
+}
+
+.bg-light {
+  background-color: var(--color-background-light);
+}
+
+.text-gray {
+  color: var(--color-text-gray);
 }

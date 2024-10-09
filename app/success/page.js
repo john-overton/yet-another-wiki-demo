@@ -19,11 +19,11 @@ export default function SuccessPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f6f6f6]">
+    <div className="min-h-screen flex items-center justify-center bg-light">
       <div className="bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-[#076bf8] mb-4">Success!</h1>
-        <p className="text-gray-600">You have successfully logged in.</p>
-        <p className="mt-2 text-gray-600">Welcome, {session?.user?.name || 'User'}!</p>
+        <h1 className="text-2xl font-bold text-primary mb-4">Success!</h1>
+        <p className="text-gray">You have successfully logged in.</p>
+        <p className="mt-2 text-gray">Welcome, {session?.user?.name || 'User'}!</p>
       </div>
     </div>
   );

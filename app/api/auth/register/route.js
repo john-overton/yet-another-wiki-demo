@@ -19,11 +19,17 @@ export async function POST(request) {
         name,
         email,
         password: hashedPassword,
+        auth_type: 'Email',
+        role: 'User',
+        is_active: true,
+        voting_rights: false,
+        notification_preferences: {},
       },
     });
 
     return NextResponse.json({ message: 'User created successfully', userId: user.id }, { status: 201 });
   } catch (error) {
+    console.error('Error creating user:', error);
     return NextResponse.json({ message: 'Error creating user', error: error.message }, { status: 500 });
   }
 }

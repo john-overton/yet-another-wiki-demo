@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function RegisterForm() {
   const [name, setName] = useState('');
@@ -30,47 +31,52 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f6f6f6]">
+    <div className="min-h-screen flex items-center justify-center bg-light">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center text-[#076bf8]">Register</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-primary">Register</h2>
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray">Name</label>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#076bf8] focus:border-[#076bf8]"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
               required
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#076bf8] focus:border-[#076bf8]"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#076bf8] focus:border-[#076bf8]"
+              className="mt-1 block w-full px-3 py-2 rounded-md shadow-sm input-primary text-gray"
               required
             />
           </div>
           <div>
             <button
               type="submit"
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#076bf8] hover:bg-[#0555c7] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#076bf8]"
+              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Register
             </button>
@@ -78,11 +84,11 @@ export default function RegisterForm() {
         </form>
         
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray">
             Already have an account?{' '}
-            <a href="/login" className="font-medium text-[#076bf8] hover:text-[#0555c7]">
+            <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </div>
