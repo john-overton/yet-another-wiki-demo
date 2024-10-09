@@ -27,7 +27,7 @@ export default function LoginForm() {
       if (result.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/');
+        router.push('/success');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
@@ -72,10 +72,17 @@ export default function LoginForm() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200 flex items-center justify-center"
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Log In'}
+            {loading ? (
+              <>
+                <div className="spinner mr-2"></div>
+                <span>Logging in...</span>
+              </>
+            ) : (
+              'Log In'
+            )}
           </button>
         </form>
         <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
