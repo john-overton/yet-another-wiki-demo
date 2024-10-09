@@ -38,3 +38,6 @@ docker-compose.yaml
 *.tsbuildinfo
 next-env.d.ts
 pocketbase.exe
+
+#backups
+*.backup
