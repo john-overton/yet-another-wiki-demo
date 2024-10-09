@@ -2,8 +2,8 @@ import PasswordResetForm from '../components/PasswordResetForm';
 
 export default function ResetPasswordPage() {
   return (
-    <div>
+    <main>
       <PasswordResetForm />
-    </div>
+    </main>
   );
 }

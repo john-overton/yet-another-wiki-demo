@@ -2,17 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function PasswordResetForm() {
   const [email, setEmail] = useState('');
+  const [step, setStep] = useState(1);
   const [secretQuestion, setSecretQuestion] = useState('');
+  const [questionId, setQuestionId] = useState(null);
   const [secretAnswer, setSecretAnswer] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
   const router = useRouter();
 
   const handleEmailSubmit = async (e) => {
@@ -21,7 +23,7 @@ export default function PasswordResetForm() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/reset-password/email', {
+      const response = await fetch('/api/auth/reset-password/init', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -31,9 +33,10 @@ export default function PasswordResetForm() {
 
       if (response.ok) {
         setSecretQuestion(data.secretQuestion);
+        setQuestionId(data.questionId);
         setStep(2);
       } else {
-        setError(data.message || 'Email not found');
+        setError(data.message || 'Failed to initiate password reset');
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -43,7 +46,7 @@ export default function PasswordResetForm() {
     }
   };
 
-  const handleSecretAnswerSubmit = async (e) => {
+  const handleAnswerSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -52,20 +55,17 @@ export default function PasswordResetForm() {
       const response = await fetch('/api/auth/reset-password/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, secretAnswer }),
+        body: JSON.stringify({ email, questionId, secretAnswer }),
       });
 
       if (response.ok) {
-        setSuccess('Answer correct');
-        setTimeout(() => {
-          setSuccess('');
-          setStep(3);
-        }, 1500);
+        setStep(3);
       } else {
-        setError('Incorrect answer');
+        const data = await response.json();
+        setError(data.message || 'Failed to verify answer');
       }
     } catch (error) {
-      console.error('Secret answer verification error:', error);
+      console.error('Answer verification error:', error);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -94,7 +94,8 @@ export default function PasswordResetForm() {
           router.push('/login');
         }, 1500);
       } else {
-        setError('Password reset failed');
+        const data = await response.json();
+        setError(data.message || 'Failed to reset password');
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -142,23 +143,18 @@ export default function PasswordResetForm() {
           </form>
         )}
         {step === 2 && (
-          <form onSubmit={handleSecretAnswerSubmit}>
+          <form onSubmit={handleAnswerSubmit}>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Secret Question
               </label>
-              <p className="text-gray-600 dark:text-gray-400">{secretQuestion}</p>
-            </div>
-            <div className="mb-4">
-              <label htmlFor="secretAnswer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Your Answer
-              </label>
+              <p className="text-gray-600 dark:text-gray-400 mb-2">{secretQuestion}</p>
               <input
                 type="text"
-                id="secretAnswer"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 value={secretAnswer}
                 onChange={(e) => setSecretAnswer(e.target.value)}
+                placeholder="Your answer"
                 required
               />
               <p className="text-xs text-gray-500 mt-1">Answer is case sensitive</p>
@@ -174,7 +170,7 @@ export default function PasswordResetForm() {
                   <span>Verifying...</span>
                 </>
               ) : (
-                'Submit Answer'
+                'Verify Answer'
               )}
             </button>
           </form>
@@ -207,13 +203,10 @@ export default function PasswordResetForm() {
                 required
               />
             </div>
-            {newPassword !== confirmPassword && (
-              <p className="text-red-500 text-sm mb-4">Passwords do not match</p>
-            )}
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 transition duration-200 flex items-center justify-center"
-              disabled={loading || newPassword !== confirmPassword}
+              disabled={loading}
             >
               {loading ? (
                 <>

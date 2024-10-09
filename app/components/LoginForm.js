@@ -85,12 +85,20 @@ export default function LoginForm() {
             )}
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
-          <Link href="/register" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
-            Register here
-          </Link>
-        </p>
+        <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+          <p>
+            Don't have an account?{' '}
+            <Link href="/register" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+              Register here
+            </Link>
+          </p>
+          <p className="mt-2">
+            Forgot your password?{' '}
+            <Link href="/reset-password" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
+              Reset password
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
