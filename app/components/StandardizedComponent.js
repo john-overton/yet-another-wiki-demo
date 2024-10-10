@@ -65,6 +65,18 @@ export const StandardizedButton = ({ type, onClick, disabled, children }) => (
   </button>
 );
 
+export const StandardizedGreyButton = ({ type, onClick, disabled, children }) => (
+  <button
+    type={type}
+    onClick={onClick}
+    disabled={disabled}
+    className="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-400 transition duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    {disabled && <div className="spinner mr-2"></div>}
+    {children}
+  </button>
+);
+
 export const StandardizedLink = ({ href, children }) => (
   <a href={href} className="text-primary hover:text-primary-hover">
     {children}
@@ -75,6 +87,10 @@ export const StandardizedForm = ({ onSubmit, children }) => (
   <form onSubmit={onSubmit} className="space-y-4">
     {children}
   </form>
+);
+
+export const StandardizedText = ({ children, className }) => (
+  <p className={`text-gray-600 dark:text-gray-400 ${className}`}>{children}</p>
 );
 
 export default StandardizedComponent;
