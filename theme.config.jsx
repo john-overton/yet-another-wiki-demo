@@ -1,20 +1,20 @@
+'use client'
+
 import React from 'react'
 import { useRouter } from 'next/router'
 import { useSession, signOut } from 'next-auth/react'
 import UserCard from './app/components/UserCard'
-import { SessionProvider } from "next-auth/react"
 
 const AuthSection = () => {
   const router = useRouter()
-  const { data: session, status } = <SessionProvider>useSession()</SessionProvider>
-
+  const { data: session, status } = useSession()
+  
   if (status === 'loading') {
     return <div>Loading...</div>
-  }
+    }
 
   if (status === 'authenticated') {
     return (
-      
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
        <UserCard user={session.user} />
         <button
