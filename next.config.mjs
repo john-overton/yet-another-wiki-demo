@@ -1,4 +1,16 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+import nextra from 'nextra'
 
-export default nextConfig;
+const nextConfig = {
+  useFileSystemPublicRoutes: false,
+}
+
+const withNextra = nextra({
+  theme: 'nextra-theme-docs',
+  themeConfig: './theme.config.jsx',
+  defaultShowCopyCode: true
+})
+
+export default withNextra({
+  ...nextConfig,
+  // Additional Next.js config options can be added here
+})
