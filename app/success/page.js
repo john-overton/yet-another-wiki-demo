@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import UserCard from '../components/UserCard';
 
 function SuccessPage() {
   const { data: session, status } = useSession();
@@ -31,6 +32,7 @@ function SuccessPage() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-96">
+        {session && <UserCard user={session.user} />}
         <h1 className="text-2xl font-semibold mb-4 text-center text-gray-800 dark:text-white">Success!</h1>
         <p className="text-gray-600 dark:text-gray-300 text-center mb-4">You are logged in.</p>
         <div className="text-gray-600 dark:text-gray-300 mb-6">
