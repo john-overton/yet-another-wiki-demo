@@ -15,12 +15,22 @@ export async function POST(req) {
   }
 
   try {
+    const currentDate = new Date();
+    console.log('Updating last_login with:', currentDate);
+
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
-      data: { last_login: new Date() },
+      data: { last_login: currentDate },
     });
 
-    return new Response(JSON.stringify({ success: true }), {
+    console.log('Updated user:', JSON.stringify(updatedUser, null, 2));
+    console.log('last_login type:', typeof updatedUser.last_login);
+    console.log('last_login value:', updatedUser.last_login);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      last_login: updatedUser.last_login.toISOString()
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
