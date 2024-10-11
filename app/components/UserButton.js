@@ -31,7 +31,7 @@ export default function UserButton({ user }) {
           alt={user.name}
           width={40}
           height={40}
-          className="rounded-full _rounded_full"
+          className="rounded-full _rounded-full"
         />
       </button>
 
