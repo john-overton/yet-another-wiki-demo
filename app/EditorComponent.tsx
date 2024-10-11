@@ -1,24 +1,72 @@
 "use client";
 
-import { MDXEditor, MDXEditorMethods, headingsPlugin } from "@mdxeditor/editor";
-import { FC } from "react";
+import { MDXEditor, MDXEditorMethods, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, listsPlugin, quotePlugin, headingsPlugin, linkPlugin, linkDialogPlugin, imagePlugin, tablePlugin, thematicBreakPlugin, frontmatterPlugin, codeBlockPlugin, diffSourcePlugin, markdownShortcutPlugin, BlockTypeSelect, CreateLink, InsertImage, InsertTable, InsertThematicBreak, ListsToggle, CodeToggle, ConditionalContents, InsertCodeBlock, ChangeCodeMirrorLanguage, DiffSourceToggleWrapper } from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
+import { FC, useRef, useState } from "react";
 
 interface EditorProps {
   markdown: string;
-  editorRef?: React.MutableRefObject<MDXEditorMethods | null>;
+  onChange: (markdown: string) => void;
 }
 
-/**
- * Extend this Component further with the necessary plugins or props you need.
- * proxying the ref is necessary. Next.js dynamically imported components don't support refs.
- */
-const Editor: FC<EditorProps> = ({ markdown, editorRef }) => {
+const Editor: FC<EditorProps> = ({ markdown, onChange }) => {
+  const ref = useRef<MDXEditorMethods>(null);
+  const [editorMarkdown, setEditorMarkdown] = useState(markdown);
+
+  const handleChange = (newMarkdown: string) => {
+    setEditorMarkdown(newMarkdown);
+    onChange(newMarkdown);
+  };
+
   return (
     <MDXEditor
-      onChange={(e) => console.log(e)}
-      ref={editorRef}
-      markdown={markdown}
-      plugins={[headingsPlugin()]}
+      ref={ref}
+      markdown={editorMarkdown}
+      onChange={handleChange}
+      plugins={[
+        toolbarPlugin({
+          toolbarContents: () => (
+            <DiffSourceToggleWrapper>
+              <UndoRedo />
+              <BoldItalicUnderlineToggles />
+              <BlockTypeSelect />
+              <CreateLink />
+              <InsertImage />
+              <InsertTable />
+              <InsertThematicBreak />
+              <ListsToggle />
+              <CodeToggle />
+              <ConditionalContents
+                options={[
+                  {
+                    when: (editor) => editor?.editorType === 'codeblock',
+                    contents: () => <ChangeCodeMirrorLanguage />
+                  },
+                  {
+                    fallback: () => (
+                      <>
+                        <InsertCodeBlock />
+                      </>
+                    )
+                  }
+                ]}
+              />
+            </DiffSourceToggleWrapper>
+          ),
+        }),
+        listsPlugin(),
+        quotePlugin(),
+        headingsPlugin(),
+        linkPlugin(),
+        linkDialogPlugin(),
+        imagePlugin(),
+        tablePlugin(),
+        thematicBreakPlugin(),
+        frontmatterPlugin(),
+        codeBlockPlugin(),
+        diffSourcePlugin(),
+        markdownShortcutPlugin()
+      ]}
     />
   );
 };
