@@ -1,5 +1,17 @@
 import MDXEditorWrapper from '../app/MDXEditorWrapper'
 
+export const initialContent = `
+# Welcome to Nextra with MDX Editor
+
+Hello, world!
+
+Here is something you can search for.
+
+## MDX Editor
+
+You can now create and edit MDX files using the editor below:
+`
+
 # Welcome to Nextra with MDX Editor
 
 Hello, world!
@@ -10,4 +22,4 @@ Here is something you can search for.
 
 You can now create and edit MDX files using the editor below:
 
-<MDXEditorWrapper />
+<MDXEditorWrapper initialContent={initialContent} />
