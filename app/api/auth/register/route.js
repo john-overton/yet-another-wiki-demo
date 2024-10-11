@@ -36,7 +36,7 @@ export async function POST(request) {
         is_active: true,
         avatar: null,
         current_active_company_id: null,
-        notification_preferences: {},
+        notification_preferences: null, // Set to null instead of an empty object
         voting_rights: false,
         created_at: new Date(),
         updated_at: new Date(),

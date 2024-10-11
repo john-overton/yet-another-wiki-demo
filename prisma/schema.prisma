@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -15,39 +12,27 @@ model User {
   email                   String   @unique
   name                    String
   avatar                  String?
-  auth_type               AuthType
-  role                    Role
+  auth_type               String
+  role                    String
   is_active               Boolean  @default(true)
   current_active_company_id Int?
-  notification_preferences Json?
+  notification_preferences String? // Changed from Json? to String?
   voting_rights           Boolean  @default(false)
   created_at              DateTime @default(now())
   updated_at              DateTime @updatedAt
-  password                String   // Added for local authentication
-  secret_question_1_id    Int
-  secret_answer_1         String
-  secret_question_2_id    Int
-  secret_answer_2         String
-  secret_question_3_id    Int
-  secret_answer_3         String
+  password                String?
+  secret_question_1_id    Int?
+  secret_answer_1         String?
+  secret_question_2_id    Int?
+  secret_answer_2         String?
+  secret_question_3_id    Int?
+  secret_answer_3         String?
   password_expiration     DateTime?
   questions_expiration    DateTime?
-  last_login              DateTime? // New field added
-  secret_question_1       SecretQuestion @relation("SecretQuestion1", fields: [secret_question_1_id], references: [id])
-  secret_question_2       SecretQuestion @relation("SecretQuestion2", fields: [secret_question_2_id], references: [id])
-  secret_question_3       SecretQuestion @relation("SecretQuestion3", fields: [secret_question_3_id], references: [id])
-}
-
-enum AuthType {
-  Email
-  Microsoft
-  Google
-}
-
-enum Role {
-  Admin
-  PowerUser
-  User
+  last_login              DateTime?
+  secret_question_1       SecretQuestion? @relation("SecretQuestion1", fields: [secret_question_1_id], references: [id])
+  secret_question_2       SecretQuestion? @relation("SecretQuestion2", fields: [secret_question_2_id], references: [id])
+  secret_question_3       SecretQuestion? @relation("SecretQuestion3", fields: [secret_question_3_id], references: [id])
 }
 
 model SecretQuestion {
