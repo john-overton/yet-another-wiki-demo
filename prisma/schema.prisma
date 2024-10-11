@@ -30,7 +30,7 @@ model User {
   secret_answer_3           String?
   password_expiration       DateTime?
   questions_expiration      DateTime?
-  last_login                DateTime?       // Reverted back to DateTime?
+  last_login                String?         // Changed from DateTime? to String?
   secret_question_3         SecretQuestion? @relation("SecretQuestion3", fields: [secret_question_3_id], references: [id])
   secret_question_2         SecretQuestion? @relation("SecretQuestion2", fields: [secret_question_2_id], references: [id])
   secret_question_1         SecretQuestion? @relation("SecretQuestion1", fields: [secret_question_1_id], references: [id])

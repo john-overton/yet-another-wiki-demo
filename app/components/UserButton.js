@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+
 export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();

@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../[...nextauth]/route';
+import { getServerSession, authOptions } from 'next-auth/next'
 
 const prisma = new PrismaClient();
 
@@ -16,20 +15,25 @@ export async function POST(req) {
 
   try {
     const currentDate = new Date();
-    console.log('Updating last_login with:', currentDate);
+    const isoString = currentDate.toISOString();
+    
+    console.log('Updating last_login with:', isoString);
 
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
-      data: { last_login: currentDate },
+      data: { last_login: isoString },
     });
 
     console.log('Updated user:', JSON.stringify(updatedUser, null, 2));
     console.log('last_login type:', typeof updatedUser.last_login);
     console.log('last_login value:', updatedUser.last_login);
 
+    // Format the date for the response
+    const formattedDate = isoString.replace('T', ' ').slice(0, -1);
+
     return new Response(JSON.stringify({ 
       success: true, 
-      last_login: updatedUser.last_login.toISOString()
+      last_login: formattedDate
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
