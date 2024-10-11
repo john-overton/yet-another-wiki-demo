@@ -3,7 +3,8 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { useSession, signOut } from 'next-auth/react'
-import UserCard from './app/components/UserCard'
+import UserButton from './app/components/UserButton'
+import { px } from 'framer-motion'
 
 const AuthSection = () => {
   const router = useRouter()
@@ -16,20 +17,11 @@ const AuthSection = () => {
   if (status === 'authenticated') {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-       <UserCard user={session.user} />
-        <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#f44336',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Logout
-        </button>
+       <UserButton user={session.user}
+        style={{
+          borderRadius: '100px'
+        }}
+        />
       </div>
       
     )
