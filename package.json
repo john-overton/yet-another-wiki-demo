@@ -17,8 +17,6 @@
     "next-auth": "^4.24.8",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.3.0",
-    "nextra": "^3.0.8",
-    "nextra-theme-docs": "^3.0.8",
     "pg": "^8.13.0",
     "prisma": "^5.20.0",
     "react": "^18",
