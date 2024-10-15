@@ -32,6 +32,18 @@ export default function LoginForm() {
       if (result.error) {
         setError('Invalid email or password');
       } else {
+        // Update last login
+        const updateResponse = await fetch('/api/auth/update-last-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!updateResponse.ok) {
+          console.error('Failed to update last login');
+        }
+
         router.push('/success');
       }
     } catch (error) {

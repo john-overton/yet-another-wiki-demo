@@ -2,35 +2,35 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../contexts/AuthContext';
+import { useSession } from 'next-auth/react';
 
 export default function ProtectedRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (status === 'unauthenticated') {
       router.push('/login');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [status, router]);
 
-  if (isLoading) {
+  if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? children : null;
+  return session ? children : null;
 }
 
 // Usage in a protected page (e.g., app/dashboard/page.js)
-import ProtectedRoute from '../components/ProtectedRoute';
-
-export default function Dashboard() {
-  return (
-    <ProtectedRoute>
-      <div>
-        <h1>Dashboard</h1>
-        {/* Dashboard content */}
-      </div>
-    </ProtectedRoute>
-  );
-}
+// import ProtectedRoute from '../components/ProtectedRoute';
+//
+// export default function Dashboard() {
+//   return (
+//     <ProtectedRoute>
+//       <div>
+//         <h1>Dashboard</h1>
+//         {/* Dashboard content */}
+//       </div>
+//     </ProtectedRoute>
+//   );
+// }

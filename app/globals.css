@@ -115,3 +115,45 @@ body {
 .text-green-700 {
   color: #047857;
 }
+
+/* New footer class */
+.footer {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-light);
+  color: var(--color-text-gray);
+}
+
+/* Main app div classes */
+
+.main-container {
+  height: 85vh;
+}
+
+.main-app-div {
+  overflow: auto;
+}
+
+.main-app-div-left, .main-app-div-right {
+  background-color: var(--background);
+}
+
+.main-app-div-center {
+  background-color: var(--color-background-light);
+}
+
+/* Login button styles */
+.login-button {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: var(--color-primary-hover);
+}
