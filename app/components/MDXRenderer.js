@@ -9,6 +9,7 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-tsx';
+import TableOfContents from './TableOfContents';
 
 const CopyButton = ({ code }) => {
   const [copied, setCopied] = useState(false);
@@ -43,13 +44,26 @@ const CodeBlock = ({ children, className }) => {
   );
 };
 
+const generateId = (text) => {
+  return text.toLowerCase().replace(/[^\w]/g, '-');
+};
+
+const createHeadingComponent = (level) => {
+  return ({ children, ...props }) => {
+    const id = generateId(children);
+    const Component = `h${level}`;
+    const className = `text-${4-level}xl font-bold mt-${10-level} mb-${6-level/2}`;
+    return <Component id={id} className={className} {...props}>{children}</Component>;
+  };
+};
+
 const components = {
-  h1: (props) => <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />,
-  h2: (props) => <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />,
-  h3: (props) => <h3 className="text-xl font-bold mt-4 mb-2" {...props} />,
-  h4: (props) => <h4 className="text-lg font-bold mt-3 mb-2" {...props} />,
-  h5: (props) => <h5 className="text-base font-bold mt-2 mb-1" {...props} />,
-  h6: (props) => <h6 className="text-sm font-bold mt-2 mb-1" {...props} />,
+  h1: createHeadingComponent(1),
+  h2: createHeadingComponent(2),
+  h3: createHeadingComponent(3),
+  h4: createHeadingComponent(4),
+  h5: createHeadingComponent(5),
+  h6: createHeadingComponent(6),
   p: (props) => <p className="mb-4" {...props} />,
   a: (props) => <Link className="text-blue-500 hover:underline" {...props} />,
   ul: (props) => <ul className="list-disc list-inside mb-4" {...props} />,
@@ -78,7 +92,8 @@ const MDXRenderer = ({ source }) => {
   }, [source]);
 
   return (
-    <div className="mdx-content prose dark:prose-invert max-w-none">
+    <div className="mdx-content prose dark:prose-invert max-w-none relative">
+      <TableOfContents source={source} />
       <MDXRemote source={source} components={components} />
     </div>
   );
