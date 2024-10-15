@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
@@ -33,7 +35,7 @@ const CodeBlock = ({ children, className }) => {
   const code = children.props.children;
 
   return (
-    <div className="relative">
+    <div className="relative z-10">
       <pre className={`language-${language} bg-gray-800 p-4 rounded-md overflow-x-auto mb-4`}>
         <code className={`language-${language}`}>{code}</code>
       </pre>
@@ -46,12 +48,31 @@ const generateId = (text) => {
   return text.toLowerCase().replace(/[^\w]/g, '-');
 };
 
+const LinkIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block ml-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+  </svg>
+);
+
 const createHeadingComponent = (level) => {
   return ({ children, ...props }) => {
     const id = generateId(children);
     const Component = `h${level}`;
-    const className = `text-${4-level}xl font-bold mt-${10-level} mb-${6-level/2}`;
-    return <Component id={id} className={className} {...props}>{children}</Component>;
+    const className = `text-${4-level}xl font-bold mt-${10-level} mb-${6-level/2} group`;
+
+    const copyLink = () => {
+      const url = `${window.location.origin}${window.location.pathname}#${id}`;
+      navigator.clipboard.writeText(url);
+    };
+
+    return (
+      <Component id={id} className={className} {...props}>
+        {children}
+        <a href={`#${id}`} onClick={copyLink} className="opacity-0 group-hover:opacity-100 transition-opacity">
+          <LinkIcon />
+        </a>
+      </Component>
+    );
   };
 };
 
