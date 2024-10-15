@@ -15,6 +15,7 @@ const MainAppLayout = () => {
 
   useEffect(() => {
     fetchFileStructure();
+    loadHomeContent();
   }, []);
 
   const fetchFileStructure = async () => {
@@ -27,9 +28,20 @@ const MainAppLayout = () => {
     }
   };
 
+  const loadHomeContent = async () => {
+    try {
+      const response = await fetch('/api/file-content?path=./_home.mdx');
+      const content = await response.text();
+      setFileContent(content);
+    } catch (error) {
+      console.error('Error loading home content:', error);
+      setFileContent('Error loading home content');
+    }
+  };
+
   const handleFileSelect = async (file) => {
-    setSelectedFile(file);
-    if (file && file.path) {
+    if (file && file.path && file.name !== '_home.mdx') {
+      setSelectedFile(file);
       try {
         const response = await fetch(`/api/file-content?path=${encodeURIComponent(file.path)}`);
         const content = await response.text();
@@ -38,6 +50,9 @@ const MainAppLayout = () => {
         console.error('Error fetching file content:', error);
         setFileContent('Error loading file content');
       }
+    } else {
+      setSelectedFile(null);
+      loadHomeContent();
     }
   };
 
@@ -69,14 +84,10 @@ const MainAppLayout = () => {
         <Sidebar fileStructure={fileStructure} onSelect={handleFileSelect} onCreateNew={handleCreateNew} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-800">
           <div className="container mx-auto px-6 py-8">
-            {selectedFile ? (
-              <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{selectedFile.name.replace('.mdx', '')}</h2>
-                <MDXRenderer source={fileContent} />
-              </div>
-            ) : (
-              <p className="text-gray-700 dark:text-gray-300">Select a file to view its content</p>
-            )}
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+              {selectedFile ? selectedFile.name.replace('.mdx', '') : 'Welcome'}
+            </h2>
+            <MDXRenderer source={fileContent} />
           </div>
         </main>
       </div>
