@@ -38,12 +38,15 @@ const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
       >
         <span className="ml-3">{item.name.replace('.mdx', '')}</span>
         {item.type === 'folder' && isHovered && (
-          <button
-            onClick={() => setIsCreating(!isCreating)}
-            className="ml-auto text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCreating(!isCreating);
+            }}
+            className="ml-auto text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white cursor-pointer"
           >
             +
-          </button>
+          </span>
         )}
       </button>
       {isCreating && (

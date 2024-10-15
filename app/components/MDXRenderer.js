@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
