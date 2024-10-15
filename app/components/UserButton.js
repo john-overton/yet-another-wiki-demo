@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/router';
-
+import { useRouter } from 'next/navigation';
 
 export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +15,7 @@ export default function UserButton({ user }) {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    router.push('/login'); // Adjust this path to your login page route
+    router.push('/login'); // This now uses the new App Router
   };
 
   return (
@@ -30,8 +29,8 @@ export default function UserButton({ user }) {
         <Image
           src={avatarSrc}
           alt={user.name}
-          width={40}
-          height={40}
+          width={30}
+          height={30}
           className="rounded-full _rounded-full"
         />
       </button>

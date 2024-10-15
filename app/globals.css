@@ -126,8 +126,6 @@ body {
   color: var(--color-text-gray);
 }
 
-
-
 /* Main app div classes */
 
 .main-container {
@@ -146,3 +144,16 @@ body {
   background-color: var(--color-background-light);
 }
 
+/* Login button styles */
+.login-button {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: var(--color-primary-hover);
+}

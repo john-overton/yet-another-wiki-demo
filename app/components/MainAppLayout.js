@@ -3,93 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
+import Sidebar from './Sidebar';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
-
-const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [newItemName, setNewItemName] = useState('');
-  const [newItemType, setNewItemType] = useState('file');
-
-  const handleCreateNew = (type) => {
-    setNewItemType(type);
-    setIsCreating(true);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const finalName = newItemType === 'file' ? `${newItemName}.mdx` : newItemName;
-    onCreateNew(item.path, finalName, newItemType);
-    setIsCreating(false);
-    setNewItemName('');
-  };
-
-  if (item.type !== 'folder' && !item.name.endsWith('.mdx')) {
-    return null;
-  }
-
-  return (
-    <div 
-      style={{ marginLeft: `${level * 20}px` }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="py-1"
-    >
-      <div className="flex items-center">
-        <span 
-          onClick={() => item.type !== 'folder' && onSelect(item)} 
-          className={`cursor-pointer ${item.type === 'folder' ? 'font-semibold border-b border-gray-300' : ''}`}
-        >
-          {item.name.replace('.mdx', '')}
-        </span>
-        {item.type === 'folder' && isHovered && (
-          <div className="relative ml-2">
-            <button 
-              onClick={() => setIsCreating(!isCreating)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              +
-            </button>
-            {isCreating && (
-              <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                  <button
-                    onClick={() => handleCreateNew('file')}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    New File
-                  </button>
-                  <button
-                    onClick={() => handleCreateNew('folder')}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    New Folder
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      {isCreating && (
-        <form onSubmit={handleSubmit} className="mt-1">
-          <input
-            type="text"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            placeholder={`New ${newItemType} name`}
-            className="border rounded px-2 py-1 text-sm"
-          />
-          <button type="submit" className="ml-2 bg-blue-500 text-white rounded px-2 py-1 text-sm">Create</button>
-        </form>
-      )}
-      {item.type === 'folder' && item.children.map((child, index) => (
-        <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} level={level + 1} />
-      ))}
-    </div>
-  );
-};
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
@@ -148,26 +64,21 @@ const MainAppLayout = () => {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="w-1/5 h-full overflow-auto p-4 main-app-div main-app-div-left">
-        <h2 className="text-lg font-semibold mb-4">Contents</h2>
-        {fileStructure.map((item, index) => (
-          <FileItem key={index} item={item} onSelect={handleFileSelect} onCreateNew={handleCreateNew} />
-        ))}
-      </div>
-      <div className="w-3/5 h-full overflow-auto p-4 main-app-div main-app-div-center">
-        {selectedFile ? (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">{selectedFile.name.replace('.mdx', '')}</h2>
-            <MDXRenderer source={fileContent} />
+    <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar fileStructure={fileStructure} onSelect={handleFileSelect} onCreateNew={handleCreateNew} />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-800">
+          <div className="container mx-auto px-6 py-8">
+            {selectedFile ? (
+              <div>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{selectedFile.name.replace('.mdx', '')}</h2>
+                <MDXRenderer source={fileContent} />
+              </div>
+            ) : (
+              <p className="text-gray-700 dark:text-gray-300">Select a file to view its content</p>
+            )}
           </div>
-        ) : (
-          <p>Select a file to view its content</p>
-        )}
-      </div>
-      <div className="w-1/5 h-full overflow-auto p-4 main-app-div main-app-div-right">
-        {/* Placeholder for future content */}
-        <p>This space is reserved for future functionality</p>
+        </main>
       </div>
     </div>
   );
