@@ -101,7 +101,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew }) => {
         aria-label="Sidenav"
       >
         <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Contents</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Pages</h2>
           <ul className="space-y-2">
             {fileStructure.map((item, index) => (
               <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} />
