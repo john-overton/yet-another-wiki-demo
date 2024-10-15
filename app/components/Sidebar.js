@@ -21,7 +21,7 @@ const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
     setNewItemName('');
   };
 
-  if (item.type !== 'folder' && !item.name.endsWith('.mdx')) {
+  if (item.type !== 'folder' && (!item.name.endsWith('.mdx') || item.name === '_home.mdx')) {
     return null;
   }
 
