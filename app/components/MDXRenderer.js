@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import Prism from 'prismjs';
@@ -9,6 +9,39 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-tsx';
+
+const CopyButton = ({ code }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 bg-gray-700 text-white px-2 py-1 rounded text-sm"
+    >
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  );
+};
+
+const CodeBlock = ({ children, className }) => {
+  const language = className ? className.replace('language-', '') : 'javascript';
+  const code = children.props.children;
+
+  return (
+    <div className="relative">
+      <pre className={`language-${language} bg-gray-800 p-4 rounded-md overflow-x-auto mb-4`}>
+        <code className={`language-${language}`}>{code}</code>
+      </pre>
+      <CopyButton code={code} />
+    </div>
+  );
+};
 
 const components = {
   h1: (props) => <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />,
@@ -27,7 +60,7 @@ const components = {
   tr: (props) => <tr className="border-b border-gray-300" {...props} />,
   th: (props) => <th className="border border-gray-300 px-4 py-2 bg-gray-100" {...props} />,
   td: (props) => <td className="border border-gray-300 px-4 py-2" {...props} />,
-  pre: (props) => <pre className="bg-gray-800 p-4 rounded-md overflow-x-auto mb-4" {...props} />,
+  pre: CodeBlock,
   code: (props) => {
     const language = props.className ? props.className.replace('language-', '') : 'javascript';
     return (
