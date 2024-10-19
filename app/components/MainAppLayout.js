@@ -78,10 +78,41 @@ const MainAppLayout = () => {
     }
   };
 
+  const handleDelete = async (path, type) => {
+    console.log('Attempting to delete item:', { path, type });
+    try {
+      const response = await fetch('/api/delete-item', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, type }),
+      });
+      console.log('API response status:', response.status);
+      const responseText = await response.text();
+      console.log('API response text:', responseText);
+      if (response.ok) {
+        console.log('Item deleted successfully, refreshing file structure');
+        await fetchFileStructure();
+        if (selectedFile && selectedFile.path === path) {
+          setSelectedFile(null);
+          loadHomeContent();
+        }
+      } else {
+        console.error('Failed to delete item');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar fileStructure={fileStructure} onSelect={handleFileSelect} onCreateNew={handleCreateNew} />
+      <div className="flex flex-1">
+        <Sidebar
+          fileStructure={fileStructure}
+          onSelect={handleFileSelect}
+          onCreateNew={handleCreateNew}
+          onDelete={handleDelete}
+        />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-800">
           <div className="container mx-auto px-6 py-8">
             <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">

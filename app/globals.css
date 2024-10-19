@@ -183,3 +183,8 @@ body {
 .rot-15:hover{
     rotate: 15deg;
   }
+
+.plus{
+  height: 20px;
+  width: 20px
+}

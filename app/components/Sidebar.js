@@ -1,24 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
+const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [newItemType, setNewItemType] = useState('file');
+  const inputRef = useRef(null);
+  const itemRef = useRef(null);
 
-  const handleCreateNew = (type) => {
-    setNewItemType(type);
+  useEffect(() => {
+    if (isCreating) {
+      document.addEventListener('click', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isCreating]);
+
+  const handleCreateNew = () => {
     setIsCreating(true);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const finalName = newItemType === 'file' ? `${newItemName}.mdx` : newItemName;
-    onCreateNew(item.path, finalName, newItemType);
+  const handleOutsideClick = (e) => {
+    if (inputRef.current && !inputRef.current.contains(e.target)) {
+      handleSubmit();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (newItemName.trim()) {
+      const finalName = newItemType === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
+      onCreateNew(item.path, finalName, newItemType);
+    }
     setIsCreating(false);
     setNewItemName('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete ${item.type} "${item.name}"?`)) {
+      onDelete(item.path, item.type);
+    }
   };
 
   if (item.type !== 'folder' && (!item.name.endsWith('.mdx') || item.name === '_home.mdx')) {
@@ -26,7 +56,7 @@ const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
   }
 
   return (
-    <li>
+    <li ref={itemRef} className="relative">
       <button
         type="button"
         className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${
@@ -36,37 +66,65 @@ const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {item.type === 'folder' && <i className="ri-folder-6-line mr-2 font-normal"></i>}
         <span className="ml-3">{item.name.replace('.mdx', '')}</span>
-        {item.type === 'folder' && isHovered && (
-          <span
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsCreating(!isCreating);
-            }}
-            className="ml-auto text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white cursor-pointer"
-          >
-            +
+        {isHovered && (
+          <span className="ml-auto flex items-center">
+            <i
+              className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
+              onClick={handleDelete}
+            ></i>
+            {item.type === 'folder' && (
+              <i
+                className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCreateNew();
+                }}
+              ></i>
+            )}
           </span>
         )}
       </button>
       {isCreating && (
-        <form onSubmit={handleSubmit} className="mt-1 ml-6">
-          <input
-            type="text"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            placeholder={`New ${newItemType} name`}
-            className="border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-          <button type="submit" className="ml-2 bg-blue-500 text-white rounded px-2 py-1 text-sm">
-            Create
-          </button>
-        </form>
+        <div className="absolute left-0 mt-1 z-1000 shadow-sm" ref={inputRef}>
+                  <div className="bg-white dark:bg-gray-800 overflow-visible rounded-lg p-2 ml-1 mr-1 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => setNewItemType('folder')}
+                        className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
+                      >
+                        <i className="ri-folder-line"></i>
+                      </button>
+                      <button
+                        onClick={() => setNewItemType('file')}
+                        className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
+                      >
+                        <i className="ri-file-line"></i>
+                      </button>
+                      <input
+                        type="text"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={`New ${newItemType} name`}
+                        className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => setIsCreating(false)}
+                        className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+                      >
+                        <i className="ri-close-line shadow-sm"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
       )}
       {item.type === 'folder' && item.children && (
         <ul className="space-y-2 ml-4">
           {item.children.map((child, index) => (
-            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} level={level + 1} />
+            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} level={level + 1} />
           ))}
         </ul>
       )}
@@ -74,7 +132,7 @@ const FileItem = ({ item, onSelect, onCreateNew, level = 0 }) => {
   );
 };
 
-const Sidebar = ({ fileStructure, onSelect, onCreateNew }) => {
+const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
@@ -104,7 +162,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew }) => {
           <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Pages</h2>
           <ul className="space-y-2">
             {fileStructure.map((item, index) => (
-              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} />
+              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} />
             ))}
           </ul>
         </div>
