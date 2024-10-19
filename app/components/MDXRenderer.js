@@ -111,8 +111,10 @@ const MDXRenderer = ({ source }) => {
   }, [source]);
 
   return (
-    <div className="mdx-content prose dark:prose-invert max-w-none relative">
-      <TableOfContents source={source} />
+    <div className="mdx-content prose dark:prose-invert max-w-none">
+      <div className="relative z-1000"> 
+        <TableOfContents source={source} />
+      </div>
       <MDXRemote source={source} components={components} />
     </div>
   );

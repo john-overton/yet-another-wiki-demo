@@ -87,39 +87,39 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
         )}
       </button>
       {isCreating && (
-        <div className="absolute left-0 mt-1 z-1000 shadow-sm" ref={inputRef}>
-                  <div className="bg-white dark:bg-gray-800 overflow-visible rounded-lg p-2 ml-1 mr-1 border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => setNewItemType('folder')}
-                        className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
-                      >
-                        <i className="ri-folder-line"></i>
-                      </button>
-                      <button
-                        onClick={() => setNewItemType('file')}
-                        className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
-                      >
-                        <i className="ri-file-line"></i>
-                      </button>
-                      <input
-                        type="text"
-                        value={newItemName}
-                        onChange={(e) => setNewItemName(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder={`New ${newItemType} name`}
-                        className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => setIsCreating(false)}
-                        className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
-                      >
-                        <i className="ri-close-line shadow-sm"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
+            <div className="flex items-center">
+              <button
+                onClick={() => setNewItemType('folder')}
+                className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
+              >
+                <i className="ri-folder-line"></i>
+              </button>
+              <button
+                onClick={() => setNewItemType('file')}
+                className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
+              >
+                <i className="ri-file-line"></i>
+              </button>
+              <input
+                type="text"
+                value={newItemName}
+                onChange={(e) => setNewItemName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={`New ${newItemType} name`}
+                className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
+                autoFocus
+              />
+              <button
+                onClick={() => setIsCreating(false)}
+                className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+              >
+                <i className="ri-close-line shadow-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {item.type === 'folder' && item.children && (
         <ul className="space-y-2 ml-4">

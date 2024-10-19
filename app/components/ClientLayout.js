@@ -10,7 +10,7 @@ export function ClientLayout({ children }) {
       <header className="h-12 p-1 flex justify-end bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header">
         <ThemeToggle />
       </header>
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 z-1 overflow-scroll">
         {children}
       </main>
       <footer className="h-12 p-1 text-center bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-footer">
