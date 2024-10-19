@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "/bootstrap/scss/bootstrap/bootstrap.scss";
+@import "remixicon/fonts/remixicon.css";
 
 :root,
 .light {
@@ -157,3 +159,27 @@ body {
 .login-button:hover {
   background-color: var(--color-primary-hover);
 }
+
+.border-gray-header {
+  border-bottom: 2px;
+  border-color: #4b5563;
+  border-style: solid;
+}
+
+.border-gray-footer {
+  border-top: 2px;
+  border-color: #4b5563;
+  border-style: solid;
+}
+
+.table-of-contents {
+  background-color: #55453177;
+}
+
+.z-1000{
+  z-index: 1000;
+}
+
+.rot-15:hover{
+    rotate: 15deg;
+  }

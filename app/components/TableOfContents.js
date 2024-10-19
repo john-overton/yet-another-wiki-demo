@@ -21,7 +21,7 @@ const TableOfContents = ({ source }) => {
   }, [source]);
 
   return (
-    <div className="table-of-contents fixed top-4 right-4 bg-gray-800 bg-opacity-50 p-4 rounded-lg max-w-xs max-h-[80vh] overflow-y-auto z-50 border border-gray-600 dark:border-gray-400 shadow-lg">
+    <div className="table-of-contents fixed top-12 mt-2 right-2 bg-gray-800 bg-opacity-75 p-2 rounded-lg max-w-xs max-h-[calc(100vh-3rem)] overflow-y-auto z-4 border border-gray-600 dark:border-gray-400 shadow-lg">
       <h3 className="text-lg font-bold mb-2 text-white text-right">Page Contents</h3>
       <ul className="space-y-1">
         {toc.map((item, index) => (

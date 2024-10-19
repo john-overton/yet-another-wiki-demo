@@ -28,7 +28,7 @@ const ThemeToggle = () => {
           <button
             aria-label="Login"
             type="button"
-            className="p-2 mr-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="p-3 m-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             Login
           </button>
@@ -37,10 +37,10 @@ const ThemeToggle = () => {
       <button
         aria-label="Toggle Dark Mode"
         type="button"
-        className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+        className="p-2 rounded-md hover:bg-gray-200 hover:rot-15 dark:hover:bg-gray-700"
         onClick={toggleTheme}
       >
-        {theme === 'light' ? '🌙' : '☀️'}
+        <i className={`${theme === 'light' ? 'ri-contrast-2-line' : 'ri-sun-fill'} text-xl`} style={{ fontSize: '20px' }}></i>
       </button>
     </div>
   );
