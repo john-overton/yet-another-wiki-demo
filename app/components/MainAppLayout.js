@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import Sidebar from './Sidebar';
+import SearchComponent from './SearchComponent';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
@@ -113,7 +114,7 @@ const MainAppLayout = () => {
           onCreateNew={handleCreateNew}
           onDelete={handleDelete}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-800">
+        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-gray-100 dark:bg-gray-800">
           <div className="container mx-auto px-6 py-8 z-1">
             <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
               {selectedFile ? selectedFile.name.replace('.mdx', '') : 'Welcome'}

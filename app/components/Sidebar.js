@@ -67,7 +67,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {item.type === 'folder' && <i className="ri-folder-6-line mr-2 font-normal"></i>}
-        <span className="ml-3">{item.name.replace('.mdx', '')}</span>
+        <span className="ml-1">{item.name.replace('.mdx', '')}</span>
         {isHovered && (
           <span className="ml-auto flex items-center">
             <i

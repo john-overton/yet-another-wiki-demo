@@ -1,16 +1,33 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 
-const ThemeToggle = dynamic(() => import('./ThemeToggle'), { ssr: false });
+const Header = dynamic(() => import('./Header'), { ssr: false });
 
 export function ClientLayout({ children }) {
+  const router = useRouter();
+
+  const handleFileSelect = (file) => {
+    if (file && file.path) {
+      // Remove 'app/docs/' from the beginning of the path if present
+      let path = file.path.replace(/^app\/docs\//, '');
+      // Remove the file extension
+      path = path.replace(/\.mdx$/, '');
+      // Ensure the path starts with a slash
+      path = path.startsWith('/') ? path : `/${path}`;
+      router.push(`/mainapp${path}`);
+    } else {
+      console.error('Invalid file selected:', file);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
       <header className="h-12 p-1 flex justify-end bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header">
-        <ThemeToggle />
+        <Header onFileSelect={handleFileSelect} />
       </header>
-      <main className="flex-1 z-1 overflow-scroll">
+      <main className="flex-1 z-1 overflow-auto">
         {children}
       </main>
       <footer className="h-12 p-1 text-center bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-footer">
