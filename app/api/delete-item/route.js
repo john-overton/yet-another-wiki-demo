@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function DELETE(request) {
-  const { path: itemPath } = await request.json();
+  const { path: itemPath, deleteChildren } = await request.json();
 
   if (!itemPath) {
     return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
@@ -16,20 +16,23 @@ export async function DELETE(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    const removeFromStructure = (items) => {
+    const markAsDeleted = (items, targetPath) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].path === itemPath) {
-          items.splice(i, 1);
+        if (items[i].path === targetPath) {
+          items[i].deleted = true;
+          if (deleteChildren && items[i].children) {
+            items[i].children.forEach(child => markAsDeleted(items, child.path));
+          }
           return true;
         }
-        if (items[i].children && removeFromStructure(items[i].children)) {
+        if (items[i].children && markAsDeleted(items[i].children, targetPath)) {
           return true;
         }
       }
       return false;
     };
 
-    if (!removeFromStructure(metaData.pages)) {
+    if (!markAsDeleted(metaData.pages, itemPath)) {
       return new Response(JSON.stringify({ error: 'Item not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
@@ -39,17 +42,13 @@ export async function DELETE(request) {
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    // Delete the MDX file
-    const filePath = path.join(process.cwd(), 'app', 'docs', itemPath);
-    await fs.unlink(filePath);
-
-    return new Response(JSON.stringify({ message: 'Item deleted successfully' }), {
+    return new Response(JSON.stringify({ message: 'Item marked as deleted successfully' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error deleting item:', error);
-    return new Response(JSON.stringify({ error: 'Failed to delete item' }), {
+    console.error('Error marking item as deleted:', error);
+    return new Response(JSON.stringify({ error: 'Failed to mark item as deleted' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

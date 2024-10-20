@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -48,10 +49,30 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
     }
   };
 
-  const handleDelete = (e) => {
+
+  const handleDelete = async (e) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to delete "${item.title}"?`)) {
-      onDelete(item.path);
+      const deleteChildren = item.children && item.children.length > 0 && 
+        window.confirm("Do you want to delete child items as well?");
+      
+      try {
+        const response = await fetch('/api/delete-item', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ path: item.path, deleteChildren }),
+        });
+
+        if (response.ok) {
+          onDelete(item.path);
+        } else {
+          console.error('Failed to delete item');
+        }
+      } catch (error) {
+        console.error('Error deleting item:', error);
+      }
     }
   };
 
@@ -217,13 +238,18 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   );
 };
 
-const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename }) => {
+const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);
+  };
+
+  const handleDelete = async (path) => {
+    await onDelete(path);
+    refreshFileStructure();
   };
 
   return (
@@ -249,7 +275,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename }) =
         } md:translate-x-0`}
         aria-label="Sidenav"
       >
-        <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
           <div 
             className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
             onMouseEnter={() => setIsHeaderHovered(true)}
@@ -269,11 +295,15 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename }) =
               onClose={() => setIsCreatingRoot(false)}
             />
           )}
-          <ul className="space-y-2">
+          <ul className="space-y-2 flex-grow">
             {fileStructure.map((item, index) => (
-              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} />
+              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} />
             ))}
           </ul>
+          <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+            <i className="ri-delete-bin-7-line mr-2"></i>
+            <span>Trash Bin</span>
+          </Link>
         </div>
       </aside>
     </>
