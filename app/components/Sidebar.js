@@ -65,9 +65,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
     <li ref={itemRef} className="relative">
       <button
         type="button"
-        className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${
-          item.type === 'folder' ? 'font-semibold' : ''
-        }`}
+        className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
         onClick={() => item.type !== 'folder' && onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -78,7 +76,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
             onClick={toggleExpand}
           ></i>
         )}
-        <span className="ml-1">{item.name.replace('.mdx', '')}</span>
+        <span className={`ml-1 ${item.type === 'folder' ? 'underline' : ''}`}>{item.name.replace('.mdx', '')}</span>
         {isHovered && (
           <span className="ml-auto flex items-center">
             <i
@@ -133,7 +131,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
         </div>
       )}
       {item.type === 'folder' && item.children && isExpanded && (
-        <ul className="space-y-2 ml-4">
+        <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
             <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} level={level + 1} />
           ))}
@@ -250,7 +248,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
             onMouseEnter={() => setIsHeaderHovered(true)}
             onMouseLeave={() => setIsHeaderHovered(false)}
           >
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pages</h2>
+            <h2 className="text-lg text-gray-900 dark:text-white">Pages</h2>
             <button
               onClick={handleCreateRoot}
               className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}

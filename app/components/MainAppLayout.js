@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
+import { useTheme } from 'next-themes';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
@@ -12,7 +12,7 @@ const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
-  const [isTocVisible, setIsTocVisible] = useState(true);
+  const [isTocVisible, setIsTocVisible] = useState(false);
   const { theme } = useTheme();
 
   const fetchFileStructure = useCallback(async () => {
@@ -106,28 +106,30 @@ const MainAppLayout = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <div className="flex flex-1 z-1000">
-        <Sidebar
-          fileStructure={fileStructure}
-          onSelect={handleFileSelect}
-          onCreateNew={handleCreateNew}
-          onDelete={handleDelete}
-        />
-        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-background-light z-5">
-          <div className="container mx-auto px-6 py-8 z-1">
-            <MDXRenderer source={fileContent}/>
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-64 flex-shrink-0 overflow-y-auto">
+          <Sidebar
+            fileStructure={fileStructure}
+            onSelect={handleFileSelect}
+            onCreateNew={handleCreateNew}
+            onDelete={handleDelete}
+          />
+        </div>
+        <main className="flex-1 overflow-y-auto bg-background-light">
+          <div className="container z-1 mx-auto px-6 py-8">
+            <MDXRenderer source={fileContent} />
           </div>
-          <div className={`fixed top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
             <TableOfContents source={fileContent} isVisible={isTocVisible} />
           </div>
           <button
             onClick={toggleToc}
-            className={`fixed top-14 right-2 z-10 p-2 rounded-full transition-colors duration-200
+            className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
               ${theme === 'dark' 
-                ? 'bg-primary text-white hover:bg-gray-600' 
-                : 'text-black hover:text-gray dark:hover:bg-gray-600'}`}
+                ? 'bg-primary text-white' 
+                : 'text-black'}`}
           >
-            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white' : 'list-unordered'}`}></i>
+            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white hover:bg-gray-600 p-1 rounded-sm' : 'list-unordered hover:bg-gray-300 dark:hover:bg-gray-400 p-1 rounded-sm'}`}></i>
           </button>
         </main>
       </div>

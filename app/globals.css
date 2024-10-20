@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import "/bootstrap/scss/bootstrap/bootstrap.scss";
 @import "remixicon/fonts/remixicon.css";
+@import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap');
 
 :root,
 .light {
@@ -35,7 +36,13 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Rethink Sans", Arial, Helvetica, sans-serif;
+}
+
+.rethink-sans {
+  font-family: "Rethink Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 #__next {
@@ -173,7 +180,7 @@ body {
 }
 
 .table-of-contents {
-  background-color: #2D2D2D;
+  background-color: #2D2D2DDD;
 }
 
 .z-1000{

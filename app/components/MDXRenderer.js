@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import Prism from 'prismjs';
@@ -9,7 +9,6 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-tsx';
-import TableOfContents from './TableOfContents';
 
 const CopyButton = ({ code }) => {
   const [copied, setCopied] = useState(false);
@@ -112,11 +111,9 @@ const MDXRenderer = ({ source }) => {
 
   return (
     <div className="mdx-content prose dark:prose-invert max-w-none">
-      <div className="z-5">
-      </div>
       <MDXRemote source={source} components={components} />
     </div>
   );
 };
 
-export default MDXRenderer;
+export default React.memo(MDXRenderer);

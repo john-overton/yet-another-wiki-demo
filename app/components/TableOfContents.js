@@ -21,7 +21,7 @@ const TableOfContents = ({ source, isVisible }) => {
   }, [source]);
 
   return (
-    <div className={`p-4 mt-1 mr-1 table-of-contents text-white rounded-lg shadow-lg ${isVisible ? 'block' : 'hidden'}`}>
+    <div className={`p-4 mt-2 mr-2 border border-gray-200 dark:border-gray-700 table-of-contents text-white rounded-lg shadow-lg ${isVisible ? 'block' : 'hidden'}`}>
       <h3 className="text-lg font-bold mb-4 text-foreground">Page Contents</h3>
       <ul className="space-y-2">
         {toc.map((item, index) => (
