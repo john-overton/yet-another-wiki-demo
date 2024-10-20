@@ -2,9 +2,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function DELETE(request) {
-  const { path: itemPath, type } = await request.json();
+  const { path: itemPath } = await request.json();
 
-  if (!itemPath || !type) {
+  if (!itemPath) {
     return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -16,7 +16,6 @@ export async function DELETE(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    // Remove the item from the meta structure
     const removeFromStructure = (items) => {
       for (let i = 0; i < items.length; i++) {
         if (items[i].path === itemPath) {
@@ -30,20 +29,19 @@ export async function DELETE(request) {
       return false;
     };
 
-    removeFromStructure(metaData.pages);
+    if (!removeFromStructure(metaData.pages)) {
+      return new Response(JSON.stringify({ error: 'Item not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    // If it's a file, delete the MDX file
-    if (type === 'file') {
-      const filePath = path.join(process.cwd(), 'app', 'docs', itemPath);
-      await fs.unlink(filePath);
-    } else if (type === 'folder') {
-      // If it's a folder, recursively delete all files and subfolders
-      const folderPath = path.join(process.cwd(), 'app', 'docs', itemPath);
-      await fs.rm(folderPath, { recursive: true, force: true });
-    }
+    // Delete the MDX file
+    const filePath = path.join(process.cwd(), 'app', 'docs', itemPath);
+    await fs.unlink(filePath);
 
     return new Response(JSON.stringify({ message: 'Item deleted successfully' }), {
       status: 200,

@@ -7,7 +7,6 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
   const [isCreating, setIsCreating] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [newItemName, setNewItemName] = useState('');
-  const [newItemType, setNewItemType] = useState('file');
   const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
   const renameInputRef = useRef(null);
@@ -37,7 +36,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
 
   const handleSubmit = () => {
     if (newItemName.trim()) {
-      onCreateNew(item.path, newItemName.trim(), newItemType);
+      onCreateNew(item.path, newItemName.trim());
     }
     setIsCreating(false);
     setNewItemName('');
@@ -52,7 +51,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
   const handleDelete = (e) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to delete "${item.title}"?`)) {
-      onDelete(item.path, item.children ? 'folder' : 'file');
+      onDelete(item.path);
     }
   };
 
@@ -69,7 +68,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
 
   const handleRenameSubmit = () => {
     if (newItemName.trim() && newItemName !== item.title) {
-      onRename(item.path, newItemName.trim(), item.children ? 'folder' : 'file');
+      onRename(item.path, newItemName.trim());
     }
     setIsRenaming(false);
     setNewItemName('');
@@ -94,13 +93,13 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
           onMouseLeave={() => setIsHovered(false)}
           onDoubleClick={handleDoubleClick}
         >
-          {item.children && (
+          {item.children && item.children.length > 0 && (
             <i
               className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
               onClick={toggleExpand}
             ></i>
           )}
-          <span className={`ml-1 ${item.children ? 'underline' : ''}`}>{displayName}</span>
+          <span className="ml-1">{displayName}</span>
           {isHovered && (
             <span className="ml-auto flex items-center">
               <i
@@ -133,24 +132,12 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
         <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
             <div className="flex items-center">
-              <button
-                onClick={() => setNewItemType('folder')}
-                className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
-              >
-                <i className="ri-folder-line"></i>
-              </button>
-              <button
-                onClick={() => setNewItemType('file')}
-                className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
-              >
-                <i className="ri-file-line"></i>
-              </button>
               <input
                 type="text"
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={`New ${newItemType} name`}
+                placeholder="New item name"
                 className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
                 autoFocus
               />
@@ -164,7 +151,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
           </div>
         </div>
       )}
-      {item.children && isExpanded && (
+      {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
             <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} />
@@ -177,7 +164,6 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
 
 const CreateItemInterface = ({ onCreateNew, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
-  const [newItemType, setNewItemType] = useState('file');
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -195,7 +181,7 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
 
   const handleSubmit = () => {
     if (newItemName.trim()) {
-      onCreateNew('/', newItemName.trim(), newItemType);
+      onCreateNew('/', newItemName.trim());
     }
     onClose();
   };
@@ -210,24 +196,12 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
     <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
       <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
         <div className="flex items-center">
-          <button
-            onClick={() => setNewItemType('folder')}
-            className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
-          >
-            <i className="ri-folder-line"></i>
-          </button>
-          <button
-            onClick={() => setNewItemType('file')}
-            className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
-          >
-            <i className="ri-file-line"></i>
-          </button>
           <input
             type="text"
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`New ${newItemType} name`}
+            placeholder="New item name"
             className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
             autoFocus
           />

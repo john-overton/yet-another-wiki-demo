@@ -2,9 +2,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function POST(request) {
-  const { oldPath, newName, type } = await request.json();
+  const { oldPath, newName } = await request.json();
 
-  if (!oldPath || !newName || !type) {
+  if (!oldPath || !newName) {
     return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -16,35 +16,42 @@ export async function POST(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    // Update the item in the meta structure
     const updateInStructure = (items) => {
       for (let item of items) {
         if (item.path === oldPath) {
           const oldName = path.basename(item.path);
+          const newSlug = newName.toLowerCase().replace(/\s+/g, '-').replace(/\.mdx$/, '');
           item.title = newName;
-          item.slug = newName.toLowerCase().replace(/\s+/g, '-');
-          item.path = item.path.replace(oldName, newName);
+          item.slug = newSlug;
+          item.path = item.path.replace(oldName, `${newSlug}.mdx`);
           item.lastModified = new Date().toISOString();
-          return true;
+          return item;
         }
-        if (item.children && updateInStructure(item.children)) {
-          return true;
+        if (item.children) {
+          const result = updateInStructure(item.children);
+          if (result) return result;
         }
       }
-      return false;
+      return null;
     };
 
-    updateInStructure(metaData.pages);
+    const updatedItem = updateInStructure(metaData.pages);
+    if (!updatedItem) {
+      return new Response(JSON.stringify({ error: 'Item not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    // Rename the actual file or folder
+    // Rename the actual file
     const oldFullPath = path.join(process.cwd(), 'app', 'docs', oldPath);
-    const newFullPath = path.join(path.dirname(oldFullPath), newName);
+    const newFullPath = path.join(path.dirname(oldFullPath), `${updatedItem.slug}.mdx`);
     await fs.rename(oldFullPath, newFullPath);
 
-    return new Response(JSON.stringify({ message: 'Item renamed successfully' }), {
+    return new Response(JSON.stringify({ message: 'Item renamed successfully', updatedItem }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
