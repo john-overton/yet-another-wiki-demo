@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import Sidebar from './Sidebar';
-import SearchComponent from './SearchComponent';
+import TableOfContents from './TableOfContents';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
@@ -12,6 +12,7 @@ const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
+  const [isTocVisible, setIsTocVisible] = useState(true);
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -105,6 +106,10 @@ const MainAppLayout = () => {
     }
   };
 
+  const toggleToc = () => {
+    setIsTocVisible(!isTocVisible);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
       <div className="flex flex-1 z-1000">
@@ -114,13 +119,19 @@ const MainAppLayout = () => {
           onCreateNew={handleCreateNew}
           onDelete={handleDelete}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-gray-100 dark:bg-gray-800">
+        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-gray-100 dark:bg-gray-800 z-5">
           <div className="container mx-auto px-6 py-8 z-1">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              {selectedFile ? selectedFile.name.replace('.mdx', '') : 'Welcome'}
-            </h2>
-            <MDXRenderer source={fileContent} />
+            <MDXRenderer source={fileContent}/>
           </div>
+          <div className={`fixed top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
+            <TableOfContents source={fileContent} isVisible={isTocVisible} />
+          </div>
+          <button
+            onClick={toggleToc}
+            className="fixed top-14 right-2 z-10 p-2 rounded-full bg-gray-800 bg-opacity-75 text-white hover:bg-opacity-100"
+          >
+            <i className={`ri-${isTocVisible ? 'arrow-right-double-line' : 'list-unordered'}`}></i>
+          </button>
         </main>
       </div>
     </div>

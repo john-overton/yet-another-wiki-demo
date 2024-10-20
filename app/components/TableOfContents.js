@@ -6,7 +6,7 @@ const generateId = (text) => {
   return text.toLowerCase().replace(/[^\w]+/g, '-');
 };
 
-const TableOfContents = ({ source }) => {
+const TableOfContents = ({ source, isVisible }) => {
   const [toc, setToc] = useState([]);
 
   useEffect(() => {
@@ -21,12 +21,12 @@ const TableOfContents = ({ source }) => {
   }, [source]);
 
   return (
-    <div className="table-of-contents fixed top-12 mt-2 right-2 bg-gray-800 bg-opacity-75 p-2 rounded-lg max-w-xs max-h-[calc(100vh-3rem)] overflow-y-auto z-4 border border-gray-600 dark:border-gray-400 shadow-lg">
-      <h3 className="text-lg font-bold mb-2 text-white text-right">Page Contents</h3>
-      <ul className="space-y-1">
+    <div className="ml-1 mt-1 bg-gray-100 dark:bg-gray-800 shadow-lg">
+      <h3 className="text-lg font-bold mb-4">Page Contents</h3>
+      <ul className="space-y-2">
         {toc.map((item, index) => (
-          <li key={index} className="text-right" style={{ paddingRight: `${(item.level - 1) * 0.5}rem` }}>
-            <a href={`#${item.id}`} className="text-white hover:underline">
+          <li key={index} style={{ paddingLeft: `${(item.level - 1) * 0.5}rem` }}>
+            <a href={`#${item.id}`} className="hover:underline text-sm">
               {item.text}
             </a>
           </li>
