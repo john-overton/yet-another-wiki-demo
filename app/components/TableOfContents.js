@@ -21,12 +21,15 @@ const TableOfContents = ({ source, isVisible }) => {
   }, [source]);
 
   return (
-    <div className="ml-1 mt-1 bg-gray-100 dark:bg-gray-800 shadow-lg">
-      <h3 className="text-lg font-bold mb-4">Page Contents</h3>
+    <div className={`p-4 mt-1 mr-1 table-of-contents text-white rounded-lg shadow-lg ${isVisible ? 'block' : 'hidden'}`}>
+      <h3 className="text-lg font-bold mb-4 text-foreground">Page Contents</h3>
       <ul className="space-y-2">
         {toc.map((item, index) => (
           <li key={index} style={{ paddingLeft: `${(item.level - 1) * 0.5}rem` }}>
-            <a href={`#${item.id}`} className="hover:underline text-sm">
+            <a 
+              href={`#${item.id}`} 
+              className="hover:text-primary text-sm text-foreground transition-colors duration-200"
+            >
               {item.text}
             </a>
           </li>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import Sidebar from './Sidebar';
@@ -15,12 +15,7 @@ const MainAppLayout = () => {
   const [isTocVisible, setIsTocVisible] = useState(true);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    fetchFileStructure();
-    loadHomeContent();
-  }, []);
-
-  const fetchFileStructure = async () => {
+  const fetchFileStructure = useCallback(async () => {
     try {
       const response = await fetch('/api/file-structure');
       const data = await response.json();
@@ -28,9 +23,9 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error fetching file structure:', error);
     }
-  };
+  }, []);
 
-  const loadHomeContent = async () => {
+  const loadHomeContent = useCallback(async () => {
     try {
       const response = await fetch('/api/file-content?path=./_home.mdx');
       const content = await response.text();
@@ -39,9 +34,14 @@ const MainAppLayout = () => {
       console.error('Error loading home content:', error);
       setFileContent('Error loading home content');
     }
-  };
+  }, []);
 
-  const handleFileSelect = async (file) => {
+  useEffect(() => {
+    fetchFileStructure();
+    loadHomeContent();
+  }, [fetchFileStructure, loadHomeContent]);
+
+  const handleFileSelect = useCallback(async (file) => {
     if (file && file.path && file.name !== '_home.mdx') {
       setSelectedFile(file);
       try {
@@ -56,9 +56,9 @@ const MainAppLayout = () => {
       setSelectedFile(null);
       loadHomeContent();
     }
-  };
+  }, [loadHomeContent]);
 
-  const handleCreateNew = async (parentPath, name, type) => {
+  const handleCreateNew = useCallback(async (parentPath, name, type) => {
     console.log('Attempting to create new item:', { parentPath, name, type });
     try {
       const response = await fetch('/api/create-item', {
@@ -66,9 +66,6 @@ const MainAppLayout = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parentPath, name, type }),
       });
-      console.log('API response status:', response.status);
-      const responseText = await response.text();
-      console.log('API response text:', responseText);
       if (response.ok) {
         console.log('Item created successfully, refreshing file structure');
         await fetchFileStructure();
@@ -78,9 +75,9 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error creating new item:', error);
     }
-  };
+  }, [fetchFileStructure]);
 
-  const handleDelete = async (path, type) => {
+  const handleDelete = useCallback(async (path, type) => {
     console.log('Attempting to delete item:', { path, type });
     try {
       const response = await fetch('/api/delete-item', {
@@ -88,9 +85,6 @@ const MainAppLayout = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path, type }),
       });
-      console.log('API response status:', response.status);
-      const responseText = await response.text();
-      console.log('API response text:', responseText);
       if (response.ok) {
         console.log('Item deleted successfully, refreshing file structure');
         await fetchFileStructure();
@@ -104,14 +98,14 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  };
+  }, [fetchFileStructure, loadHomeContent, selectedFile]);
 
-  const toggleToc = () => {
-    setIsTocVisible(!isTocVisible);
-  };
+  const toggleToc = useCallback(() => {
+    setIsTocVisible((prev) => !prev);
+  }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="flex flex-1 z-1000">
         <Sidebar
           fileStructure={fileStructure}
@@ -119,7 +113,7 @@ const MainAppLayout = () => {
           onCreateNew={handleCreateNew}
           onDelete={handleDelete}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-gray-100 dark:bg-gray-800 z-5">
+        <main className="flex-1 overflow-x-hidden overflow-y-scroll bg-background-light z-5">
           <div className="container mx-auto px-6 py-8 z-1">
             <MDXRenderer source={fileContent}/>
           </div>
@@ -128,9 +122,12 @@ const MainAppLayout = () => {
           </div>
           <button
             onClick={toggleToc}
-            className="fixed top-14 right-2 z-10 p-2 rounded-full bg-gray-800 bg-opacity-75 text-white hover:bg-opacity-100"
+            className={`fixed top-14 right-2 z-10 p-2 rounded-full transition-colors duration-200
+              ${theme === 'dark' 
+                ? 'bg-primary text-white hover:bg-gray-600' 
+                : 'text-black hover:text-gray dark:hover:bg-gray-600'}`}
           >
-            <i className={`ri-${isTocVisible ? 'arrow-right-double-line' : 'list-unordered'}`}></i>
+            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white' : 'list-unordered'}`}></i>
           </button>
         </main>
       </div>
@@ -138,4 +135,4 @@ const MainAppLayout = () => {
   );
 };
 
-export default MainAppLayout;
+export default React.memo(MainAppLayout);
