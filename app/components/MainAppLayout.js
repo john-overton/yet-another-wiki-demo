@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter, useParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
+import MDXEditor from './MDXEditor';
 import { useTheme } from 'next-themes';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
@@ -13,53 +15,73 @@ const MainAppLayout = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
   const [isTocVisible, setIsTocVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { theme } = useTheme();
+  const router = useRouter();
+  const params = useParams();
 
   const fetchFileStructure = useCallback(async () => {
     try {
       const response = await fetch('/api/file-structure');
       const data = await response.json();
-      setFileStructure(data);
+      setFileStructure(data.pages);
     } catch (error) {
       console.error('Error fetching file structure:', error);
     }
   }, []);
 
-  const loadHomeContent = useCallback(async () => {
+  const loadFileContent = useCallback(async (path) => {
     try {
-      const response = await fetch('/api/file-content?path=./_home.mdx');
+      const response = await fetch(`/api/file-content?path=${encodeURIComponent(path)}`);
       const content = await response.text();
       setFileContent(content);
     } catch (error) {
-      console.error('Error loading home content:', error);
-      setFileContent('Error loading home content');
+      console.error('Error loading file content:', error);
+      setFileContent('Error loading file content');
     }
   }, []);
 
   useEffect(() => {
     fetchFileStructure();
-    loadHomeContent();
-  }, [fetchFileStructure, loadHomeContent]);
+  }, [fetchFileStructure]);
 
-  const handleFileSelect = useCallback(async (file) => {
-    if (file && file.path && file.name !== '_home.mdx') {
-      setSelectedFile(file);
-      try {
-        const response = await fetch(`/api/file-content?path=${encodeURIComponent(file.path)}`);
-        const content = await response.text();
-        setFileContent(content);
-      } catch (error) {
-        console.error('Error fetching file content:', error);
-        setFileContent('Error loading file content');
+  useEffect(() => {
+    const slug = params?.slug;
+    if (slug) {
+      const file = findFileBySlug(fileStructure, slug);
+      if (file) {
+        setSelectedFile(file);
+        loadFileContent(file.path);
       }
     } else {
-      setSelectedFile(null);
-      loadHomeContent();
+      const homeFile = fileStructure.find(f => f.slug === 'home');
+      if (homeFile) {
+        setSelectedFile(homeFile);
+        loadFileContent(homeFile.path);
+      }
     }
-  }, [loadHomeContent]);
+  }, [params, fileStructure, loadFileContent]);
+
+  const findFileBySlug = (items, slug) => {
+    for (const item of items) {
+      if (item.slug === slug) {
+        return item;
+      }
+      if (item.children) {
+        const found = findFileBySlug(item.children, slug);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleFileSelect = useCallback((file) => {
+    router.push(`/${file.slug}`);
+  }, [router]);
 
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
-    console.log('Attempting to create new item:', { parentPath, name, type });
     try {
       const response = await fetch('/api/create-item', {
         method: 'POST',
@@ -67,7 +89,6 @@ const MainAppLayout = () => {
         body: JSON.stringify({ parentPath, name, type }),
       });
       if (response.ok) {
-        console.log('Item created successfully, refreshing file structure');
         await fetchFileStructure();
       } else {
         console.error('Failed to create new item');
@@ -78,7 +99,6 @@ const MainAppLayout = () => {
   }, [fetchFileStructure]);
 
   const handleDelete = useCallback(async (path, type) => {
-    console.log('Attempting to delete item:', { path, type });
     try {
       const response = await fetch('/api/delete-item', {
         method: 'DELETE',
@@ -86,11 +106,9 @@ const MainAppLayout = () => {
         body: JSON.stringify({ path, type }),
       });
       if (response.ok) {
-        console.log('Item deleted successfully, refreshing file structure');
         await fetchFileStructure();
         if (selectedFile && selectedFile.path === path) {
-          setSelectedFile(null);
-          loadHomeContent();
+          router.push('/');
         }
       } else {
         console.error('Failed to delete item');
@@ -98,10 +116,9 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [fetchFileStructure, loadHomeContent, selectedFile]);
+  }, [fetchFileStructure, selectedFile, router]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
-    console.log('Attempting to rename item:', { oldPath, newName, type });
     try {
       const response = await fetch('/api/rename-item', {
         method: 'POST',
@@ -110,15 +127,9 @@ const MainAppLayout = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        console.log('Item renamed successfully');
-        if (data.requiresRefresh) {
-          alert('The item has been renamed. The page will now refresh to reflect the changes.');
-          window.location.reload();
-        } else {
-          await fetchFileStructure();
-          if (selectedFile && selectedFile.path === oldPath) {
-            setSelectedFile({ ...selectedFile, name: newName, path: oldPath.replace(/[^/]+$/, newName) });
-          }
+        await fetchFileStructure();
+        if (selectedFile && selectedFile.path === oldPath) {
+          router.push(`/${data.newSlug}`);
         }
       } else {
         console.error('Failed to rename item:', data.message);
@@ -128,10 +139,34 @@ const MainAppLayout = () => {
       console.error('Error renaming item:', error);
       alert(`Error renaming item: ${error.message}`);
     }
-  }, [fetchFileStructure, selectedFile]);
+  }, [fetchFileStructure, selectedFile, router]);
+
+  const handleSave = useCallback(async (updatedFile) => {
+    try {
+      const response = await fetch('/api/update-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFile),
+      });
+      if (response.ok) {
+        setSelectedFile(updatedFile);
+        setIsEditing(false);
+        await fetchFileStructure();
+        router.push(`/${updatedFile.slug}`);
+      } else {
+        console.error('Failed to update file');
+      }
+    } catch (error) {
+      console.error('Error updating file:', error);
+    }
+  }, [fetchFileStructure, router]);
 
   const toggleToc = useCallback(() => {
     setIsTocVisible((prev) => !prev);
+  }, []);
+
+  const toggleEdit = useCallback(() => {
+    setIsEditing((prev) => !prev);
   }, []);
 
   return (
@@ -148,7 +183,21 @@ const MainAppLayout = () => {
         </div>
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
-            <MDXRenderer source={fileContent} />
+            {selectedFile && !isEditing ? (
+              <>
+                <button
+                  onClick={toggleEdit}
+                  className="mb-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+                <MDXRenderer source={fileContent} />
+              </>
+            ) : selectedFile && isEditing ? (
+              <MDXEditor file={selectedFile} onSave={handleSave} />
+            ) : (
+              <div>Select a file from the sidebar</div>
+            )}
           </div>
           <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
             <TableOfContents source={fileContent} isVisible={isTocVisible} />

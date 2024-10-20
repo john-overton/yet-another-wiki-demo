@@ -1,0 +1,53 @@
+{
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Home",
+      "path": "home.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T11:58:38.645Z"
+    },
+    {
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "path": "getting-started.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T12:05:54.772Z",
+      "children": []
+    },
+    {
+      "slug": "installation",
+      "title": "Installation",
+      "path": "installation.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T12:05:07.891Z"
+    },
+    {
+      "slug": "next-steps",
+      "title": "Next Steps",
+      "path": "next-steps.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T12:06:02.987Z"
+    },
+    {
+      "slug": "downloading",
+      "title": "Downloading",
+      "path": "downloading.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T12:06:18.105Z"
+    },
+    {
+      "slug": "testing",
+      "title": "Testing",
+      "path": "\\testing.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T12:10:31.380Z"
+    }
+  ]
+}

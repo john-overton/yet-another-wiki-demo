@@ -6,19 +6,23 @@ export async function GET(request) {
   const filePath = searchParams.get('path');
 
   if (!filePath) {
-    return new Response('File path is required', { status: 400 });
+    return new Response(JSON.stringify({ error: 'File path is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-
   try {
+    const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
     const content = await fs.readFile(fullPath, 'utf8');
     return new Response(content, {
-      status: 200,
-      headers: { 'Content-Type': 'text/plain' }
+      headers: { 'Content-Type': 'text/plain' },
     });
   } catch (error) {
     console.error('Error reading file:', error);
-    return new Response('Failed to read file', { status: 500 });
+    return new Response(JSON.stringify({ error: 'Failed to read file content' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }

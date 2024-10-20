@@ -37,8 +37,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
 
   const handleSubmit = () => {
     if (newItemName.trim()) {
-      const finalName = newItemType === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
-      onCreateNew(item.path, finalName, newItemType);
+      onCreateNew(item.path, newItemName.trim(), newItemType);
     }
     setIsCreating(false);
     setNewItemName('');
@@ -52,8 +51,8 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
 
   const handleDelete = (e) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete ${item.type} "${item.name}"?`)) {
-      onDelete(item.path, item.type);
+    if (window.confirm(`Are you sure you want to delete "${item.title}"?`)) {
+      onDelete(item.path, item.children ? 'folder' : 'file');
     }
   };
 
@@ -65,19 +64,12 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
   const handleDoubleClick = (e) => {
     e.preventDefault();
     setIsRenaming(true);
-    setNewItemName(item.name.replace('.mdx', ''));
+    setNewItemName(item.title);
   };
 
   const handleRenameSubmit = () => {
-    if (newItemName.trim() && newItemName !== item.name.replace('.mdx', '')) {
-      const finalName = item.type === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
-      if (typeof onRename === 'function') {
-        onRename(item.path, finalName, item.type);
-      } else {
-        console.warn('onRename function is not provided. Please implement the onRename function in the parent component.');
-        // Fallback behavior: update the item name locally
-        item.name = finalName;
-      }
+    if (newItemName.trim() && newItemName !== item.title) {
+      onRename(item.path, newItemName.trim(), item.children ? 'folder' : 'file');
     }
     setIsRenaming(false);
     setNewItemName('');
@@ -89,9 +81,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
     }
   };
 
-  if (item.type !== 'folder' && (!item.name.endsWith('.mdx') || item.name === '_home.mdx')) {
-    return null;
-  }
+  const displayName = item.title.replace(/\.mdx$/, '');
 
   return (
     <li ref={itemRef}>
@@ -99,33 +89,31 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
         <button
           type="button"
           className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
-          onClick={() => item.type !== 'folder' && onSelect(item)}
+          onClick={() => onSelect(item)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onDoubleClick={handleDoubleClick}
         >
-          {item.type === 'folder' && (
+          {item.children && (
             <i
               className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
               onClick={toggleExpand}
             ></i>
           )}
-          <span className={`ml-1 ${item.type === 'folder' ? 'underline' : ''}`}>{item.name.replace('.mdx', '')}</span>
+          <span className={`ml-1 ${item.children ? 'underline' : ''}`}>{displayName}</span>
           {isHovered && (
             <span className="ml-auto flex items-center">
               <i
                 className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
                 onClick={handleDelete}
               ></i>
-              {item.type === 'folder' && (
-                <i
-                  className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCreateNew();
-                  }}
-                ></i>
-              )}
+              <i
+                className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCreateNew();
+                }}
+              ></i>
             </span>
           )}
         </button>
@@ -176,7 +164,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
           </div>
         </div>
       )}
-      {item.type === 'folder' && item.children && isExpanded && (
+      {item.children && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
             <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} />
@@ -207,8 +195,7 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
 
   const handleSubmit = () => {
     if (newItemName.trim()) {
-      const finalName = newItemType === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
-      onCreateNew('/', finalName, newItemType);
+      onCreateNew('/', newItemName.trim(), newItemType);
     }
     onClose();
   };
