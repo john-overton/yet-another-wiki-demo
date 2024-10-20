@@ -94,7 +94,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
   }
 
   return (
-    <li ref={itemRef} className="relative">
+    <li ref={itemRef}>
       {!isRenaming ? (
         <button
           type="button"
@@ -142,8 +142,8 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
         </div>
       )}
       {isCreating && (
-        <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
+        <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
             <div className="flex items-center">
               <button
                 onClick={() => setNewItemType('folder')}

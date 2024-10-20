@@ -137,7 +137,7 @@ const MainAppLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-64 flex-shrink-0 overflow-y-auto">
+        <div className="w-64 flex-shrink-0 z-[999]">
           <Sidebar
             fileStructure={fileStructure}
             onSelect={handleFileSelect}
@@ -146,8 +146,8 @@ const MainAppLayout = () => {
             onRename={handleRename}
           />
         </div>
-        <main className="flex-1 overflow-y-auto bg-background-light">
-          <div className="container z-1 mx-auto px-6 py-8">
+        <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
+          <div className="mx-auto px-6 py-8">
             <MDXRenderer source={fileContent} />
           </div>
           <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
