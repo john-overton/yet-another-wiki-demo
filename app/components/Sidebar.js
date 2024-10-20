@@ -238,6 +238,14 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   );
 };
 
+// New function to filter out deleted items
+const filterDeletedItems = (items) => {
+  return items.filter(item => !item.deleted).map(item => ({
+    ...item,
+    children: item.children ? filterDeletedItems(item.children) : []
+  }));
+};
+
 const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
@@ -251,6 +259,9 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
     await onDelete(path);
     refreshFileStructure();
   };
+
+  // Filter out deleted items
+  const filteredFileStructure = filterDeletedItems(fileStructure);
 
   return (
     <>
@@ -296,7 +307,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
             />
           )}
           <ul className="space-y-2 flex-grow">
-            {fileStructure.map((item, index) => (
+            {filteredFileStructure.map((item, index) => (
               <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} />
             ))}
           </ul>

@@ -16,27 +16,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T13:12:01.136Z",
-      "children": [
-        {
-          "slug": "subitem1",
-          "title": "subitem1",
-          "path": "subitem1.mdx",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-20T13:12:19.504Z",
-          "children": [
-            {
-              "slug": "subsubitem1",
-              "title": "subsubitem1",
-              "path": "subsubitem1.mdx",
-              "isPublic": true,
-              "version": 1,
-              "lastModified": "2024-10-20T13:12:24.843Z",
-              "children": []
-            }
-          ]
-        }
-      ]
+      "children": []
     },
     {
       "slug": "item2",
@@ -45,8 +25,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T13:12:07.299Z",
-      "children": [],
-      "deleted": true
+      "children": []
     },
     {
       "slug": "item3",
