@@ -10,12 +10,12 @@
       "children": []
     },
     {
-      "slug": "item1",
-      "title": "Item1",
-      "path": "item1.mdx",
+      "slug": "the-new-name",
+      "title": "The new name",
+      "path": "the-new-name.mdx",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-20T13:12:01.136Z",
+      "lastModified": "2024-10-20T19:04:01.750Z",
       "children": []
     },
     {
