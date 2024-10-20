@@ -10,7 +10,7 @@ const HighlightMatches = ({ value, match }) => {
     <>
       {parts.map((part, i) => 
         part.toLowerCase() === match.toLowerCase() ? (
-          <span key={i} className="bg-yellow-200 dark:bg-yellow-800">{part}</span>
+          <span key={i} className="bg-yellow-200 dark:bg-yellow-800 font-bold">{part}</span>
         ) : (
           part
         )
@@ -51,7 +51,7 @@ const SearchComponent = () => {
   }, [fetchSearchResults]);
 
   const handleResultClick = (result) => {
-    router.push(`/docs/${result.path}`);
+    router.push(result.slug === 'home' ? '/' : `/${result.slug}`);
     setSearchTerm('');
     setSearchResults([]);
   };
@@ -83,11 +83,13 @@ const SearchComponent = () => {
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b"
               >
                 <div className="text-base font-semibold leading-5">
-                  <HighlightMatches value={result.name} match={searchTerm} />
+                  <HighlightMatches value={result.title} match={searchTerm} />
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {result.path}
-                </div>
+                {result.snippet && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <HighlightMatches value={result.snippet} match={searchTerm} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

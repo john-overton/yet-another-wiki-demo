@@ -4,6 +4,7 @@ import FlexSearch from 'flexsearch';
 
 let index;
 let documents = [];
+let titleMap = {};
 
 async function initializeSearch() {
   if (index) return;
@@ -12,12 +13,23 @@ async function initializeSearch() {
     document: {
       id: 'id',
       index: ['name', 'content'],
-      store: ['name', 'path']
+      store: ['name', 'path', 'content']
     }
   });
 
   const docsDir = path.join(process.cwd(), 'app', 'docs');
+  await loadMetaData();
   await indexFiles(docsDir);
+}
+
+async function loadMetaData() {
+  const metaPath = path.join(process.cwd(), 'app', 'docs', 'meta.json');
+  const metaContent = await fs.readFile(metaPath, 'utf-8');
+  const metaData = JSON.parse(metaContent);
+
+  metaData.pages.forEach(page => {
+    titleMap[page.path] = page.title;
+  });
 }
 
 async function indexFiles(dir, basePath = '') {
@@ -44,6 +56,22 @@ async function indexFiles(dir, basePath = '') {
   }
 }
 
+function getSnippet(content, term, maxLength = 150) {
+  const lowerContent = content.toLowerCase();
+  const lowerTerm = term.toLowerCase();
+  const index = lowerContent.indexOf(lowerTerm);
+  if (index === -1) return '';
+
+  let start = Math.max(0, index - 75);
+  let end = Math.min(content.length, index + term.length + 75);
+  let snippet = content.slice(start, end);
+
+  if (start > 0) snippet = '...' + snippet;
+  if (end < content.length) snippet = snippet + '...';
+
+  return snippet;
+}
+
 export async function GET(request) {
   await initializeSearch();
 
@@ -65,9 +93,12 @@ export async function GET(request) {
         const id = item.id;
         console.log(`Processing item with id: ${id}`);
         if (documents[id]) {
+          const slug = documents[id].path.replace('.mdx', '');
           return {
-            name: documents[id].name,
-            path: documents[id].path
+            title: titleMap[documents[id].path] || documents[id].name,
+            slug: slug,
+            path: documents[id].path,
+            snippet: getSnippet(documents[id].content, term)
           };
         } else {
           console.error(`Document with id ${id} not found`);
