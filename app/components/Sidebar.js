@@ -2,23 +2,25 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
+const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [newItemType, setNewItemType] = useState('file');
   const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
+  const renameInputRef = useRef(null);
   const itemRef = useRef(null);
 
   useEffect(() => {
-    if (isCreating) {
+    if (isCreating || isRenaming) {
       document.addEventListener('click', handleOutsideClick);
     }
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [isCreating]);
+  }, [isCreating, isRenaming]);
 
   const handleCreateNew = () => {
     setIsCreating(true);
@@ -27,6 +29,9 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
   const handleOutsideClick = (e) => {
     if (inputRef.current && !inputRef.current.contains(e.target)) {
       handleSubmit();
+    }
+    if (renameInputRef.current && !renameInputRef.current.contains(e.target)) {
+      handleRenameSubmit();
     }
   };
 
@@ -57,44 +62,85 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
     setIsExpanded(!isExpanded);
   };
 
+  const handleDoubleClick = (e) => {
+    e.preventDefault();
+    setIsRenaming(true);
+    setNewItemName(item.name.replace('.mdx', ''));
+  };
+
+  const handleRenameSubmit = () => {
+    if (newItemName.trim() && newItemName !== item.name.replace('.mdx', '')) {
+      const finalName = item.type === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
+      if (typeof onRename === 'function') {
+        onRename(item.path, finalName, item.type);
+      } else {
+        console.warn('onRename function is not provided. Please implement the onRename function in the parent component.');
+        // Fallback behavior: update the item name locally
+        item.name = finalName;
+      }
+    }
+    setIsRenaming(false);
+    setNewItemName('');
+  };
+
+  const handleRenameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleRenameSubmit();
+    }
+  };
+
   if (item.type !== 'folder' && (!item.name.endsWith('.mdx') || item.name === '_home.mdx')) {
     return null;
   }
 
   return (
     <li ref={itemRef} className="relative">
-      <button
-        type="button"
-        className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
-        onClick={() => item.type !== 'folder' && onSelect(item)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {item.type === 'folder' && (
-          <i
-            className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
-            onClick={toggleExpand}
-          ></i>
-        )}
-        <span className={`ml-1 ${item.type === 'folder' ? 'underline' : ''}`}>{item.name.replace('.mdx', '')}</span>
-        {isHovered && (
-          <span className="ml-auto flex items-center">
+      {!isRenaming ? (
+        <button
+          type="button"
+          className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
+          onClick={() => item.type !== 'folder' && onSelect(item)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onDoubleClick={handleDoubleClick}
+        >
+          {item.type === 'folder' && (
             <i
-              className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
-              onClick={handleDelete}
+              className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
+              onClick={toggleExpand}
             ></i>
-            {item.type === 'folder' && (
+          )}
+          <span className={`ml-1 ${item.type === 'folder' ? 'underline' : ''}`}>{item.name.replace('.mdx', '')}</span>
+          {isHovered && (
+            <span className="ml-auto flex items-center">
               <i
-                className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCreateNew();
-                }}
+                className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
+                onClick={handleDelete}
               ></i>
-            )}
-          </span>
-        )}
-      </button>
+              {item.type === 'folder' && (
+                <i
+                  className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCreateNew();
+                  }}
+                ></i>
+              )}
+            </span>
+          )}
+        </button>
+      ) : (
+        <div className="flex items-center p-2" ref={renameInputRef}>
+          <input
+            type="text"
+            value={newItemName}
+            onChange={(e) => setNewItemName(e.target.value)}
+            onKeyDown={handleRenameKeyDown}
+            className="border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
+            autoFocus
+          />
+        </div>
+      )}
       {isCreating && (
         <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
@@ -133,7 +179,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
       {item.type === 'folder' && item.children && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
-            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} level={level + 1} />
+            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} />
           ))}
         </ul>
       )}
@@ -210,7 +256,7 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   );
 };
 
-const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
+const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -264,7 +310,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
           )}
           <ul className="space-y-2">
             {fileStructure.map((item, index) => (
-              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} />
+              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} />
             ))}
           </ul>
         </div>

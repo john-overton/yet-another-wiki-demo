@@ -3,7 +3,8 @@
 @tailwind utilities;
 @import "/bootstrap/scss/bootstrap/bootstrap.scss";
 @import "remixicon/fonts/remixicon.css";
-@import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;1,300&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap');
+
 
 :root,
 .light {
@@ -28,6 +29,16 @@
   --color-success: #10b981;
 }
 
+
+.open-sans {
+  font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
 html, body {
   height: 100%;
   overflow-x: hidden;
@@ -36,13 +47,7 @@ html, body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Rethink Sans", Arial, Helvetica, sans-serif;
-}
-
-.rethink-sans {
-  font-family: "Rethink Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 }
 
 #__next {

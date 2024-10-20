@@ -100,6 +100,36 @@ const MainAppLayout = () => {
     }
   }, [fetchFileStructure, loadHomeContent, selectedFile]);
 
+  const handleRename = useCallback(async (oldPath, newName, type) => {
+    console.log('Attempting to rename item:', { oldPath, newName, type });
+    try {
+      const response = await fetch('/api/rename-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPath, newName, type }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Item renamed successfully');
+        if (data.requiresRefresh) {
+          alert('The item has been renamed. The page will now refresh to reflect the changes.');
+          window.location.reload();
+        } else {
+          await fetchFileStructure();
+          if (selectedFile && selectedFile.path === oldPath) {
+            setSelectedFile({ ...selectedFile, name: newName, path: oldPath.replace(/[^/]+$/, newName) });
+          }
+        }
+      } else {
+        console.error('Failed to rename item:', data.message);
+        alert(`Failed to rename item: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error renaming item:', error);
+      alert(`Error renaming item: ${error.message}`);
+    }
+  }, [fetchFileStructure, selectedFile]);
+
   const toggleToc = useCallback(() => {
     setIsTocVisible((prev) => !prev);
   }, []);
@@ -113,6 +143,7 @@ const MainAppLayout = () => {
             onSelect={handleFileSelect}
             onCreateNew={handleCreateNew}
             onDelete={handleDelete}
+            onRename={handleRename}
           />
         </div>
         <main className="flex-1 overflow-y-auto bg-background-light">
