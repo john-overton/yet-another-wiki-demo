@@ -209,7 +209,7 @@ const MainAppLayout = () => {
                 ? 'bg-primary text-white' 
                 : 'text-black'}`}
           >
-            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white hover:bg-gray-600 p-1 rounded-sm' : 'list-unordered hover:bg-gray-300 dark:hover:bg-gray-400 p-1 rounded-sm'}`}></i>
+            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white hover:bg-gray-600 p-1 rounded-sm' : 'list-unordered bg-white border border-gray-200 shadow-sm dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-400 p-1 rounded-sm'}`}></i>
           </button>
         </main>
       </div>
