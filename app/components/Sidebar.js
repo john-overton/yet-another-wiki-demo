@@ -7,6 +7,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [newItemType, setNewItemType] = useState('file');
+  const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
   const itemRef = useRef(null);
 
@@ -51,6 +52,11 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
     }
   };
 
+  const toggleExpand = (e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
   if (item.type !== 'folder' && (!item.name.endsWith('.mdx') || item.name === '_home.mdx')) {
     return null;
   }
@@ -66,7 +72,12 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {item.type === 'folder' && <i className="ri-folder-6-line mr-2 font-normal"></i>}
+        {item.type === 'folder' && (
+          <i
+            className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
+            onClick={toggleExpand}
+          ></i>
+        )}
         <span className="ml-1">{item.name.replace('.mdx', '')}</span>
         {isHovered && (
           <span className="ml-auto flex items-center">
@@ -121,7 +132,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
           </div>
         </div>
       )}
-      {item.type === 'folder' && item.children && (
+      {item.type === 'folder' && item.children && isExpanded && (
         <ul className="space-y-2 ml-4">
           {item.children.map((child, index) => (
             <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} level={level + 1} />
@@ -132,8 +143,83 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, level = 0 }) => {
   );
 };
 
+const CreateItemInterface = ({ onCreateNew, onClose }) => {
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemType, setNewItemType] = useState('file');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    document.addEventListener('click', handleOutsideClick);
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, []);
+
+  const handleOutsideClick = (e) => {
+    if (inputRef.current && !inputRef.current.contains(e.target)) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (newItemName.trim()) {
+      const finalName = newItemType === 'file' ? `${newItemName.trim()}.mdx` : newItemName.trim();
+      onCreateNew('/', finalName, newItemType);
+    }
+    onClose();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
+  return (
+    <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
+        <div className="flex items-center">
+          <button
+            onClick={() => setNewItemType('folder')}
+            className={`mr-2 ${newItemType === 'folder' ? 'text-blue-500' : 'text-gray-500'}`}
+          >
+            <i className="ri-folder-line"></i>
+          </button>
+          <button
+            onClick={() => setNewItemType('file')}
+            className={`mr-2 ${newItemType === 'file' ? 'text-blue-500' : 'text-gray-500'}`}
+          >
+            <i className="ri-file-line"></i>
+          </button>
+          <input
+            type="text"
+            value={newItemName}
+            onChange={(e) => setNewItemName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={`New ${newItemType} name`}
+            className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
+            autoFocus
+          />
+          <button
+            onClick={onClose}
+            className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+          >
+            <i className="ri-close-line shadow-sm"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isCreatingRoot, setIsCreatingRoot] = useState(false);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
+  const handleCreateRoot = () => {
+    setIsCreatingRoot(true);
+  };
 
   return (
     <>
@@ -159,7 +245,25 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete }) => {
         aria-label="Sidenav"
       >
         <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Pages</h2>
+          <div 
+            className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onMouseEnter={() => setIsHeaderHovered(true)}
+            onMouseLeave={() => setIsHeaderHovered(false)}
+          >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Pages</h2>
+            <button
+              onClick={handleCreateRoot}
+              className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <i className="ri-add-line"></i>
+            </button>
+          </div>
+          {isCreatingRoot && (
+            <CreateItemInterface
+              onCreateNew={onCreateNew}
+              onClose={() => setIsCreatingRoot(false)}
+            />
+          )}
           <ul className="space-y-2">
             {fileStructure.map((item, index) => (
               <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} />

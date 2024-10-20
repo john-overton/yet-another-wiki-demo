@@ -30,7 +30,7 @@ const Header = ({ onFileSelect }) => {
 
   return (
     <div className="flex items-center justify-between w-full z-[1001]">
-      <div></div>
+      <div>Placeholder for search</div>
       <div className="flex items-center">
         {session ? (
           <UserButton user={session.user} />
