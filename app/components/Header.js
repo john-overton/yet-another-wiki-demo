@@ -20,18 +20,12 @@ const Header = ({ onFileSelect }) => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
-  const handleSearchSelect = (file) => {
-    if (onFileSelect) {
-      onFileSelect(file);
-    } else {
-      console.error('onFileSelect is not defined');
-    }
-  };
-
   return (
-    <div className="flex items-center justify-between w-full z-[1001]">
-      <div>Placeholder for search</div>
-      <div className="flex items-center">
+    <div className="flex items-center justify-between w-full p-4">
+      <div className="flex-grow max-w-xl">
+        <SearchComponent />
+      </div>
+      <div className="flex items-center ml-4">
         {session ? (
           <UserButton user={session.user} />
         ) : (

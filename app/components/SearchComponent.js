@@ -1,67 +1,93 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
-const SearchComponent = ({ onFileSelect }) => {
+const HighlightMatches = ({ value, match }) => {
+  if (!match) return value;
+  const parts = value.split(new RegExp(`(${match})`, 'gi'));
+  return (
+    <>
+      {parts.map((part, i) => 
+        part.toLowerCase() === match.toLowerCase() ? (
+          <span key={i} className="bg-yellow-200 dark:bg-yellow-800">{part}</span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+};
+
+const SearchComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const fetchSearchResults = useCallback(async () => {
+    if (!searchTerm) {
+      setSearchResults([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/search?term=${encodeURIComponent(searchTerm)}`);
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (searchTerm) {
-        fetchSearchResults();
-      } else {
-        setSearchResults([]);
-      }
+      fetchSearchResults();
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
-
-  const fetchSearchResults = async () => {
-    try {
-      const response = await fetch(`/api/search?term=${searchTerm}`);
-      const data = await response.json();
-      console.log('API Response:', data);
-      setSearchResults(data.slice(0, 5));
-      console.log('Search Results Set:', data.slice(0, 5));
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  };
+  }, [fetchSearchResults]);
 
   const handleResultClick = (result) => {
-    onFileSelect({
-      name: result.fullName,
-      path: result.path,
-    });
+    router.push(`/docs/${result.path}`);
     setSearchTerm('');
     setSearchResults([]);
   };
 
-  console.log('Current Search Term:', searchTerm);
-  console.log('Current Search Results:', searchResults);
-
   return (
-    <div>
+    <div className="relative">
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search docs..."
-        className="p-2 border rounded-md"
+        className="w-full p-2 border rounded-md"
       />
+      {loading && (
+        <div className="absolute right-2 top-2">
+          <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      )}
       {searchResults.length > 0 && (
-        <div className="absolute z-[1050] w-full bg-white border-2 border-blue-500 rounded-md mt-1 max-h-60 overflow-y-auto">
-          <p className="p-2 bg-gray-200">Search Results:</p>
+        <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-md mt-1 max-h-60 overflow-y-auto">
           <ul>
             {searchResults.map((result, index) => (
               <li
                 key={index}
                 onClick={() => handleResultClick(result)}
-                className="p-2 hover:bg-gray-100 cursor-pointer border-b"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b"
               >
-                {result.name}
+                <div className="text-base font-semibold leading-5">
+                  <HighlightMatches value={result.name} match={searchTerm} />
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {result.path}
+                </div>
               </li>
             ))}
           </ul>

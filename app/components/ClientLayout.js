@@ -24,7 +24,7 @@ export function ClientLayout({ children }) {
 
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-      <header className="h-12 p-1 flex justify-end bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header">
+      <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header z-[2000]">
         <Header onFileSelect={handleFileSelect} />
       </header>
       <main className="flex-1 z-1 overflow-auto">
