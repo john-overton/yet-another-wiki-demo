@@ -10,13 +10,52 @@
       "children": []
     },
     {
-      "slug": "the-new-name",
-      "title": "The new name",
-      "path": "the-new-name.mdx",
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "path": "getting-started.mdx",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-20T19:04:01.750Z",
-      "children": []
+      "lastModified": "2024-10-20T20:08:16.526Z",
+      "children": [
+        {
+          "slug": "installation",
+          "title": "Installation",
+          "path": "installation.mdx",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-20T20:08:23.653Z",
+          "children": [
+            {
+              "slug": "configuration",
+              "title": "Configuration",
+              "path": "configuration.mdx",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-10-20T20:08:29.901Z",
+              "children": [],
+              "deleted": true
+            }
+          ]
+        },
+        {
+          "slug": "configuration",
+          "title": "Configuration",
+          "path": "configuration.mdx",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-20T20:08:41.939Z",
+          "children": []
+        },
+        {
+          "slug": "theming",
+          "title": "Theming",
+          "path": "theming.mdx",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-20T20:08:48.694Z",
+          "children": []
+        }
+      ]
     },
     {
       "slug": "item2",
