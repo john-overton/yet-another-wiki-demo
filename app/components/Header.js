@@ -3,6 +3,7 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import UserButton from './UserButton';
 import SearchComponent from './SearchComponent';
@@ -22,7 +23,10 @@ const Header = ({ onFileSelect }) => {
 
   return (
     <div className="flex items-center justify-between w-full p-4">
-      <div className="m-2">
+      <div className="m-2 height-[50px]">
+        <Link href="/">
+          <Image src="/images/YAW-WIKI.png" alt="Logo" width={50} height={50} />
+        </Link>
       </div>
       <div className="flex items-center ml-4">
       <div className="m-2">

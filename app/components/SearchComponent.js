@@ -62,7 +62,7 @@ const SearchComponent = () => {
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search docs..."
+        placeholder="Search"
         className="w-full p-1 border rounded-md"
       />
       {loading && (
