@@ -22,10 +22,12 @@ const Header = ({ onFileSelect }) => {
 
   return (
     <div className="flex items-center justify-between w-full p-4">
-      <div className="flex-grow max-w-xl">
-        <SearchComponent />
+      <div className="m-2">
       </div>
       <div className="flex items-center ml-4">
+      <div className="m-2">
+        <SearchComponent />
+      </div>
         {session ? (
           <UserButton user={session.user} />
         ) : (

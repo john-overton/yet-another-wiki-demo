@@ -63,7 +63,7 @@ const SearchComponent = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search docs..."
-        className="w-full p-2 border rounded-md"
+        className="w-full p-1 border rounded-md"
       />
       {loading && (
         <div className="absolute right-2 top-2">
@@ -74,7 +74,7 @@ const SearchComponent = () => {
         </div>
       )}
       {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-md mt-1 max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-[200%] right-0 bg-white dark:bg-gray-800 border-2 border-blue-500 rounded-md mt-1 max-h-60 overflow-y-auto">
           <ul>
             {searchResults.map((result, index) => (
               <li
