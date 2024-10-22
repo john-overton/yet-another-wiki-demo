@@ -2,9 +2,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function POST(request) {
-  const { path: filePath, content, title, isPublic, slug, isFolder } = await request.json();
+  const { path: filePath, content, title, isPublic, slug, version } = await request.json();
 
-  if (!filePath || title === undefined || isPublic === undefined || slug === undefined || isFolder === undefined) {
+  if (!filePath || title === undefined || isPublic === undefined || slug === undefined) {
     return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
@@ -23,29 +23,39 @@ export async function POST(request) {
           item.isPublic = isPublic;
           item.slug = slug;
           item.lastModified = new Date().toISOString();
+          item.version = version || item.version || 1;
           
-          if (isFolder && !item.children) {
-            item.children = [];
-          } else if (!isFolder && item.children) {
-            delete item.children;
-          }
-
-          // Update file content if it's not a folder
-          if (!isFolder) {
-            const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-            fs.writeFile(fullPath, content);
-          }
+          // Update file content
+          const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
+          fs.writeFile(fullPath, content);
 
           return true;
         }
-        if (item.children && updateInStructure(item.children)) {
-          return true;
+        if (item.children && item.children.length > 0) {
+          if (updateInStructure(item.children)) {
+            return true;
+          }
         }
       }
       return false;
     };
 
-    updateInStructure(metaData.pages);
+    if (!updateInStructure(metaData.pages)) {
+      // If the file doesn't exist in the structure, add it as a new page
+      metaData.pages.push({
+        slug,
+        title,
+        path: filePath,
+        isPublic,
+        version: version || 1,
+        lastModified: new Date().toISOString(),
+        children: []
+      });
+
+      // Create the new file
+      const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
+      await fs.writeFile(fullPath, content);
+    }
 
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));

@@ -1,25 +1,85 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import {
+  MDXEditor,
+  UndoRedo,
+  BoldItalicUnderlineToggles,
+  toolbarPlugin,
+  listsPlugin,
+  quotePlugin,
+  headingsPlugin,
+  linkPlugin,
+  linkDialogPlugin,
+  imagePlugin,
+  tablePlugin,
+  thematicBreakPlugin,
+  frontmatterPlugin,
+  codeBlockPlugin,
+  codeMirrorPlugin,
+  sandpackPlugin,
+  diffSourcePlugin,
+  markdownShortcutPlugin,
+  BlockTypeSelect,
+  CreateLink,
+  InsertImage,
+  InsertTable,
+  InsertThematicBreak,
+  ListsToggle,
+  CodeToggle,
+  ConditionalContents,
+  InsertCodeBlock,
+  ChangeCodeMirrorLanguage,
+  DiffSourceToggleWrapper
+} from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
-const MDXEditor = ({ file, onSave }) => {
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div className="error-message">Error rendering MDX content. Please check your markdown syntax.</div>;
+    }
+
+    return this.props.children;
+  }
+}
+
+const MDXEditorComponent = ({ file, onSave }) => {
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
   const [slug, setSlug] = useState(file.slug);
+  const [version, setVersion] = useState(file.version || 1);
   const [isPreview, setIsPreview] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSourceMode, setIsSourceMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const fetchContent = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch(`/api/file-content?path=${encodeURIComponent(file.path)}`);
         const fileContent = await response.text();
         setContent(fileContent);
       } catch (error) {
         console.error('Error fetching file content:', error);
+        setErrorMessage('Failed to fetch file content. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchContent();
@@ -27,26 +87,43 @@ const MDXEditor = ({ file, onSave }) => {
 
   const handleSave = async () => {
     try {
+      const editorContent = editorRef.current?.getMarkdown();
+      if (editorContent === undefined) {
+        setErrorMessage('Failed to get editor content');
+        return;
+      }
       const response = await fetch('/api/update-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           path: file.path,
-          content,
+          content: editorContent,
           title,
           isPublic,
           slug,
+          version,
         }),
       });
       if (response.ok) {
-        onSave({ ...file, title, isPublic, slug });
+        const updatedFile = { ...file, title, isPublic, slug, version };
+        onSave(updatedFile);
+        setVersion(prevVersion => prevVersion + 1);
+        setErrorMessage('');
       } else {
-        console.error('Failed to save file');
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to save file');
       }
     } catch (error) {
       console.error('Error saving file:', error);
+      setErrorMessage('An error occurred while saving the file');
     }
   };
+
+  const codeBlockLanguages = ['', 'javascript', 'typescript', 'html', 'css', 'json', 'markdown', 'jsx', 'sql', 'python', 'java', 'ruby', 'bash', 'shell', 'text', 'txt', ];
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -88,19 +165,81 @@ const MDXEditor = ({ file, onSave }) => {
           </button>
         </div>
       </div>
+      {errorMessage && (
+        <div className="text-red-500 mb-4">{errorMessage}</div>
+      )}
       {isPreview ? (
         <div className="flex-grow overflow-auto">
           <MDXRenderer source={content} />
         </div>
       ) : (
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded"
-        />
+        <ErrorBoundary>
+          <MDXEditor
+            ref={editorRef}
+            markdown={content}
+            onChange={(newContent) => setContent(newContent)}
+            plugins={[
+              toolbarPlugin({
+                toolbarContents: () => (
+                  <DiffSourceToggleWrapper>
+                    <UndoRedo />
+                    <BoldItalicUnderlineToggles />
+                    <BlockTypeSelect />
+                    <CreateLink />
+                    <InsertImage />
+                    <InsertTable />
+                    <InsertThematicBreak />
+                    <ListsToggle />
+                    <CodeToggle />
+                    <ConditionalContents
+                      options={[
+                        {
+                          when: (editor) => editor?.editorType === 'codeblock',
+                          contents: () => <ChangeCodeMirrorLanguage />
+                        },
+                        {
+                          fallback: () => (
+                            <>
+                              <InsertCodeBlock />
+                            </>
+                          )
+                        }
+                      ]}
+                    />
+                    <button onClick={() => setIsSourceMode(!isSourceMode)}>
+                      {isSourceMode ? 'Rich Text' : 'Source'}
+                    </button>
+                  </DiffSourceToggleWrapper>
+                ),
+              }),
+              listsPlugin(),
+              quotePlugin(),
+              headingsPlugin(),
+              linkPlugin(),
+              linkDialogPlugin(),
+              imagePlugin(),
+              tablePlugin(),
+              thematicBreakPlugin(),
+              frontmatterPlugin(),
+              codeBlockPlugin({
+                defaultLanguage: 'text'
+              }),
+              codeMirrorPlugin({
+                codeBlockLanguages: codeBlockLanguages.reduce((acc, language) => {
+                  acc[language] = language || 'Text';
+                  return acc;
+                }, {})
+              }),
+              sandpackPlugin(),
+              diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
+              markdownShortcutPlugin()
+            ]}
+            className="flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded mdxeditor"
+          />
+        </ErrorBoundary>
       )}
     </div>
   );
 };
 
-export default MDXEditor;
+export default MDXEditorComponent;
