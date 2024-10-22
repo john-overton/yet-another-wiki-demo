@@ -25,11 +25,11 @@ const Header = ({ onFileSelect }) => {
     <div className="flex items-center justify-between w-full p-4">
       <div className="">
         <Link href="/">
-          <Image src="/images/YetAnotherWiki-Wide.png" alt="Logo" width={160} height={40} className="rounded-sm m-2 border"/>
+          <Image src="/images/YAW-Solo.png" alt="Logo" width={80} height={40} className="rounded-sm m-2 shadow-lg border"/>
         </Link>
       </div>
       <div className="flex items-center ml-4">
-      <div className="m-2">
+      <div className="mr-2">
         <SearchComponent />
       </div>
         {session ? (
@@ -39,7 +39,7 @@ const Header = ({ onFileSelect }) => {
             <button
               aria-label="Login"
               type="button"
-              className="p-3 m-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-2 mr-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 "
             >
               Login
             </button>
@@ -48,7 +48,7 @@ const Header = ({ onFileSelect }) => {
         <button
           aria-label="Toggle Dark Mode"
           type="button"
-          className="p-2 rounded-md hover:bg-gray-200 hover:rot-15 dark:hover:bg-gray-700"
+          className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
           onClick={toggleTheme}
         >
           <i className={`${theme === 'light' ? 'ri-contrast-2-line' : 'ri-sun-fill'} text-xl`} style={{ fontSize: '20px' }}></i>

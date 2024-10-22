@@ -249,13 +249,13 @@ body {
 }
 
 .border-gray-header {
-  border-bottom: 2px;
+  border-bottom: 1px;
   border-color: #4b5563;
   border-style: solid;
 }
 
 .border-gray-footer {
-  border-top: 2px;
+  border-top: 1px;
   border-color: #4b5563;
   border-style: solid;
 }
