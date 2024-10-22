@@ -176,6 +176,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
         <ErrorBoundary>
           <MDXEditor
             ref={editorRef}
+            className="flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded"
             markdown={content}
             onChange={(newContent) => setContent(newContent)}
             plugins={[
@@ -234,7 +235,6 @@ const MDXEditorComponent = ({ file, onSave }) => {
               diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
               markdownShortcutPlugin()
             ]}
-            className="flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded mdxeditor"
           />
         </ErrorBoundary>
       )}

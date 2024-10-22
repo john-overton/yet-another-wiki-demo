@@ -44,6 +44,9 @@ const CodeBlock = ({ children, className }) => {
 };
 
 const generateId = (text) => {
+  if (typeof text !== 'string') {
+    return '';
+  }
   return text.toLowerCase().replace(/[^\w]/g, '-');
 };
 
