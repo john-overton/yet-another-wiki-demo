@@ -23,9 +23,9 @@ const Header = ({ onFileSelect }) => {
 
   return (
     <div className="flex items-center justify-between w-full p-4">
-      <div className="m-2 height-[50px]">
+      <div className="">
         <Link href="/">
-          <Image src="/images/YAW-WIKI.png" alt="Logo" width={50} height={50} />
+          <Image src="/images/YetAnotherWiki-Wide.png" alt="Logo" width={160} height={40} className="rounded-sm m-2 border"/>
         </Link>
       </div>
       <div className="flex items-center ml-4">
