@@ -21,9 +21,9 @@
           "slug": "installation",
           "title": "Installation",
           "path": "installation.mdx",
-          "isPublic": true,
+          "isPublic": false,
           "version": 1,
-          "lastModified": "2024-10-22T13:45:46.019Z",
+          "lastModified": "2024-10-23T13:10:05.058Z",
           "children": [
             {
               "slug": "configuration",
