@@ -220,41 +220,47 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
-              <>
-                {session && (
-                  <button
-                    onClick={toggleEdit}
-                    className="mb-4 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                )}
-                <MDXRenderer source={fileContent} />
-              </>
+              <MDXRenderer source={fileContent} />
             ) : selectedFile && isEditing ? (
               <MDXEditor file={selectedFile} onSave={handleSave} />
             ) : (
               <div>Select a file from the sidebar</div>
             )}
           </div>
-          <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible && !isEditing ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className={`fixed z-[1001] top-[6.5rem] right-0 transition-transform duration-300 ease-in-out ${isTocVisible && !isEditing ? 'translate-x-0' : 'translate-x-full'}`}>
             <TableOfContents source={fileContent} isVisible={isTocVisible} />
           </div>
           {!isEditing && (
-            <button
-              onClick={toggleToc}
-              className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
-                ${theme === 'dark' 
-                  ? 'bg-primary text-white' 
-                  : 'text-black'}`}
-            >
-              <i 
-                className={`ri-${isTocVisible 
-                  ? 'arrow-right-double-line border border-gray-200 text-white hover:bg-gray-600 p-1 rounded-sm' 
-                  : 'list-unordered bg-transparent border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm'}`}
-                style={{ fontSize: '1.5rem' }}
-              ></i>
-            </button>
+            <>
+              {session && (
+                <button
+                  onClick={toggleEdit}
+                  className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
+                    ${theme === 'dark' 
+                      ? 'bg-primary text-white' 
+                      : 'text-black'}`}
+                >
+                  <i 
+                    className="ri-edit-2-line bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm"
+                    style={{ fontSize: '1.5rem' }}
+                  ></i>
+                </button>
+              )}
+              <button
+                onClick={toggleToc}
+                className={`fixed z-[1002] top-28 right-2 p-2 rounded-full transition-colors duration-200
+                  ${theme === 'dark' 
+                    ? 'bg-primary text-white' 
+                    : 'text-black'}`}
+              >
+                <i 
+                  className={`ri-${isTocVisible 
+                    ? 'arrow-right-double-line border shadow-lg border-gray-200 text-white hover:bg-gray-600 p-1 rounded-sm' 
+                    : 'list-unordered bg-white shadow-lg border border-gray-200 dark:text-white dark:bg-gray-800 text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm'}`}
+                  style={{ fontSize: '1.5rem' }}
+                ></i>
+              </button>
+            </>
           )}
         </main>
       </div>

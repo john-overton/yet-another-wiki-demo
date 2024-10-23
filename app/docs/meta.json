@@ -6,7 +6,7 @@
       "path": "home.mdx",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-23T21:49:35.716Z",
+      "lastModified": "2024-10-23T23:35:36.375Z",
       "children": []
     },
     {
@@ -23,7 +23,7 @@
           "path": "installation.mdx",
           "isPublic": false,
           "version": 1,
-          "lastModified": "2024-10-23T15:10:05.773Z",
+          "lastModified": "2024-10-23T23:36:06.641Z",
           "children": [
             {
               "slug": "configuration",
