@@ -4,7 +4,7 @@ import FlexSearch from 'flexsearch';
 
 let index;
 let documents = [];
-let titleMap = {};
+let pageMetadata = {};
 
 async function initializeSearch() {
   if (index) return;
@@ -27,9 +27,21 @@ async function loadMetaData() {
   const metaContent = await fs.readFile(metaPath, 'utf-8');
   const metaData = JSON.parse(metaContent);
 
-  metaData.pages.forEach(page => {
-    titleMap[page.path] = page.title;
-  });
+  function processPages(pages, parentPath = '') {
+    pages.forEach(page => {
+      const fullPath = path.join(parentPath, page.path).replace(/\\/g, '/');
+      pageMetadata[fullPath] = {
+        title: page.title,
+        isPublic: page.isPublic
+      };
+      if (page.children) {
+        processPages(page.children, path.dirname(fullPath));
+      }
+    });
+  }
+
+  processPages(metaData.pages);
+  console.log('Loaded metadata:', JSON.stringify(pageMetadata, null, 2));
 }
 
 async function indexFiles(dir, basePath = '') {
@@ -56,14 +68,14 @@ async function indexFiles(dir, basePath = '') {
   }
 }
 
-function getSnippet(content, term, maxLength = 150) {
+function getSnippet(content, term, maxLength = 100) {
   const lowerContent = content.toLowerCase();
   const lowerTerm = term.toLowerCase();
   const index = lowerContent.indexOf(lowerTerm);
   if (index === -1) return '';
 
-  let start = Math.max(0, index - 75);
-  let end = Math.min(content.length, index + term.length + 75);
+  let start = Math.max(0, index - 50);
+  let end = Math.min(content.length, index + term.length + 50);
   let snippet = content.slice(start, end);
 
   if (start > 0) snippet = '...' + snippet;
@@ -77,13 +89,14 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const term = searchParams.get('term');
+  const authenticated = searchParams.get('authenticated') === 'true';
 
   if (!term) {
     return new Response(JSON.stringify([]), { status: 400 });
   }
 
-  console.log(`Searching for term: ${term}`);
-  const results = index.search(term, { limit: 5, enrich: true });
+  console.log(`Searching for term: ${term}, authenticated: ${authenticated}`);
+  const results = index.search(term, { limit: 10, enrich: true });
   console.log(`Search results:`, JSON.stringify(results, null, 2));
 
   let formattedResults = [];
@@ -93,17 +106,23 @@ export async function GET(request) {
         const id = item.id;
         console.log(`Processing item with id: ${id}`);
         if (documents[id]) {
-          const slug = documents[id].path.replace('.mdx', '');
-          return {
-            title: titleMap[documents[id].path] || documents[id].name,
-            slug: slug,
-            path: documents[id].path,
-            snippet: getSnippet(documents[id].content, term)
-          };
+          const metadata = pageMetadata[documents[id].path];
+          console.log(`Metadata for ${documents[id].path}:`, metadata);
+          if (authenticated || (metadata && metadata.isPublic)) {
+            const slug = documents[id].path.replace('.mdx', '');
+            return {
+              title: metadata ? metadata.title : documents[id].name,
+              slug: slug,
+              path: documents[id].path,
+              snippet: getSnippet(documents[id].content, term)
+            };
+          } else {
+            console.log(`Skipping ${documents[id].path} - not public and user not authenticated`);
+          }
         } else {
           console.error(`Document with id ${id} not found`);
-          return null;
         }
+        return null;
       }).filter(Boolean);
     });
   } catch (error) {
@@ -111,5 +130,5 @@ export async function GET(request) {
   }
 
   console.log(`Formatted results:`, JSON.stringify(formattedResults, null, 2));
-  return new Response(JSON.stringify(formattedResults), { status: 200 });
+  return new Response(JSON.stringify(formattedResults.slice(0, 5)), { status: 200 });
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const HighlightMatches = ({ value, match }) => {
   if (!match) return value;
@@ -24,6 +25,7 @@ const SearchComponent = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
 
   const fetchSearchResults = useCallback(async () => {
     if (!searchTerm) {
@@ -32,7 +34,7 @@ const SearchComponent = () => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`/api/search?term=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch(`/api/search?term=${encodeURIComponent(searchTerm)}&authenticated=${!!session}`);
       const data = await response.json();
       setSearchResults(data);
     } catch (error) {
@@ -40,7 +42,7 @@ const SearchComponent = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, session]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

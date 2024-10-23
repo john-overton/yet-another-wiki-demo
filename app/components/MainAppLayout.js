@@ -191,9 +191,10 @@ const MainAppLayout = () => {
       onCreateNew={handleCreateNew}
       onDelete={handleDelete}
       onRename={handleRename}
-      isLoggedIn={!!session}
+      isAuthenticated={!!session}
+      refreshFileStructure={fetchFileStructure}
     />
-  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session]);
+  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
@@ -224,15 +225,20 @@ const MainAppLayout = () => {
           <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
             <TableOfContents source={fileContent} isVisible={isTocVisible} />
           </div>
-          <button
-            onClick={toggleToc}
-            className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
-              ${theme === 'dark' 
-                ? 'bg-primary text-white' 
-                : 'text-black'}`}
-          >
-            <i className={`ri-${isTocVisible ? 'arrow-right-double-line text-white hover:bg-gray-600 p-1 rounded-sm' : 'list-unordered bg-white border border-gray-200 shadow-sm dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-400 p-1 rounded-sm'}`}></i>
-          </button>
+          {!isEditing && (
+            <button
+              onClick={toggleToc}
+              className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
+                ${theme === 'dark' 
+                  ? 'bg-primary text-white' 
+                  : 'text-black'}`}
+            >
+              <i 
+                className={`ri-${isTocVisible ? 'arrow-right-double-line text-white hover:bg-gray-600 p-1 rounded-sm' : 'list-unordered bg-white border border-gray-200 shadow-sm dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-400 p-1 rounded-sm'}`}
+                style={{ fontSize: '1.5rem' }}
+              ></i>
+            </button>
+          )}
         </main>
       </div>
     </div>

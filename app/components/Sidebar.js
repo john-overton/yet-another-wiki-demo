@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }) => {
+const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, isAuthenticated }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -48,7 +48,6 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
       handleSubmit();
     }
   };
-
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -121,7 +120,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
             ></i>
           )}
           <span className="ml-1">{displayName}</span>
-          {isHovered && (
+          {isHovered && isAuthenticated && (
             <span className="ml-auto flex items-center">
               <i
                 className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
@@ -175,7 +174,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0 }
       {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
-            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} />
+            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} isAuthenticated={isAuthenticated} />
           ))}
         </ul>
       )}
@@ -238,15 +237,15 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   );
 };
 
-// New function to filter out deleted items
-const filterDeletedItems = (items) => {
-  return items.filter(item => !item.deleted).map(item => ({
+// Modified function to filter out deleted items and non-public items for unauthenticated users
+const filterItems = (items, isAuthenticated) => {
+  return items.filter(item => !item.deleted && (isAuthenticated || item.isPublic)).map(item => ({
     ...item,
-    children: item.children ? filterDeletedItems(item.children) : []
+    children: item.children ? filterItems(item.children, isAuthenticated) : []
   }));
 };
 
-const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure }) => {
+const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure, isAuthenticated }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -260,8 +259,8 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
     refreshFileStructure();
   };
 
-  // Filter out deleted items
-  const filteredFileStructure = filterDeletedItems(fileStructure);
+  // Filter items based on authentication status
+  const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
     <>
@@ -293,14 +292,16 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
             onMouseLeave={() => setIsHeaderHovered(false)}
           >
             <h2 className="text-lg text-gray-900 dark:text-white">Pages</h2>
-            <button
-              onClick={handleCreateRoot}
-              className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
-            >
-              <i className="ri-add-line"></i>
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={handleCreateRoot}
+                className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <i className="ri-add-line"></i>
+              </button>
+            )}
           </div>
-          {isCreatingRoot && (
+          {isCreatingRoot && isAuthenticated && (
             <CreateItemInterface
               onCreateNew={onCreateNew}
               onClose={() => setIsCreatingRoot(false)}
@@ -308,13 +309,15 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
           )}
           <ul className="space-y-2 flex-grow">
             {filteredFileStructure.map((item, index) => (
-              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} />
+              <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} isAuthenticated={isAuthenticated} />
             ))}
           </ul>
-          <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-            <i className="ri-delete-bin-7-line mr-2"></i>
-            <span>Trash Bin</span>
-          </Link>
+          {isAuthenticated && (
+            <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+              <i className="ri-delete-bin-7-line mr-2"></i>
+              <span>Trash Bin</span>
+            </Link>
+          )}
         </div>
       </aside>
     </>
