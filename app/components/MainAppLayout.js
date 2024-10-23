@@ -212,7 +212,7 @@ const MainAppLayout = () => {
   ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure]);
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
       <div className="flex flex-1 overflow-hidden">
         <div className="w-64 flex-shrink-0 z-[999]">
           {memoizedSidebar}
