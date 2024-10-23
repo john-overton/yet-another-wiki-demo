@@ -181,6 +181,7 @@ const MainAppLayout = () => {
   const toggleEdit = useCallback(() => {
     if (session) {
       setIsEditing((prev) => !prev);
+      setIsTocVisible(false); // Close table of contents when entering edit mode
     }
   }, [session]);
 
@@ -222,7 +223,7 @@ const MainAppLayout = () => {
               <div>Select a file from the sidebar</div>
             )}
           </div>
-          <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className={`fixed z-[1001] top-12 right-0 transition-transform duration-300 ease-in-out ${isTocVisible && !isEditing ? 'translate-x-0' : 'translate-x-full'}`}>
             <TableOfContents source={fileContent} isVisible={isTocVisible} />
           </div>
           {!isEditing && (

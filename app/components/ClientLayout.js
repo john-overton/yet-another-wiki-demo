@@ -2,6 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import { Open_Sans } from 'next/font/google';
+
+const openSans = Open_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 const Header = dynamic(() => import('./Header'), { ssr: false });
 
@@ -23,7 +29,7 @@ export function ClientLayout({ children }) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200 font-[Verdana,sans-serif] font-light">
+    <div className={`h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200 ${openSans.className}`}>
       <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
         <Header onFileSelect={handleFileSelect} />
       </header>
