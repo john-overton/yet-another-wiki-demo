@@ -214,7 +214,6 @@ body {
 
 .input-primary:focus {
   outline: none;
-  ring-color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
