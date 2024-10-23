@@ -9,6 +9,7 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-tsx';
+import MDXContent from './MDXContent';
 
 const CopyButton = ({ code }) => {
   const [copied, setCopied] = useState(false);
@@ -131,9 +132,11 @@ const MDXRenderer = ({ source }) => {
   }, [source]);
 
   return (
-    <div className="mdx-content prose dark:prose-invert max-w-none">
-      <MDXRemote source={source} components={components} />
-    </div>
+    <MDXContent>
+      <div className="mdx-content prose dark:prose-invert max-w-none">
+        <MDXRemote source={source} components={components} />
+      </div>
+    </MDXContent>
   );
 };
 

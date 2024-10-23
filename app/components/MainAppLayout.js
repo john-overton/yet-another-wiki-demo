@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
@@ -20,7 +20,21 @@ const MainAppLayout = () => {
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
+
+  // Handle initial hash scroll
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash && fileContent) {
+      const hash = window.location.hash;
+      const element = document.querySelector(hash);
+      if (element) {
+        // Force a reflow to ensure the element is rendered
+        void element.offsetHeight;
+        element.scrollIntoView();
+      }
+    }
+  }, [fileContent, searchParams]); // searchParams ensures this runs on client-side navigation
 
   const fetchFileStructure = useCallback(async () => {
     try {
