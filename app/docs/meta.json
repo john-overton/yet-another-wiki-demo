@@ -17,43 +17,43 @@
           "lastModified": "2024-10-24T14:43:42.296Z",
           "children": [],
           "deleted": true
-        }
-      ]
-    },
-    {
-      "slug": "getting-started",
-      "title": "Getting Started",
-      "path": "getting-started.mdx",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-10-20T20:08:16.526Z",
-      "children": [
-        {
-          "slug": "configuration2456",
-          "title": "Configuration23",
-          "path": "configuration.mdx",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-24T18:44:16.115Z",
-          "children": []
         },
         {
-          "slug": "theming",
-          "title": "Theming",
-          "path": "theming.mdx",
+          "slug": "getting-started",
+          "title": "Getting Started",
+          "path": "getting-started.mdx",
           "isPublic": true,
           "version": 1,
-          "lastModified": "2024-10-23T13:35:25.208Z",
-          "children": []
-        },
-        {
-          "slug": "installation",
-          "title": "Installation",
-          "path": "installation.mdx",
-          "isPublic": false,
-          "version": 1,
-          "lastModified": "2024-10-23T23:36:06.641Z",
-          "children": []
+          "lastModified": "2024-10-20T20:08:16.526Z",
+          "children": [
+            {
+              "slug": "configuration2456",
+              "title": "Configuration23",
+              "path": "configuration.mdx",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-10-24T18:44:16.115Z",
+              "children": []
+            },
+            {
+              "slug": "theming",
+              "title": "Theming",
+              "path": "theming.mdx",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-10-23T13:35:25.208Z",
+              "children": []
+            },
+            {
+              "slug": "installation",
+              "title": "Installation",
+              "path": "installation.mdx",
+              "isPublic": false,
+              "version": 1,
+              "lastModified": "2024-10-23T23:36:06.641Z",
+              "children": []
+            }
+          ]
         }
       ]
     },

@@ -5,17 +5,29 @@ import Link from 'next/link';
 
 const Alert = ({ message, onClose }) => {
   return (
-    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-      <div className="d-flex align-items-center">
-        <i className="ri-error-warning-line me-2"></i>
-        <div>{message}</div>
+    <div 
+      style={{
+        position: 'fixed',
+        top: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 9999,
+        minWidth: '300px',
+        maxWidth: '500px'
+      }}
+    >
+      <div className="alert alert-danger alert-dismissible fade show shadow-lg" role="alert">
+        <div className="d-flex align-items-center">
+          <i className="ri-error-warning-line me-2"></i>
+          <div>{message}</div>
+        </div>
+        <button 
+          type="button" 
+          className="btn-close" 
+          onClick={onClose}
+          aria-label="Close"
+        ></button>
       </div>
-      <button 
-        type="button" 
-        className="btn-close" 
-        onClick={onClose}
-        aria-label="Close"
-      ></button>
     </div>
   );
 };
@@ -30,7 +42,8 @@ const FileItem = ({
   isAuthenticated,
   draggedItem,
   setDraggedItem,
-  onInvalidMove
+  onInvalidMove,
+  fileStructure
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -39,6 +52,56 @@ const FileItem = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const inputRef = useRef(null);
   const itemRef = useRef(null);
+
+  // Helper function to get all ancestor paths of an item
+  const getAncestorPaths = (itemPath, structure, ancestors = []) => {
+    for (const node of structure) {
+      if (node.path === itemPath) {
+        return ancestors;
+      }
+      if (node.children) {
+        const newAncestors = [...ancestors, node.path];
+        const found = getAncestorPaths(itemPath, node.children, newAncestors);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // Helper function to get all descendant paths of an item
+  const getDescendantPaths = (node, paths = []) => {
+    if (node.children) {
+      for (const child of node.children) {
+        paths.push(child.path);
+        getDescendantPaths(child, paths);
+      }
+    }
+    return paths;
+  };
+
+  // Function to check if a move is valid
+  const isValidMove = (sourceItem, targetPath) => {
+    if (!sourceItem || !targetPath) return false;
+    if (sourceItem.path === targetPath) return false;
+
+    // Get ancestors of target
+    const targetAncestors = getAncestorPaths(targetPath, fileStructure) || [];
+    
+    // Get descendants of source
+    const sourceDescendants = getDescendantPaths(sourceItem);
+
+    // Check if target is a descendant of source
+    if (sourceDescendants.includes(targetPath)) {
+      return false;
+    }
+
+    // Check if source is an ancestor of target
+    if (targetAncestors.includes(sourceItem.path)) {
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     if (isCreating) {
@@ -104,19 +167,6 @@ const FileItem = ({
     setIsExpanded(!isExpanded);
   };
 
-  // Helper function to check if an item is a descendant
-  const isDescendant = (parentPath, childPath) => {
-    const findItem = (items, path) => {
-      for (const item of items) {
-        if (item.path === path) return true;
-        if (item.children && findItem(item.children, path)) return true;
-      }
-      return false;
-    };
-
-    return findItem(item.children || [], childPath);
-  };
-
   const handleDragStart = (e) => {
     e.stopPropagation();
     const dragData = {
@@ -132,16 +182,18 @@ const FileItem = ({
   const handleDragEnd = (e) => {
     e.target.style.opacity = '1';
     setDraggedItem(null);
+    setIsDragOver(false);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (draggedItem && draggedItem.path !== item.path) {
-      // Check if target is a descendant of the dragged item
-      if (isDescendant(draggedItem.path, item.path)) {
+    if (draggedItem) {
+      // Check if this would be a valid move
+      if (!isValidMove(draggedItem, item.path)) {
         onInvalidMove();
+        setIsDragOver(false);
         return;
       }
       setIsDragOver(true);
@@ -159,10 +211,10 @@ const FileItem = ({
     e.stopPropagation();
     setIsDragOver(false);
 
-    if (!draggedItem || draggedItem.path === item.path) return;
+    if (!draggedItem) return;
 
-    // Check if target is a descendant of the dragged item
-    if (isDescendant(draggedItem.path, item.path)) {
+    // Final validation before attempting move
+    if (!isValidMove(draggedItem, item.path)) {
       onInvalidMove();
       return;
     }
@@ -184,7 +236,6 @@ const FileItem = ({
         throw new Error('Failed to reorder items');
       }
 
-      // Refresh the file structure after successful reorder
       window.location.reload();
     } catch (error) {
       console.error('Error reordering items:', error);
@@ -270,6 +321,7 @@ const FileItem = ({
               draggedItem={draggedItem}
               setDraggedItem={setDraggedItem}
               onInvalidMove={onInvalidMove}
+              fileStructure={fileStructure}
             />
           ))}
         </ul>
@@ -278,7 +330,6 @@ const FileItem = ({
   );
 };
 
-// Rest of the components remain the same...
 const CreateItemInterface = ({ onCreateNew, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
   const inputRef = useRef(null);
@@ -359,7 +410,6 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
 
   const handleInvalidMove = () => {
     setShowAlert(true);
-    // Auto-hide alert after 3 seconds
     setTimeout(() => setShowAlert(false), 3000);
   };
 
@@ -398,7 +448,6 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
         throw new Error('Failed to reorder items');
       }
 
-      // Refresh the file structure after successful reorder
       window.location.reload();
     } catch (error) {
       console.error('Error reordering items:', error);
@@ -408,66 +457,67 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
-    <div className="h-full overflow-hidden">
-      <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
-        {showAlert && (
-          <div className="mb-4">
-            <Alert 
-              message="Cannot move a parent item to its child" 
-              onClose={() => setShowAlert(false)}
-            />
+    <>
+      {showAlert && (
+        <Alert 
+          message="Cannot move a parent item to its child" 
+          onClose={() => setShowAlert(false)}
+        />
+      )}
+      <div className="h-full overflow-hidden">
+        <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
+          <div 
+            className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onMouseEnter={() => setIsHeaderHovered(true)}
+            onMouseLeave={() => setIsHeaderHovered(false)}
+          >
+            <h2 className="text-lg text-gray-900 dark:text-white">Pages</h2>
+            {isAuthenticated && (
+              <button
+                onClick={handleCreateRoot}
+                className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <i className="ri-add-line"></i>
+              </button>
+            )}
           </div>
-        )}
-        <div 
-          className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
-          onMouseEnter={() => setIsHeaderHovered(true)}
-          onMouseLeave={() => setIsHeaderHovered(false)}
-        >
-          <h2 className="text-lg text-gray-900 dark:text-white">Pages</h2>
+          {isCreatingRoot && isAuthenticated && (
+            <CreateItemInterface
+              onCreateNew={onCreateNew}
+              onClose={() => setIsCreatingRoot(false)}
+            />
+          )}
+          <ul 
+            className={`space-y-2 flex-grow ${isDragOverRoot ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            onDragOver={handleRootDragOver}
+            onDragLeave={handleRootDragLeave}
+            onDrop={handleRootDrop}
+          >
+            {filteredFileStructure.map((item, index) => (
+              <FileItem 
+                key={index} 
+                item={item} 
+                onSelect={onSelect} 
+                onCreateNew={onCreateNew} 
+                onDelete={handleDelete} 
+                onRename={onRename} 
+                isAuthenticated={isAuthenticated}
+                draggedItem={draggedItem}
+                setDraggedItem={setDraggedItem}
+                onInvalidMove={handleInvalidMove}
+                fileStructure={filteredFileStructure}
+              />
+            ))}
+          </ul>
           {isAuthenticated && (
-            <button
-              onClick={handleCreateRoot}
-              className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
-            >
-              <i className="ri-add-line"></i>
-            </button>
+            <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+              <i className="ri-delete-bin-7-line mr-2"></i>
+              <span>Trash Bin</span>
+            </Link>
           )}
         </div>
-        {isCreatingRoot && isAuthenticated && (
-          <CreateItemInterface
-            onCreateNew={onCreateNew}
-            onClose={() => setIsCreatingRoot(false)}
-          />
-        )}
-        <ul 
-          className={`space-y-2 flex-grow ${isDragOverRoot ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
-          onDragOver={handleRootDragOver}
-          onDragLeave={handleRootDragLeave}
-          onDrop={handleRootDrop}
-        >
-          {filteredFileStructure.map((item, index) => (
-            <FileItem 
-              key={index} 
-              item={item} 
-              onSelect={onSelect} 
-              onCreateNew={onCreateNew} 
-              onDelete={handleDelete} 
-              onRename={onRename} 
-              isAuthenticated={isAuthenticated}
-              draggedItem={draggedItem}
-              setDraggedItem={setDraggedItem}
-              onInvalidMove={handleInvalidMove}
-            />
-          ))}
-        </ul>
-        {isAuthenticated && (
-          <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-            <i className="ri-delete-bin-7-line mr-2"></i>
-            <span>Trash Bin</span>
-          </Link>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 
