@@ -5,6 +5,7 @@ import { getMDXComponent } from 'mdx-bundler/client';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import Prism from 'prismjs';
+import 'prism-themes/themes/prism-hopscotch.css';
 
 // Core languages (order matters for dependencies)
 require('prismjs/components/prism-markup');
@@ -171,7 +172,7 @@ const MDXRenderer = ({ code }) => {
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [mdxComponent, mounted, resolvedTheme]); // Use resolvedTheme instead of theme
+  }, [mdxComponent, mounted, resolvedTheme]);
 
   if (!mounted) return null;
 
@@ -197,8 +198,6 @@ const MDXRenderer = ({ code }) => {
     return null;
   }
 
-  const currentTheme = resolvedTheme || theme;
-
   const components = {
     a: (props) => <Link className="text-blue-500 hover:underline" {...props} />,
     p: (props) => <p className="mb-4" {...props} />,
@@ -222,7 +221,7 @@ const MDXRenderer = ({ code }) => {
       const code = children?.props?.children || '';
       const language = children?.props?.className?.replace(/language-/, '') || 'text';
       return (
-        <pre className={`p-4 rounded-md overflow-x-auto mb-4 relative group font-mono text-sm leading-relaxed ${currentTheme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`}>
+        <pre className="p-4 rounded-md overflow-x-auto mb-4 relative group font-mono text-sm leading-relaxed">
           <CopyButton text={code} />
           {children}
         </pre>
@@ -236,7 +235,7 @@ const MDXRenderer = ({ code }) => {
       if (isInline) {
         return (
           <code 
-            className={`px-1 py-0.5 rounded font-mono text-sm ${currentTheme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`} 
+            className="px-1 py-0.5 rounded font-mono text-sm"
             {...props} 
           />
         );
