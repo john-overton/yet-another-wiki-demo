@@ -427,7 +427,7 @@ body {
 /* Code block header styles */
 .dark-theme [class*="_codeBlockContainer"] > div:first-child {
   background-color: rgba(46, 46, 46, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
 }
 
 .dark-theme [class*="_codeBlockContainer"] [class*="_selectTrigger"] {
@@ -448,7 +448,7 @@ body {
 .dark-theme [class*="_selectTrigger"] {
   background-color: var(--baseBgSubtle) !important;
   color: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .dark-theme [class*="_toolbarNodeKindSelectTrigger"]:hover,
@@ -461,7 +461,7 @@ body {
 .dark-theme [class*="_selectContent"],
 .dark-theme [data-radix-popper-content-wrapper] > div {
   background-color: var(--baseBgSubtle) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
 }
 
 .dark-theme [class*="_selectItem"],
@@ -481,11 +481,17 @@ body {
   color: #ffffff !important;
 }
 
+.dark-theme .mdxeditor-content-editable table,
+.dark-theme .mdxeditor-content-editable th,
+.dark-theme .mdxeditor-content-editable td {
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
 /* Radix UI Popover styles */
 .dark-theme [data-radix-popper-content-wrapper] {
   background-color: var(--baseBgSubtle) !important;
   color: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Dialog styles */
