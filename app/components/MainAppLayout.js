@@ -9,8 +9,14 @@ import MDXEditor from './MDXEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import { bundleMDXContent } from '../actions/mdx';
+import Image from 'next/image';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
+
+// Add image loader configuration
+const imageLoader = ({ src, width, quality }) => {
+  return `${src}?w=${width}&q=${quality || 75}`
+}
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
@@ -56,7 +62,7 @@ const MainAppLayout = () => {
       const content = await response.text();
       setFileContent(content);
       
-      // Bundle the MDX content
+      // Bundle the MDX content with image handling
       const bundled = await bundleMDXContent(content);
       if (bundled) {
         setBundledContent(bundled.code);
@@ -247,7 +253,7 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
-              <MDXRenderer code={bundledContent} />
+              <MDXRenderer code={bundledContent} components={{ Image: (props) => <Image {...props} loader={imageLoader} /> }} />
             ) : selectedFile && isEditing ? (
               <MDXEditor file={selectedFile} onSave={handleSave} />
             ) : (

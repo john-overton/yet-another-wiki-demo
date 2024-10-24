@@ -10,7 +10,7 @@ import SearchComponent from './SearchComponent';
 
 const Header = ({ onFileSelect }) => {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { data: session } = useSession();
 
   useEffect(() => setMounted(true), []);
@@ -18,7 +18,7 @@ const Header = ({ onFileSelect }) => {
   if (!mounted) return null;
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -29,9 +29,9 @@ const Header = ({ onFileSelect }) => {
         </Link>
       </div>
       <div className="flex items-center ml-4">
-      <div className="mr-2">
-        <SearchComponent />
-      </div>
+        <div className="mr-2">
+          <SearchComponent />
+        </div>
         {session ? (
           <UserButton user={session.user} />
         ) : (
@@ -51,7 +51,7 @@ const Header = ({ onFileSelect }) => {
           className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
           onClick={toggleTheme}
         >
-          <i className={`${theme === 'light' ? 'ri-contrast-2-line' : 'ri-sun-fill'} text-xl`} style={{ fontSize: '20px' }}></i>
+          <i className={`${resolvedTheme === 'light' ? 'ri-contrast-2-line' : 'ri-sun-fill'} text-xl`} style={{ fontSize: '20px' }}></i>
         </button>
       </div>
     </div>

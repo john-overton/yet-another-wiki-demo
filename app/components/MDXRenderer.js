@@ -136,10 +136,19 @@ const createHeadingComponent = (level) => {
 const MDXRenderer = ({ code }) => {
   const [mdxComponent, setMdxComponent] = React.useState(null);
   const [error, setError] = React.useState(null);
-  const { theme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const { theme, resolvedTheme } = useTheme();
 
   React.useEffect(() => {
-    if (!code) return;
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (!code) {
+      setIsLoading(true);
+      return;
+    }
     
     try {
       const Component = getMDXComponent(code);
@@ -148,21 +157,30 @@ const MDXRenderer = ({ code }) => {
     } catch (err) {
       console.error('Error creating MDX component:', err);
       setError(err);
+    } finally {
+      setIsLoading(false);
     }
   }, [code]);
 
   React.useEffect(() => {
-    if (mdxComponent) {
-      setTimeout(() => {
-        Prism.highlightAll();
-      }, 100);
+    if (mounted && mdxComponent) {
+      const timer = setTimeout(() => {
+        requestAnimationFrame(() => {
+          Prism.highlightAll();
+        });
+      }, 200);
+      return () => clearTimeout(timer);
     }
-  }, [mdxComponent, theme]); // Re-highlight when theme changes
+  }, [mdxComponent, mounted, resolvedTheme]); // Use resolvedTheme instead of theme
 
-  if (!code) {
+  if (!mounted) return null;
+
+  if (isLoading) {
     return (
-      <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <p>No content provided</p>
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
       </div>
     );
   }
@@ -178,6 +196,8 @@ const MDXRenderer = ({ code }) => {
   if (!mdxComponent) {
     return null;
   }
+
+  const currentTheme = resolvedTheme || theme;
 
   const components = {
     a: (props) => <Link className="text-blue-500 hover:underline" {...props} />,
@@ -202,7 +222,7 @@ const MDXRenderer = ({ code }) => {
       const code = children?.props?.children || '';
       const language = children?.props?.className?.replace(/language-/, '') || 'text';
       return (
-        <pre className={`p-4 rounded-md overflow-x-auto mb-4 relative group font-mono text-sm leading-relaxed ${theme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`}>
+        <pre className={`p-4 rounded-md overflow-x-auto mb-4 relative group font-mono text-sm leading-relaxed ${currentTheme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`}>
           <CopyButton text={code} />
           {children}
         </pre>
@@ -216,7 +236,7 @@ const MDXRenderer = ({ code }) => {
       if (isInline) {
         return (
           <code 
-            className={`px-1 py-0.5 rounded font-mono text-sm ${theme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`} 
+            className={`px-1 py-0.5 rounded font-mono text-sm ${currentTheme === 'dark' ? 'prism-one-dark' : 'prism-one-light'}`} 
             {...props} 
           />
         );
