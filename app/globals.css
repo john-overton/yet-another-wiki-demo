@@ -94,6 +94,7 @@
   --baseSolidHover: #9c9c9c;
   --baseText: #b3b3b3;
   --baseTextContrast: #ffffff;
+  --basePageBg: #1a1a1a;
 
   --admonitionTipBg: #064e3b;
   --admonitionTipBorder: #10b981;
@@ -395,4 +396,66 @@ body {
 
 .mdxeditor-content-editable hr {
   border-color: var(--baseBorder);
+}
+
+/* CodeMirror specific styles */
+.cm-editor {
+  background-color: var(--baseBgSubtle) !important;
+  color: var(--baseText) !important;
+}
+
+.cm-editor .cm-content {
+  color: var(--baseText) !important;
+}
+
+.cm-editor .cm-gutters {
+  background-color: var(--baseBgSubtle) !important;
+  border-color: var(--baseBorder) !important;
+  color: var(--baseText) !important;
+}
+
+.cm-editor .cm-activeLineGutter,
+.cm-editor .cm-activeLine {
+  background-color: var(--baseBgActive) !important;
+}
+
+.cm-editor .cm-selectionBackground {
+  background-color: var(--accentBgActive) !important;
+}
+
+.dark-theme [class*="_toolbarNodeKindSelectTrigger"],
+.dark-theme [class*="_toolbarButtonSelectTrigger"],
+.dark-theme [class*="_selectTrigger"] {
+  background-color: var(--baseBase) !important;
+  color: var(--baseText) !important;
+}
+
+.dark-theme [class*="_toolbarNodeKindSelectTrigger"]:hover,
+.dark-theme [class*="_toolbarButtonSelectTrigger"]:hover,
+.dark-theme [class*="_selectTrigger"]:hover {
+  background-color: var(--baseBgHover) !important;
+}
+
+.dark-theme [class*="_selectContent"] {
+  background-color: var(--baseBase) !important;
+  border-color: var(--baseBorder) !important;
+}
+
+.dark-theme [class*="_selectItem"] {
+  color: var(--baseText) !important;
+}
+
+.dark-theme [class*="_selectItem"]:hover {
+  background-color: var(--baseBgHover) !important;
+}
+
+.dark-theme [class*="_selectItem"][data-highlighted="true"] {
+  background-color: var(--baseBg) !important;
+}
+
+/* Dialog styles */
+.mdxeditor-popup-container {
+  --mdxeditor-popup-bg: var(--baseBase);
+  --mdxeditor-popup-text: var(--baseText);
+  --mdxeditor-popup-border: var(--baseBorder);
 }

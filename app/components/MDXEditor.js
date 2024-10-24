@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
 import { bundleMDXContent } from '../actions/mdx';
 import {
   MDXEditor,
@@ -114,6 +115,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const MDXEditorComponent = ({ file, onSave }) => {
+  const { theme } = useTheme();
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
@@ -289,7 +291,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
               markdown={content}
               onChange={handleEditorChange}
               contentEditableClassName="mdxeditor-content-editable"
-              className={`${openSans.className} mdxeditor flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded`}
+              className={`${openSans.className} mdxeditor flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
               plugins={[
                 toolbarPlugin({
                   toolbarContents: () => (
