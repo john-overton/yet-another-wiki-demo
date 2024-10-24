@@ -17,6 +17,7 @@ const MainAppLayout = () => {
   const [fileContent, setFileContent] = useState('');
   const [isTocVisible, setIsTocVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -199,6 +200,10 @@ const MainAppLayout = () => {
     }
   }, [session]);
 
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarVisible((prev) => !prev);
+  }, []);
+
   const memoizedSidebar = useMemo(() => (
     <Sidebar
       fileStructure={fileStructure}
@@ -213,10 +218,23 @@ const MainAppLayout = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-64 flex-shrink-0 z-[999]">
+      <div className="flex flex-1 overflow-hidden relative">
+        <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? 'w-64' : 'w-0'} flex-shrink-0 z-[999] overflow-hidden`}>
           {memoizedSidebar}
         </div>
+        <button
+          onClick={toggleSidebar}
+          className={`fixed z-[1002] top-16 transition-all duration-300 ${
+            isSidebarVisible 
+              ? 'left-[15rem]' 
+              : 'left-0'
+          }`}
+        >
+          <i 
+            className={`ri-${isSidebarVisible ? 'contract-left-line' : 'contract-right-line'} bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm`}
+            style={{ fontSize: '1.5rem' }}
+          ></i>
+        </button>
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
