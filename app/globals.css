@@ -398,6 +398,7 @@ body {
   border-color: var(--baseBorder);
 }
 
+
 /* CodeMirror specific styles */
 .cm-editor {
   background-color: var(--baseBgSubtle) !important;
@@ -423,52 +424,85 @@ body {
   background-color: var(--accentBgActive) !important;
 }
 
+/* Code block header styles */
+.dark-theme [class*="_codeBlockContainer"] > div:first-child {
+  background-color: rgba(46, 46, 46, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark-theme [class*="_codeBlockContainer"] [class*="_selectTrigger"] {
+  background-color: transparent !important;
+}
+
+.dark-theme [class*="_codeBlockContainer"] button {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark-theme [class*="_codeBlockContainer"] button:hover {
+  color: #ffffff !important;
+}
+
+/* Rest of the dark theme styles */
 .dark-theme [class*="_toolbarNodeKindSelectTrigger"],
 .dark-theme [class*="_toolbarButtonSelectTrigger"],
 .dark-theme [class*="_selectTrigger"] {
   background-color: var(--baseBgSubtle) !important;
-  color: var(--baseText) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .dark-theme [class*="_toolbarNodeKindSelectTrigger"]:hover,
 .dark-theme [class*="_toolbarButtonSelectTrigger"]:hover,
 .dark-theme [class*="_selectTrigger"]:hover {
   background-color: var(--baseBgHover) !important;
+  color: #ffffff !important;
 }
 
 .dark-theme [class*="_selectContent"],
 .dark-theme [data-radix-popper-content-wrapper] > div {
   background-color: var(--baseBgSubtle) !important;
-  border-color: var(--baseBorder) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .dark-theme [class*="_selectItem"],
 .dark-theme [data-radix-popper-content-wrapper] [role="option"] {
-  color: var(--baseText) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .dark-theme [class*="_selectItem"]:hover,
 .dark-theme [data-radix-popper-content-wrapper] [role="option"]:hover {
   background-color: var(--baseBgHover) !important;
+  color: #ffffff !important;
 }
 
 .dark-theme [class*="_selectItem"][data-highlighted="true"],
 .dark-theme [data-radix-popper-content-wrapper] [role="option"][data-highlighted] {
   background-color: var(--baseBgActive) !important;
+  color: #ffffff !important;
 }
 
 /* Radix UI Popover styles */
 .dark-theme [data-radix-popper-content-wrapper] {
   background-color: var(--baseBgSubtle) !important;
-  color: var(--baseText) !important;
-  border-color: var(--baseBorder) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Dialog styles */
-.mdxeditor-popup-container {
+.dark-theme .mdxeditor-popup-container {
   --mdxeditor-popup-bg: var(--baseBgSubtle);
-  --mdxeditor-popup-text: var(--baseText);
-  --mdxeditor-popup-border: var(--baseBorder);
+  --mdxeditor-popup-text: rgba(255, 255, 255, 0.9);
+  --mdxeditor-popup-border: rgba(255, 255, 255, 0.2);
 }
 
-/* Rest of the file remains exactly the same */
+/* Icon colors in dark mode */
+.dark-theme [class*="_icon"],
+.dark-theme svg {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark-theme [class*="_icon"]:hover,
+.dark-theme button:hover svg {
+  color: #ffffff !important;
+}
+
