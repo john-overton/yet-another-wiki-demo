@@ -8,7 +8,7 @@ const Tooltip = ({ message, isVisible, position }) => {
   
   return (
     <div 
-      className="absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
+      className="fixed z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
       style={{
         top: `${position.y}px`,
         left: `${position.x}px`,
@@ -16,17 +16,25 @@ const Tooltip = ({ message, isVisible, position }) => {
       }}
     >
       {message}
-      <div className="tooltip-arrow"></div>
     </div>
   );
 };
 
-const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, isAuthenticated }) => {
+const FileItem = ({ 
+  item, 
+  onSelect, 
+  onCreateNew, 
+  onDelete, 
+  onRename, 
+  level = 0, 
+  isAuthenticated,
+  draggedItem,
+  setDraggedItem 
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isInvalidTarget, setIsInvalidTarget] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -113,16 +121,19 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
 
   const handleDragStart = (e) => {
     e.stopPropagation();
-    setIsDragging(true);
-    e.dataTransfer.setData('text/plain', JSON.stringify({
+    const dragData = {
       path: item.path,
       title: item.title,
       children: item.children
-    }));
+    };
+    setDraggedItem(dragData);
+    e.dataTransfer.setData('text/plain', JSON.stringify(dragData));
+    e.target.style.opacity = '0.5';
   };
 
-  const handleDragEnd = () => {
-    setIsDragging(false);
+  const handleDragEnd = (e) => {
+    e.target.style.opacity = '1';
+    setDraggedItem(null);
     setIsInvalidTarget(false);
     setTooltipVisible(false);
   };
@@ -131,23 +142,19 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
     e.preventDefault();
     e.stopPropagation();
 
-    // Get the dragged item data
-    const draggedData = e.dataTransfer.getData('text/plain');
-    if (draggedData) {
-      const draggedItem = JSON.parse(draggedData);
-      
+    if (draggedItem && draggedItem.path !== item.path) {
       // Check if target is a descendant of the dragged item
       if (isDescendant(draggedItem.path, item.path)) {
         setIsInvalidTarget(true);
+        setIsDragOver(false);
         setTooltipVisible(true);
         setTooltipPosition({ x: e.clientX, y: e.clientY });
-        return;
+      } else {
+        setIsInvalidTarget(false);
+        setIsDragOver(true);
+        setTooltipVisible(false);
       }
     }
-
-    setIsInvalidTarget(false);
-    setIsDragOver(true);
-    setTooltipVisible(false);
   };
 
   const handleDragLeave = (e) => {
@@ -165,12 +172,11 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
     setIsInvalidTarget(false);
     setTooltipVisible(false);
 
-    const draggedItem = JSON.parse(e.dataTransfer.getData('text/plain'));
-    if (draggedItem.path === item.path) return; // Prevent dropping on itself
+    if (!draggedItem || draggedItem.path === item.path) return; // Prevent dropping on itself
 
     // Check if target is a descendant of the dragged item
     if (isDescendant(draggedItem.path, item.path)) {
-      return; // Silently fail as we've already shown the visual feedback
+      return; // Don't proceed with the API call
     }
 
     try {
@@ -205,8 +211,7 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
         type="button"
         className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
           ${isDragOver && !isInvalidTarget ? 'bg-blue-100 dark:bg-blue-900' : ''}
-          ${isInvalidTarget ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}
-          ${isDragging ? 'opacity-50' : ''}`}
+          ${isInvalidTarget ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}`}
         onClick={() => onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -240,11 +245,13 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
           </span>
         )}
       </button>
-      <Tooltip 
-        message="Cannot move a parent item to its child"
-        isVisible={tooltipVisible}
-        position={tooltipPosition}
-      />
+      {tooltipVisible && (
+        <Tooltip 
+          message="Cannot move a parent item to its child"
+          isVisible={tooltipVisible}
+          position={tooltipPosition}
+        />
+      )}
       {isCreating && (
         <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
@@ -271,7 +278,18 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
       {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {item.children.map((child, index) => (
-            <FileItem key={index} item={child} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={onDelete} onRename={onRename} level={level + 1} isAuthenticated={isAuthenticated} />
+            <FileItem 
+              key={index} 
+              item={child} 
+              onSelect={onSelect} 
+              onCreateNew={onCreateNew} 
+              onDelete={onDelete} 
+              onRename={onRename} 
+              level={level + 1} 
+              isAuthenticated={isAuthenticated}
+              draggedItem={draggedItem}
+              setDraggedItem={setDraggedItem}
+            />
           ))}
         </ul>
       )}
@@ -345,6 +363,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
+  const [draggedItem, setDraggedItem] = useState(null);
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);
@@ -357,7 +376,9 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
 
   const handleRootDragOver = (e) => {
     e.preventDefault();
-    setIsDragOverRoot(true);
+    if (draggedItem) {
+      setIsDragOverRoot(true);
+    }
   };
 
   const handleRootDragLeave = (e) => {
@@ -369,7 +390,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
     e.preventDefault();
     setIsDragOverRoot(false);
 
-    const draggedItem = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (!draggedItem) return;
 
     try {
       const response = await fetch('/api/file-structure/reorder', {
@@ -428,7 +449,17 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
           onDrop={handleRootDrop}
         >
           {filteredFileStructure.map((item, index) => (
-            <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} isAuthenticated={isAuthenticated} />
+            <FileItem 
+              key={index} 
+              item={item} 
+              onSelect={onSelect} 
+              onCreateNew={onCreateNew} 
+              onDelete={handleDelete} 
+              onRename={onRename} 
+              isAuthenticated={isAuthenticated}
+              draggedItem={draggedItem}
+              setDraggedItem={setDraggedItem}
+            />
           ))}
         </ul>
         {isAuthenticated && (
