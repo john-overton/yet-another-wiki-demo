@@ -125,7 +125,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [bundledContent, setBundledContent] = useState(null);
   const editorRef = useRef(null);
-  const [currentMarkdown, setCurrentMarkdown] = useState('');
+  const contentRef = useRef('');
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -135,7 +135,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
         const fileContent = await response.text();
         if (fileContent) {
           setContent(fileContent);
-          setCurrentMarkdown(fileContent);
+          contentRef.current = fileContent;
           
           // Bundle the initial content
           const bundled = await bundleMDXContent(fileContent);
@@ -155,32 +155,22 @@ const MDXEditorComponent = ({ file, onSave }) => {
 
   const handleSave = async () => {
     try {
-      let markdownContent;
+      const currentContent = contentRef.current;
       
-      if (editorRef.current) {
-        // Get content from editor's markdown state
-        markdownContent = content;
-        console.log('Editor content:', markdownContent); // Debug log
-      }
-
-      // Fallback to currentMarkdown if editor content is not available
-      if (!markdownContent) {
-        markdownContent = currentMarkdown;
-        console.log('Using current markdown:', markdownContent); // Debug log
-      }
-
       // Validate content before saving
-      if (!markdownContent || markdownContent.trim() === '') {
+      if (!currentContent || currentContent.trim() === '') {
         setErrorMessage('Cannot save empty content');
         return;
       }
+
+      console.log('Saving content:', currentContent); // Debug log
 
       const response = await fetch('/api/update-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           path: file.path,
-          content: markdownContent,
+          content: currentContent,
           title: title || file.title,
           isPublic,
           slug: slug || file.slug,
@@ -188,39 +178,26 @@ const MDXEditorComponent = ({ file, onSave }) => {
         }),
       });
 
-      if (response.ok) {
-        const updatedFile = { ...file, title, isPublic, slug, version };
-        // Update local state with the saved content
-        setContent(markdownContent);
-        setCurrentMarkdown(markdownContent);
-        onSave(updatedFile);
-        setVersion(prevVersion => prevVersion + 1);
-        setErrorMessage('');
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to save file');
+        throw new Error(errorData.error || 'Failed to save file');
       }
+
+      const updatedFile = { ...file, title, isPublic, slug, version };
+      onSave(updatedFile);
+      setVersion(prevVersion => prevVersion + 1);
+      setErrorMessage('');
     } catch (error) {
       console.error('Error saving file:', error);
-      setErrorMessage('An error occurred while saving the file');
+      setErrorMessage(`An error occurred while saving the file: ${error.message}`);
     }
   };
 
-  const handleEditorChange = async (newContent) => {
-    if (typeof newContent === 'string') {
-      console.log('Editor onChange:', newContent); // Debug log
-      setContent(newContent);
-      setCurrentMarkdown(newContent);
-      
-      try {
-        const bundled = await bundleMDXContent(newContent);
-        if (bundled) {
-          setBundledContent(bundled.code);
-        }
-      } catch (error) {
-        console.error('Error bundling MDX content:', error);
-      }
-    }
+  const handleEditorChange = (newContent) => {
+    // Update both the state and ref with the new content
+    setContent(newContent);
+    contentRef.current = newContent;
+    console.log('Editor content updated:', newContent); // Debug log
   };
 
   // Define available languages with descriptive names

@@ -25,9 +25,10 @@ export async function POST(request) {
           item.lastModified = new Date().toISOString();
           item.version = version || item.version || 1;
           
-          // Update file content
+          // Update file content - ensure we save in app/docs directory
           const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-          await fs.writeFile(fullPath, content || ''); // Add fallback empty string
+          console.log('Writing file to:', fullPath); // Debug log
+          await fs.writeFile(fullPath, content, 'utf8');
 
           return true;
         }
@@ -52,13 +53,20 @@ export async function POST(request) {
         children: []
       });
 
-      // Create the new file
+      // Create the new file - ensure we save in app/docs directory
       const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-      await fs.writeFile(fullPath, content || ''); // Add fallback empty string
+      console.log('Creating new file at:', fullPath); // Debug log
+      
+      // Ensure directory exists
+      const dir = path.dirname(fullPath);
+      await fs.mkdir(dir, { recursive: true });
+      
+      // Write content with explicit encoding
+      await fs.writeFile(fullPath, content, 'utf8');
     }
 
     // Write updated meta data
-    await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
+    await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2), 'utf8');
 
     return new Response(JSON.stringify({ message: 'File updated successfully' }), {
       status: 200,
@@ -66,7 +74,7 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Error updating file:', error);
-    return new Response(JSON.stringify({ error: 'Failed to update file' }), {
+    return new Response(JSON.stringify({ error: `Failed to update file: ${error.message}` }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
