@@ -260,39 +260,41 @@ const MainAppLayout = () => {
               <div>Select a file from the sidebar</div>
             )}
           </div>
-          <div className={`fixed z-[1001] top-[6.5rem] right-0 transition-transform duration-300 ease-in-out ${isTocVisible && !isEditing ? 'translate-x-0' : 'translate-x-full'}`}>
-            <TableOfContents source={fileContent} isVisible={isTocVisible} />
-          </div>
           {!isEditing && (
             <>
-              {session && (
+              <div className="fixed z-[1002] top-14 right-2 flex flex-col gap-4">
+                {session && (
+                  <button
+                    onClick={toggleEdit}
+                    className={`p-2 rounded-full transition-colors duration-200
+                      ${theme === 'dark' 
+                        ? 'bg-primary text-white' 
+                        : 'text-black'}`}
+                  >
+                    <i 
+                      className="ri-edit-2-line bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm"
+                      style={{ fontSize: '1.5rem' }}
+                    ></i>
+                  </button>
+                )}
                 <button
-                  onClick={toggleEdit}
-                  className={`fixed z-[1002] top-14 right-2 p-2 rounded-full transition-colors duration-200
+                  onClick={toggleToc}
+                  className={`p-2 rounded-full transition-colors duration-200
                     ${theme === 'dark' 
                       ? 'bg-primary text-white' 
                       : 'text-black'}`}
                 >
                   <i 
-                    className="ri-edit-2-line bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm"
+                    className={`ri-${isTocVisible 
+                      ? 'arrow-right-double-line border shadow-lg border-gray-200 text-white hover:bg-gray-600 p-1 rounded-sm' 
+                      : 'list-unordered bg-white shadow-lg border border-gray-200 dark:text-white dark:bg-gray-800 text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm'}`}
                     style={{ fontSize: '1.5rem' }}
                   ></i>
                 </button>
-              )}
-              <button
-                onClick={toggleToc}
-                className={`fixed z-[1002] top-28 right-2 p-2 rounded-full transition-colors duration-200
-                  ${theme === 'dark' 
-                    ? 'bg-primary text-white' 
-                    : 'text-black'}`}
-              >
-                <i 
-                  className={`ri-${isTocVisible 
-                    ? 'arrow-right-double-line border shadow-lg border-gray-200 text-white hover:bg-gray-600 p-1 rounded-sm' 
-                    : 'list-unordered bg-white shadow-lg border border-gray-200 dark:text-white dark:bg-gray-800 text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm'}`}
-                  style={{ fontSize: '1.5rem' }}
-                ></i>
-              </button>
+              </div>
+              <div className={`fixed z-[1001] right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`} style={{ top: session ? '7.5rem' : '3rem' }}>
+                <TableOfContents source={fileContent} isVisible={isTocVisible} />
+              </div>
             </>
           )}
         </main>
