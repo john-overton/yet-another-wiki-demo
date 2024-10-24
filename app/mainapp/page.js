@@ -1,11 +1,10 @@
-import dynamic from 'next/dynamic';
+import { ClientLayout } from '../components/ClientLayout';
+import MainAppLayout from '../components/MainAppLayout';
 
-const MainAppLayout = dynamic(() => import('../components/MainAppLayout'), { ssr: false });
-
-export default function MainApp() {
+export default function MainAppPage() {
   return (
-    <div className="h-screen">
+    <ClientLayout>
       <MainAppLayout />
-    </div>
+    </ClientLayout>
   );
 }

@@ -11,8 +11,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'No path provided' }, { status: 400 });
     }
 
-    // Resolve the path relative to the project root
-    const fullPath = path.join(process.cwd(), filePath);
+    // Resolve the path relative to the app/docs directory
+    const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
     console.log('Reading file from:', fullPath);
 
     const content = await fs.readFile(fullPath, 'utf8');

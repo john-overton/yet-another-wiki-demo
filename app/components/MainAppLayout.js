@@ -8,6 +8,7 @@ import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
+import { bundleMDXContent } from '../actions/mdx';
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
@@ -15,6 +16,7 @@ const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
+  const [bundledContent, setBundledContent] = useState(null);
   const [isTocVisible, setIsTocVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -35,7 +37,7 @@ const MainAppLayout = () => {
         element.scrollIntoView();
       }
     }
-  }, [fileContent, searchParams]); // searchParams ensures this runs on client-side navigation
+  }, [fileContent, searchParams]);
 
   const fetchFileStructure = useCallback(async () => {
     try {
@@ -53,9 +55,16 @@ const MainAppLayout = () => {
       const response = await fetch(`/api/file-content?path=${encodeURIComponent(path)}`);
       const content = await response.text();
       setFileContent(content);
+      
+      // Bundle the MDX content
+      const bundled = await bundleMDXContent(content);
+      if (bundled) {
+        setBundledContent(bundled.code);
+      }
     } catch (error) {
       console.error('Error loading file content:', error);
       setFileContent('Error loading file content');
+      setBundledContent(null);
     }
   }, []);
 
@@ -196,7 +205,7 @@ const MainAppLayout = () => {
   const toggleEdit = useCallback(() => {
     if (session) {
       setIsEditing((prev) => !prev);
-      setIsTocVisible(false); // Close table of contents when entering edit mode
+      setIsTocVisible(false);
     }
   }, [session]);
 
@@ -238,7 +247,7 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
-              <MDXRenderer source={fileContent} />
+              <MDXRenderer code={bundledContent} />
             ) : selectedFile && isEditing ? (
               <MDXEditor file={selectedFile} onSave={handleSave} />
             ) : (

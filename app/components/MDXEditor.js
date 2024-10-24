@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { bundleMDXContent } from '../actions/mdx';
 import {
   MDXEditor,
   UndoRedo,
@@ -122,6 +123,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [bundledContent, setBundledContent] = useState(null);
   const editorRef = useRef(null);
   const [currentMarkdown, setCurrentMarkdown] = useState('');
 
@@ -131,8 +133,16 @@ const MDXEditorComponent = ({ file, onSave }) => {
       try {
         const response = await fetch(`/api/file-content?path=${encodeURIComponent(file.path)}`);
         const fileContent = await response.text();
-        setContent(fileContent);
-        setCurrentMarkdown(fileContent);
+        if (fileContent) {
+          setContent(fileContent);
+          setCurrentMarkdown(fileContent);
+          
+          // Bundle the initial content
+          const bundled = await bundleMDXContent(fileContent);
+          if (bundled) {
+            setBundledContent(bundled.code);
+          }
+        }
       } catch (error) {
         console.error('Error fetching file content:', error);
         setErrorMessage('Failed to fetch file content. Please try again.');
@@ -145,14 +155,23 @@ const MDXEditorComponent = ({ file, onSave }) => {
 
   const handleSave = async () => {
     try {
-      let markdown = currentMarkdown;
-      if (!isPreview && editorRef.current) {
-        markdown = editorRef.current.getMarkdown();
-        setCurrentMarkdown(markdown);
+      let markdownContent;
+      
+      if (editorRef.current) {
+        // Get content from editor's markdown state
+        markdownContent = content;
+        console.log('Editor content:', markdownContent); // Debug log
       }
 
-      if (!markdown) {
-        setErrorMessage('No content to save');
+      // Fallback to currentMarkdown if editor content is not available
+      if (!markdownContent) {
+        markdownContent = currentMarkdown;
+        console.log('Using current markdown:', markdownContent); // Debug log
+      }
+
+      // Validate content before saving
+      if (!markdownContent || markdownContent.trim() === '') {
+        setErrorMessage('Cannot save empty content');
         return;
       }
 
@@ -161,16 +180,19 @@ const MDXEditorComponent = ({ file, onSave }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           path: file.path,
-          content: markdown,
-          title,
+          content: markdownContent,
+          title: title || file.title,
           isPublic,
-          slug,
+          slug: slug || file.slug,
           version,
         }),
       });
 
       if (response.ok) {
         const updatedFile = { ...file, title, isPublic, slug, version };
+        // Update local state with the saved content
+        setContent(markdownContent);
+        setCurrentMarkdown(markdownContent);
         onSave(updatedFile);
         setVersion(prevVersion => prevVersion + 1);
         setErrorMessage('');
@@ -184,9 +206,21 @@ const MDXEditorComponent = ({ file, onSave }) => {
     }
   };
 
-  const handleEditorChange = (newContent) => {
-    setContent(newContent);
-    setCurrentMarkdown(newContent);
+  const handleEditorChange = async (newContent) => {
+    if (typeof newContent === 'string') {
+      console.log('Editor onChange:', newContent); // Debug log
+      setContent(newContent);
+      setCurrentMarkdown(newContent);
+      
+      try {
+        const bundled = await bundleMDXContent(newContent);
+        if (bundled) {
+          setBundledContent(bundled.code);
+        }
+      } catch (error) {
+        console.error('Error bundling MDX content:', error);
+      }
+    }
   };
 
   const codeBlockLanguages = ['', 'javascript', 'typescript', 'html', 'css', 'json', 'markdown', 'jsx', 'sql', 'python', 'java', 'ruby', 'bash', 'shell', 'text', 'txt'];
@@ -202,7 +236,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
         <div className="flex justify-between items-center mb-4">
           <input
             type="text"
-            value={title}
+            value={title || ''}
             onChange={(e) => setTitle(e.target.value)}
             className="text-2xl font-bold bg-transparent border-none focus:outline-none"
           />
@@ -218,7 +252,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
             </label>
             <input
               type="text"
-              value={slug}
+              value={slug || ''}
               onChange={(e) => setSlug(e.target.value)}
               className="mr-2 px-2 py-1 border rounded"
               placeholder="URL slug"
@@ -242,7 +276,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
         )}
         {isPreview ? (
           <div className="flex-grow overflow-auto">
-            <MDXRenderer source={currentMarkdown} />
+            <MDXRenderer code={bundledContent} />
           </div>
         ) : (
           <ErrorBoundary>

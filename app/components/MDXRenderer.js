@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getMDXComponent } from 'mdx-bundler/client';
 import Link from 'next/link';
 
@@ -75,40 +74,35 @@ const components = {
   },
 };
 
-const MDXRenderer = ({ code, source }) => {
-  // If code is provided, use mdx-bundler's renderer
-  if (code) {
-    console.log('Using mdx-bundler renderer');
-    const Component = useMemo(() => {
-      try {
-        return getMDXComponent(code);
-      } catch (error) {
-        console.error('Error creating MDX component:', error);
-        return null;
-      }
-    }, [code]);
-
-    if (!Component) {
-      console.error('Failed to create MDX component');
-      return (
-        <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <p>Error rendering content</p>
-        </div>
-      );
-    }
-
+const MDXRenderer = ({ code }) => {
+  if (!code) {
     return (
-      <div className="mdx-content prose dark:prose-invert max-w-none">
-        <Component components={components} />
+      <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <p>No content provided</p>
       </div>
     );
   }
 
-  // Otherwise, use the current renderer
-  console.log('Using default MDX renderer');
+  const Component = useMemo(() => {
+    try {
+      return getMDXComponent(code);
+    } catch (error) {
+      console.error('Error creating MDX component:', error);
+      return null;
+    }
+  }, [code]);
+
+  if (!Component) {
+    return (
+      <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <p>Error rendering content</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mdx-content prose dark:prose-invert max-w-none">
-      <MDXRemote source={source} components={components} />
+      <Component components={components} />
     </div>
   );
 };

@@ -16,7 +16,7 @@ export async function POST(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    const updateInStructure = (items) => {
+    const updateInStructure = async (items) => {
       for (let item of items) {
         if (item.path === filePath) {
           item.title = title;
@@ -27,12 +27,12 @@ export async function POST(request) {
           
           // Update file content
           const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-          fs.writeFile(fullPath, content);
+          await fs.writeFile(fullPath, content || ''); // Add fallback empty string
 
           return true;
         }
         if (item.children && item.children.length > 0) {
-          if (updateInStructure(item.children)) {
+          if (await updateInStructure(item.children)) {
             return true;
           }
         }
@@ -40,7 +40,7 @@ export async function POST(request) {
       return false;
     };
 
-    if (!updateInStructure(metaData.pages)) {
+    if (!await updateInStructure(metaData.pages)) {
       // If the file doesn't exist in the structure, add it as a new page
       metaData.pages.push({
         slug,
@@ -54,7 +54,7 @@ export async function POST(request) {
 
       // Create the new file
       const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
-      await fs.writeFile(fullPath, content);
+      await fs.writeFile(fullPath, content || ''); // Add fallback empty string
     }
 
     // Write updated meta data
