@@ -3,19 +3,19 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-const Tooltip = ({ message, isVisible, position }) => {
-  if (!isVisible) return null;
-  
+const Alert = ({ message, onClose }) => {
   return (
-    <div 
-      className="fixed z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
-      style={{
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        transform: 'translate(10px, -50%)'
-      }}
-    >
-      {message}
+    <div className="alert alert-danger alert-dismissible fade show" role="alert">
+      <div className="d-flex align-items-center">
+        <i className="ri-error-warning-line me-2"></i>
+        <div>{message}</div>
+      </div>
+      <button 
+        type="button" 
+        className="btn-close" 
+        onClick={onClose}
+        aria-label="Close"
+      ></button>
     </div>
   );
 };
@@ -29,16 +29,14 @@ const FileItem = ({
   level = 0, 
   isAuthenticated,
   draggedItem,
-  setDraggedItem 
+  setDraggedItem,
+  onInvalidMove
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isInvalidTarget, setIsInvalidTarget] = useState(false);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef(null);
   const itemRef = useRef(null);
 
@@ -134,8 +132,6 @@ const FileItem = ({
   const handleDragEnd = (e) => {
     e.target.style.opacity = '1';
     setDraggedItem(null);
-    setIsInvalidTarget(false);
-    setTooltipVisible(false);
   };
 
   const handleDragOver = (e) => {
@@ -145,15 +141,10 @@ const FileItem = ({
     if (draggedItem && draggedItem.path !== item.path) {
       // Check if target is a descendant of the dragged item
       if (isDescendant(draggedItem.path, item.path)) {
-        setIsInvalidTarget(true);
-        setIsDragOver(false);
-        setTooltipVisible(true);
-        setTooltipPosition({ x: e.clientX, y: e.clientY });
-      } else {
-        setIsInvalidTarget(false);
-        setIsDragOver(true);
-        setTooltipVisible(false);
+        onInvalidMove();
+        return;
       }
+      setIsDragOver(true);
     }
   };
 
@@ -161,22 +152,19 @@ const FileItem = ({
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-    setIsInvalidTarget(false);
-    setTooltipVisible(false);
   };
 
   const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-    setIsInvalidTarget(false);
-    setTooltipVisible(false);
 
-    if (!draggedItem || draggedItem.path === item.path) return; // Prevent dropping on itself
+    if (!draggedItem || draggedItem.path === item.path) return;
 
     // Check if target is a descendant of the dragged item
     if (isDescendant(draggedItem.path, item.path)) {
-      return; // Don't proceed with the API call
+      onInvalidMove();
+      return;
     }
 
     try {
@@ -210,8 +198,7 @@ const FileItem = ({
       <button
         type="button"
         className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
-          ${isDragOver && !isInvalidTarget ? 'bg-blue-100 dark:bg-blue-900' : ''}
-          ${isInvalidTarget ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}`}
+          ${isDragOver ? 'bg-blue-100 dark:bg-blue-900' : 'hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}`}
         onClick={() => onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -245,13 +232,6 @@ const FileItem = ({
           </span>
         )}
       </button>
-      {tooltipVisible && (
-        <Tooltip 
-          message="Cannot move a parent item to its child"
-          isVisible={tooltipVisible}
-          position={tooltipPosition}
-        />
-      )}
       {isCreating && (
         <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
@@ -289,6 +269,7 @@ const FileItem = ({
               isAuthenticated={isAuthenticated}
               draggedItem={draggedItem}
               setDraggedItem={setDraggedItem}
+              onInvalidMove={onInvalidMove}
             />
           ))}
         </ul>
@@ -297,6 +278,7 @@ const FileItem = ({
   );
 };
 
+// Rest of the components remain the same...
 const CreateItemInterface = ({ onCreateNew, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
   const inputRef = useRef(null);
@@ -364,6 +346,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
   const [draggedItem, setDraggedItem] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);
@@ -372,6 +355,12 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
   const handleDelete = async (path) => {
     await onDelete(path);
     refreshFileStructure();
+  };
+
+  const handleInvalidMove = () => {
+    setShowAlert(true);
+    // Auto-hide alert after 3 seconds
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
   const handleRootDragOver = (e) => {
@@ -421,6 +410,14 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
   return (
     <div className="h-full overflow-hidden">
       <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
+        {showAlert && (
+          <div className="mb-4">
+            <Alert 
+              message="Cannot move a parent item to its child" 
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
         <div 
           className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
           onMouseEnter={() => setIsHeaderHovered(true)}
@@ -459,6 +456,7 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
               isAuthenticated={isAuthenticated}
               draggedItem={draggedItem}
               setDraggedItem={setDraggedItem}
+              onInvalidMove={handleInvalidMove}
             />
           ))}
         </ul>
