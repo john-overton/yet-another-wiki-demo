@@ -16,9 +16,22 @@ export async function POST(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
+    // Normalize the incoming file path to remove any 'app/docs/' prefix
+    const normalizedFilePath = filePath.replace(/^(app\/docs\/)?/, '');
+    console.log('Normalized file path:', normalizedFilePath); // Debug log
+
     const updateInStructure = async (items) => {
       for (let item of items) {
-        if (item.path === filePath) {
+        // Normalize the item path for comparison
+        const normalizedItemPath = item.path.replace(/^(app\/docs\/)?/, '');
+        console.log('Comparing paths:', { 
+          normalizedFilePath, 
+          normalizedItemPath, 
+          match: normalizedItemPath === normalizedFilePath 
+        }); // Debug log
+
+        if (normalizedItemPath === normalizedFilePath) {
+          console.log('Found matching item:', item); // Debug log
           item.title = title;
           item.isPublic = isPublic;
           item.slug = slug;
@@ -26,7 +39,7 @@ export async function POST(request) {
           item.version = version || item.version || 1;
           
           // Update file content - ensure we save in app/docs directory
-          const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
+          const fullPath = path.join(process.cwd(), 'app', 'docs', normalizedFilePath);
           console.log('Writing file to:', fullPath); // Debug log
           await fs.writeFile(fullPath, content, 'utf8');
 
@@ -42,11 +55,12 @@ export async function POST(request) {
     };
 
     if (!await updateInStructure(metaData.pages)) {
+      console.log('No existing entry found, creating new one'); // Debug log
       // If the file doesn't exist in the structure, add it as a new page
       metaData.pages.push({
         slug,
         title,
-        path: filePath,
+        path: normalizedFilePath,
         isPublic,
         version: version || 1,
         lastModified: new Date().toISOString(),
@@ -54,7 +68,7 @@ export async function POST(request) {
       });
 
       // Create the new file - ensure we save in app/docs directory
-      const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
+      const fullPath = path.join(process.cwd(), 'app', 'docs', normalizedFilePath);
       console.log('Creating new file at:', fullPath); // Debug log
       
       // Ensure directory exists

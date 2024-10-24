@@ -239,42 +239,56 @@ const MDXEditorComponent = ({ file, onSave }) => {
     <>
       <style jsx global>{editorStyles}</style>
       <div className="flex flex-col h-full">
-        <div className="flex justify-between items-center mb-4">
-          <input
-            type="text"
-            value={title || ''}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-2xl font-bold bg-transparent border-none focus:outline-none"
-          />
-          <div className="flex items-center">
-            <label className="mr-2">
-              <input
-                type="checkbox"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-                className="mr-1"
-              />
-              Public
-            </label>
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
+            <input
+              type="text"
+              value={title || ''}
+              onChange={(e) => setTitle(e.target.value)}
+              className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL Slug</label>
             <input
               type="text"
               value={slug || ''}
               onChange={(e) => setSlug(e.target.value)}
-              className="mr-2 px-2 py-1 border rounded"
-              placeholder="URL slug"
+              className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <button
-              onClick={() => setIsPreview(!isPreview)}
-              className="mr-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {isPreview ? 'Edit' : 'Preview'}
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Save
-            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+
+            </div>
+            <div className="flex gap-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Public</span>
+              </label>
+              <button
+                onClick={() => setIsPreview(!isPreview)}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                style={{ fontSize: '1.5rem' }}
+                title="Preview"
+              >
+                <i className="ri-eye-line"></i>
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                style={{ fontSize: '1.5rem' }}
+                title="Save"
+              >
+                <i className="ri-save-line"></i>
+              </button>
+            </div>
           </div>
         </div>
         {errorMessage && (
@@ -336,7 +350,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
                 frontmatterPlugin(),
                 codeBlockPlugin({
                   defaultLanguage: 'text',
-                  forcedLanguage: 'text' // This ensures a language is always selected
+                  forcedLanguage: 'text'
                 }),
                 codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),

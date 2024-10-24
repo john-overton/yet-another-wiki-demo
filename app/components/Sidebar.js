@@ -3,24 +3,45 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
+const Tooltip = ({ message, isVisible, position }) => {
+  if (!isVisible) return null;
+  
+  return (
+    <div 
+      className="absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700"
+      style={{
+        top: `${position.y}px`,
+        left: `${position.x}px`,
+        transform: 'translate(10px, -50%)'
+      }}
+    >
+      {message}
+      <div className="tooltip-arrow"></div>
+    </div>
+  );
+};
+
 const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, isAuthenticated }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [isRenaming, setIsRenaming] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isInvalidTarget, setIsInvalidTarget] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef(null);
-  const renameInputRef = useRef(null);
   const itemRef = useRef(null);
 
   useEffect(() => {
-    if (isCreating || isRenaming) {
+    if (isCreating) {
       document.addEventListener('click', handleOutsideClick);
     }
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [isCreating, isRenaming]);
+  }, [isCreating]);
 
   const handleCreateNew = () => {
     setIsCreating(true);
@@ -29,9 +50,6 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
   const handleOutsideClick = (e) => {
     if (inputRef.current && !inputRef.current.contains(e.target)) {
       handleSubmit();
-    }
-    if (renameInputRef.current && !renameInputRef.current.contains(e.target)) {
-      handleRenameSubmit();
     }
   };
 
@@ -80,23 +98,102 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
     setIsExpanded(!isExpanded);
   };
 
-  const handleDoubleClick = (e) => {
+  // Helper function to check if an item is a descendant
+  const isDescendant = (parentPath, childPath) => {
+    const findItem = (items, path) => {
+      for (const item of items) {
+        if (item.path === path) return true;
+        if (item.children && findItem(item.children, path)) return true;
+      }
+      return false;
+    };
+
+    return findItem(item.children || [], childPath);
+  };
+
+  const handleDragStart = (e) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    e.dataTransfer.setData('text/plain', JSON.stringify({
+      path: item.path,
+      title: item.title,
+      children: item.children
+    }));
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setIsInvalidTarget(false);
+    setTooltipVisible(false);
+  };
+
+  const handleDragOver = (e) => {
     e.preventDefault();
-    setIsRenaming(true);
-    setNewItemName(item.title);
-  };
+    e.stopPropagation();
 
-  const handleRenameSubmit = () => {
-    if (newItemName.trim() && newItemName !== item.title) {
-      onRename(item.path, newItemName.trim());
+    // Get the dragged item data
+    const draggedData = e.dataTransfer.getData('text/plain');
+    if (draggedData) {
+      const draggedItem = JSON.parse(draggedData);
+      
+      // Check if target is a descendant of the dragged item
+      if (isDescendant(draggedItem.path, item.path)) {
+        setIsInvalidTarget(true);
+        setTooltipVisible(true);
+        setTooltipPosition({ x: e.clientX, y: e.clientY });
+        return;
+      }
     }
-    setIsRenaming(false);
-    setNewItemName('');
+
+    setIsInvalidTarget(false);
+    setIsDragOver(true);
+    setTooltipVisible(false);
   };
 
-  const handleRenameKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleRenameSubmit();
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    setIsInvalidTarget(false);
+    setTooltipVisible(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    setIsInvalidTarget(false);
+    setTooltipVisible(false);
+
+    const draggedItem = JSON.parse(e.dataTransfer.getData('text/plain'));
+    if (draggedItem.path === item.path) return; // Prevent dropping on itself
+
+    // Check if target is a descendant of the dragged item
+    if (isDescendant(draggedItem.path, item.path)) {
+      return; // Silently fail as we've already shown the visual feedback
+    }
+
+    try {
+      const response = await fetch('/api/file-structure/reorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sourcePath: draggedItem.path,
+          targetPath: item.path,
+          moveToRoot: false
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder items');
+      }
+
+      // Refresh the file structure after successful reorder
+      window.location.reload();
+    } catch (error) {
+      console.error('Error reordering items:', error);
     }
   };
 
@@ -104,50 +201,50 @@ const FileItem = ({ item, onSelect, onCreateNew, onDelete, onRename, level = 0, 
 
   return (
     <li ref={itemRef}>
-      {!isRenaming ? (
-        <button
-          type="button"
-          className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700`}
-          onClick={() => onSelect(item)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onDoubleClick={handleDoubleClick}
-        >
-          {item.children && item.children.length > 0 && (
+      <button
+        type="button"
+        className={`flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
+          ${isDragOver && !isInvalidTarget ? 'bg-blue-100 dark:bg-blue-900' : ''}
+          ${isInvalidTarget ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}
+          ${isDragging ? 'opacity-50' : ''}`}
+        onClick={() => onSelect(item)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        draggable={true}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {item.children && item.children.length > 0 && (
+          <i
+            className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
+            onClick={toggleExpand}
+          ></i>
+        )}
+        <span className="ml-1">{displayName}</span>
+        {isHovered && isAuthenticated && (
+          <span className="ml-auto flex items-center">
             <i
-              className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
-              onClick={toggleExpand}
+              className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
+              onClick={handleDelete}
             ></i>
-          )}
-          <span className="ml-1">{displayName}</span>
-          {isHovered && isAuthenticated && (
-            <span className="ml-auto flex items-center">
-              <i
-                className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
-                onClick={handleDelete}
-              ></i>
-              <i
-                className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCreateNew();
-                }}
-              ></i>
-            </span>
-          )}
-        </button>
-      ) : (
-        <div className="flex items-center p-2" ref={renameInputRef}>
-          <input
-            type="text"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            onKeyDown={handleRenameKeyDown}
-            className="border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
-            autoFocus
-          />
-        </div>
-      )}
+            <i
+              className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateNew();
+              }}
+            ></i>
+          </span>
+        )}
+      </button>
+      <Tooltip 
+        message="Cannot move a parent item to its child"
+        isVisible={tooltipVisible}
+        position={tooltipPosition}
+      />
       {isCreating && (
         <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
           <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
@@ -237,7 +334,6 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   );
 };
 
-// Modified function to filter out deleted items and non-public items for unauthenticated users
 const filterItems = (items, isAuthenticated) => {
   return items.filter(item => !item.deleted && (isAuthenticated || item.isPublic)).map(item => ({
     ...item,
@@ -248,6 +344,7 @@ const filterItems = (items, isAuthenticated) => {
 const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure, isAuthenticated }) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [isDragOverRoot, setIsDragOverRoot] = useState(false);
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);
@@ -258,7 +355,46 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
     refreshFileStructure();
   };
 
-  // Filter items based on authentication status
+  const handleRootDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOverRoot(true);
+  };
+
+  const handleRootDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOverRoot(false);
+  };
+
+  const handleRootDrop = async (e) => {
+    e.preventDefault();
+    setIsDragOverRoot(false);
+
+    const draggedItem = JSON.parse(e.dataTransfer.getData('text/plain'));
+
+    try {
+      const response = await fetch('/api/file-structure/reorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sourcePath: draggedItem.path,
+          targetPath: null,
+          moveToRoot: true
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder items');
+      }
+
+      // Refresh the file structure after successful reorder
+      window.location.reload();
+    } catch (error) {
+      console.error('Error reordering items:', error);
+    }
+  };
+
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
@@ -285,7 +421,12 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
             onClose={() => setIsCreatingRoot(false)}
           />
         )}
-        <ul className="space-y-2 flex-grow">
+        <ul 
+          className={`space-y-2 flex-grow ${isDragOverRoot ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          onDragOver={handleRootDragOver}
+          onDragLeave={handleRootDragLeave}
+          onDrop={handleRootDrop}
+        >
           {filteredFileStructure.map((item, index) => (
             <FileItem key={index} item={item} onSelect={onSelect} onCreateNew={onCreateNew} onDelete={handleDelete} onRename={onRename} isAuthenticated={isAuthenticated} />
           ))}
