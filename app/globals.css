@@ -426,7 +426,7 @@ body {
 .dark-theme [class*="_toolbarNodeKindSelectTrigger"],
 .dark-theme [class*="_toolbarButtonSelectTrigger"],
 .dark-theme [class*="_selectTrigger"] {
-  background-color: var(--baseBase) !important;
+  background-color: var(--baseBgSubtle) !important;
   color: var(--baseText) !important;
 }
 
@@ -436,26 +436,39 @@ body {
   background-color: var(--baseBgHover) !important;
 }
 
-.dark-theme [class*="_selectContent"] {
-  background-color: var(--baseBase) !important;
+.dark-theme [class*="_selectContent"],
+.dark-theme [data-radix-popper-content-wrapper] > div {
+  background-color: var(--baseBgSubtle) !important;
   border-color: var(--baseBorder) !important;
 }
 
-.dark-theme [class*="_selectItem"] {
+.dark-theme [class*="_selectItem"],
+.dark-theme [data-radix-popper-content-wrapper] [role="option"] {
   color: var(--baseText) !important;
 }
 
-.dark-theme [class*="_selectItem"]:hover {
+.dark-theme [class*="_selectItem"]:hover,
+.dark-theme [data-radix-popper-content-wrapper] [role="option"]:hover {
   background-color: var(--baseBgHover) !important;
 }
 
-.dark-theme [class*="_selectItem"][data-highlighted="true"] {
-  background-color: var(--baseBg) !important;
+.dark-theme [class*="_selectItem"][data-highlighted="true"],
+.dark-theme [data-radix-popper-content-wrapper] [role="option"][data-highlighted] {
+  background-color: var(--baseBgActive) !important;
+}
+
+/* Radix UI Popover styles */
+.dark-theme [data-radix-popper-content-wrapper] {
+  background-color: var(--baseBgSubtle) !important;
+  color: var(--baseText) !important;
+  border-color: var(--baseBorder) !important;
 }
 
 /* Dialog styles */
 .mdxeditor-popup-container {
-  --mdxeditor-popup-bg: var(--baseBase);
+  --mdxeditor-popup-bg: var(--baseBgSubtle);
   --mdxeditor-popup-text: var(--baseText);
   --mdxeditor-popup-border: var(--baseBorder);
 }
+
+/* Rest of the file remains exactly the same */
