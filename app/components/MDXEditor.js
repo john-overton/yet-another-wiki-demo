@@ -223,7 +223,34 @@ const MDXEditorComponent = ({ file, onSave }) => {
     }
   };
 
-  const codeBlockLanguages = ['', 'javascript', 'typescript', 'html', 'css', 'json', 'markdown', 'jsx', 'sql', 'python', 'java', 'ruby', 'bash', 'shell', 'text', 'txt'];
+  // Define available languages with descriptive names
+  const codeBlockLanguages = {
+    'text': 'Plain Text',
+    'javascript': 'JavaScript',
+    'typescript': 'TypeScript',
+    'jsx': 'React JSX',
+    'tsx': 'React TSX',
+    'html': 'HTML',
+    'css': 'CSS',
+    'scss': 'SCSS',
+    'json': 'JSON',
+    'yaml': 'YAML',
+    'markdown': 'Markdown',
+    'sql': 'SQL',
+    'python': 'Python',
+    'java': 'Java',
+    'ruby': 'Ruby',
+    'php': 'PHP',
+    'bash': 'Bash',
+    'shell': 'Shell',
+    'plaintext': 'Plain Text',
+    'diff': 'Diff',
+    'git': 'Git',
+    'graphql': 'GraphQL',
+    'docker': 'Docker',
+    'nginx': 'Nginx',
+    'xml': 'XML'
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -329,14 +356,10 @@ const MDXEditorComponent = ({ file, onSave }) => {
                 thematicBreakPlugin(),
                 frontmatterPlugin(),
                 codeBlockPlugin({
-                  defaultLanguage: 'text'
+                  defaultLanguage: 'text',
+                  forcedLanguage: 'text' // This ensures a language is always selected
                 }),
-                codeMirrorPlugin({
-                  codeBlockLanguages: codeBlockLanguages.reduce((acc, language) => {
-                    acc[language] = language || 'Text';
-                    return acc;
-                  }, {})
-                }),
+                codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),
                 diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
                 markdownShortcutPlugin()
