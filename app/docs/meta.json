@@ -65,6 +65,15 @@
       "version": 1,
       "lastModified": "2024-10-20T13:12:13.164Z",
       "children": []
+    },
+    {
+      "slug": "new-item",
+      "title": "New Item",
+      "path": "new-item.mdx",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-24T19:30:28.391Z",
+      "children": []
     }
   ]
 }
