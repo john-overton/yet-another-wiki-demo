@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MdEditor } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
+import '../mdeditor.css';
 import { useTheme } from 'next-themes';
 
 const MarkdownEditor = ({ file, onSave }) => {
@@ -167,13 +168,15 @@ const MarkdownEditor = ({ file, onSave }) => {
           onChange={setContent}
           language="en-US"
           theme={theme === 'dark' ? 'dark' : 'light'}
-          previewTheme={theme === 'dark' ? 'dark' : 'default'}
+          previewTheme='github'
           onSave={handleSave}
           onUploadImg={onUploadImg}
           onError={onError}
           previewOnly={false}
           showCodeRowNumber={true}
           autoFocus={false}
+          noMacButtons={true}
+          showCodeBlockLang={true}
           toolbars={[
             'bold', 'underline', 'italic', '-',
             'strikeThrough', 'title', 'sub', 'sup',
@@ -187,6 +190,16 @@ const MarkdownEditor = ({ file, onSave }) => {
             height: '100%',
             borderRadius: '6px',
           }}
+          preview={{
+            theme: 'github',
+            hljs: {
+              lineNumbers: true
+            }
+          }}
+          defToolbars={[]}
+          formatCopiedText={(text) => text}
+          inputBoxWitdh="50%"
+          scrollAuto={true}
         />
       </div>
     </div>

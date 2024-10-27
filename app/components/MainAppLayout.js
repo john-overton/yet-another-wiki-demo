@@ -23,6 +23,15 @@ const MainAppLayout = () => {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
 
+  // Update document title when selected file changes
+  useEffect(() => {
+    if (selectedFile?.title) {
+      document.title = `${selectedFile.title} - Yet Another Wiki`;
+    } else {
+      document.title = 'Yet Another Wiki';
+    }
+  }, [selectedFile]);
+
   // Handle initial hash scroll
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash && fileContent) {
