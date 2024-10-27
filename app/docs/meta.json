@@ -6,7 +6,7 @@
       "path": "home.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-24T15:15:44.947Z",
+      "lastModified": "2024-10-27T02:44:04.874Z",
       "children": [
         {
           "slug": "item2",
@@ -27,45 +27,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T13:12:13.164Z",
-      "children": [
-        {
-          "slug": "getting-started",
-          "title": "Getting Started",
-          "path": "getting-started.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-20T20:08:16.526Z",
-          "children": [
-            {
-              "slug": "configuration2456",
-              "title": "Configuration23",
-              "path": "configuration.md",
-              "isPublic": true,
-              "version": 1,
-              "lastModified": "2024-10-24T18:44:16.115Z",
-              "children": []
-            },
-            {
-              "slug": "theming",
-              "title": "Theming",
-              "path": "theming.md",
-              "isPublic": true,
-              "version": 1,
-              "lastModified": "2024-10-23T13:35:25.208Z",
-              "children": []
-            },
-            {
-              "slug": "installation",
-              "title": "Installation",
-              "path": "installation.md",
-              "isPublic": false,
-              "version": 1,
-              "lastModified": "2024-10-23T23:36:06.641Z",
-              "children": []
-            }
-          ]
-        }
-      ]
+      "children": []
     },
     {
       "slug": "new-item",
@@ -75,6 +37,43 @@
       "version": 1,
       "lastModified": "2024-10-24T19:30:28.391Z",
       "children": []
+    },
+    {
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "path": "getting-started.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T20:08:16.526Z",
+      "children": [
+        {
+          "slug": "configuration2456",
+          "title": "Configuration23",
+          "path": "configuration.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-24T18:44:16.115Z",
+          "children": []
+        },
+        {
+          "slug": "theming",
+          "title": "Theming",
+          "path": "theming.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-23T13:35:25.208Z",
+          "children": []
+        },
+        {
+          "slug": "installation",
+          "title": "Installation",
+          "path": "installation.md",
+          "isPublic": false,
+          "version": 1,
+          "lastModified": "2024-10-23T23:36:06.641Z",
+          "children": []
+        }
+      ]
     }
   ]
 }

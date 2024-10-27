@@ -1,19 +1,9 @@
+import './globals.css'
+import './markdown.css'
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { Providers } from "./components/Providers";
+import { Providers } from './components/Providers'
+import './lib/editorConfig'
 import { ClientLayout } from "./components/ClientLayout";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,17 +13,20 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
+      <body>
+      <Providers>
           <ClientLayout>
             {children}
           </ClientLayout>
         </Providers>
       </body>
     </html>
-  );
+  )
 }

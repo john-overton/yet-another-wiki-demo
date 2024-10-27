@@ -5,6 +5,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
+import MarkdownEditor from './MarkdownEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -215,6 +216,19 @@ const MainAppLayout = () => {
     />
   ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure]);
 
+  const renderEditor = () => {
+    if (!selectedFile || !isEditing) return null;
+    
+    // Use MarkdownEditor for .md files and MDXEditor for .mdx files
+    const isMarkdownFile = selectedFile.path.endsWith('.md');
+    
+    if (isMarkdownFile) {
+      return <MarkdownEditor file={selectedFile} onSave={handleSave} />;
+    } else {
+      return <MDXEditor file={selectedFile} onSave={handleSave} />;
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
       <div className="flex flex-1 overflow-hidden relative">
@@ -238,10 +252,8 @@ const MainAppLayout = () => {
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
               <MarkdownRenderer content={fileContent} />
-            ) : selectedFile && isEditing ? (
-              <MDXEditor file={selectedFile} onSave={handleSave} />
             ) : (
-              <div>Select a file from the sidebar</div>
+              renderEditor() || <div>Select a file from the sidebar</div>
             )}
           </div>
           {!isEditing && (
