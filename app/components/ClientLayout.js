@@ -19,7 +19,7 @@ export function ClientLayout({ children }) {
       // Remove 'app/docs/' from the beginning of the path if present
       let path = file.path.replace(/^app\/docs\//, '');
       // Remove the file extension
-      path = path.replace(/\.mdx$/, '');
+      path = path.replace(/\.md$/, '');
       // Ensure the path starts with a slash
       path = path.startsWith('/') ? path : `/${path}`;
       router.push(`/mainapp${path}`);

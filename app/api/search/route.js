@@ -53,13 +53,13 @@ async function indexFiles(dir, basePath = '') {
 
     if (stat.isDirectory()) {
       await indexFiles(filePath, path.join(basePath, file));
-    } else if (file.endsWith('.mdx')) {
+    } else if (file.endsWith('.md')) {
       const content = await fs.readFile(filePath, 'utf-8');
       const relativePath = path.join(basePath, file).replace(/\\/g, '/');
       const id = documents.length;
       documents.push({
         id,
-        name: file.replace('.mdx', ''),
+        name: file.replace('.md', ''),
         path: relativePath,
         content
       });
@@ -109,7 +109,7 @@ export async function GET(request) {
           const metadata = pageMetadata[documents[id].path];
           console.log(`Metadata for ${documents[id].path}:`, metadata);
           if (authenticated || (metadata && metadata.isPublic)) {
-            const slug = documents[id].path.replace('.mdx', '');
+            const slug = documents[id].path.replace('.md', '');
             return {
               title: metadata ? metadata.title : documents[id].name,
               slug: slug,

@@ -20,10 +20,10 @@ export async function POST(request) {
       for (let item of items) {
         if (item.path === oldPath) {
           const oldName = path.basename(item.path);
-          const newSlug = newName.toLowerCase().replace(/\s+/g, '-').replace(/\.mdx$/, '');
+          const newSlug = newName.toLowerCase().replace(/\s+/g, '-').replace(/\.md$/, '');
           item.title = newName;
           item.slug = newSlug;
-          item.path = item.path.replace(oldName, `${newSlug}.mdx`);
+          item.path = item.path.replace(oldName, `${newSlug}.md`);
           item.lastModified = new Date().toISOString();
           return item;
         }
@@ -48,7 +48,7 @@ export async function POST(request) {
 
     // Rename the actual file
     const oldFullPath = path.join(process.cwd(), 'app', 'docs', oldPath);
-    const newFullPath = path.join(path.dirname(oldFullPath), `${updatedItem.slug}.mdx`);
+    const newFullPath = path.join(path.dirname(oldFullPath), `${updatedItem.slug}.md`);
     await fs.rename(oldFullPath, newFullPath);
 
     return new Response(JSON.stringify({ message: 'Item renamed successfully', updatedItem }), {

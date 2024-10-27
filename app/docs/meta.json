@@ -3,7 +3,7 @@
     {
       "slug": "home",
       "title": "Home",
-      "path": "home.mdx",
+      "path": "home.md",
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-24T15:15:44.947Z",
@@ -11,7 +11,7 @@
         {
           "slug": "item2",
           "title": "Item2",
-          "path": "item2.mdx",
+          "path": "item2.md",
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-24T14:43:42.296Z",
@@ -21,7 +21,7 @@
         {
           "slug": "getting-started",
           "title": "Getting Started",
-          "path": "getting-started.mdx",
+          "path": "getting-started.md",
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-20T20:08:16.526Z",
@@ -29,7 +29,7 @@
             {
               "slug": "configuration2456",
               "title": "Configuration23",
-              "path": "configuration.mdx",
+              "path": "configuration.md",
               "isPublic": true,
               "version": 1,
               "lastModified": "2024-10-24T18:44:16.115Z",
@@ -38,7 +38,7 @@
             {
               "slug": "theming",
               "title": "Theming",
-              "path": "theming.mdx",
+              "path": "theming.md",
               "isPublic": true,
               "version": 1,
               "lastModified": "2024-10-23T13:35:25.208Z",
@@ -47,7 +47,7 @@
             {
               "slug": "installation",
               "title": "Installation",
-              "path": "installation.mdx",
+              "path": "installation.md",
               "isPublic": false,
               "version": 1,
               "lastModified": "2024-10-23T23:36:06.641Z",
@@ -60,7 +60,7 @@
     {
       "slug": "item3",
       "title": "Item3",
-      "path": "item3.mdx",
+      "path": "item3.md",
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T13:12:13.164Z",
@@ -69,7 +69,7 @@
     {
       "slug": "new-item",
       "title": "New Item",
-      "path": "new-item.mdx",
+      "path": "new-item.md",
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-24T19:30:28.391Z",

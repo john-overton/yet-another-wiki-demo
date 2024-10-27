@@ -242,7 +242,7 @@ const FileItem = ({
     }
   };
 
-  const displayName = item.title.replace(/\.mdx$/, '');
+  const displayName = item.title.replace(/\.md$/, '');
 
   return (
     <li ref={itemRef}>

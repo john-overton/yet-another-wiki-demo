@@ -16,8 +16,8 @@ export async function POST(request) {
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/\.mdx$/, '');
-    const newItemPath = `${slug}.mdx`;
+    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/\.md$/, '');
+    const newItemPath = `${slug}.md`;
 
     const newItem = {
       slug,
@@ -57,7 +57,7 @@ export async function POST(request) {
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    // Create an empty MDX file
+    // Create an empty MD file
     const filePath = path.join(process.cwd(), 'app', 'docs', newItemPath);
     await fs.writeFile(filePath, `# ${newItem.title}\n\nYour content here.`);
 
