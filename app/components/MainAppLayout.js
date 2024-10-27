@@ -1,28 +1,18 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
-import { bundleMDXContent } from '../actions/mdx';
-import Image from 'next/image';
-
-const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
-
-// Add image loader configuration
-const imageLoader = ({ src, width, quality }) => {
-  return `${src}?w=${width}&q=${quality || 75}`
-}
+import MarkdownRenderer from './MarkdownRenderer';
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
-  const [bundledContent, setBundledContent] = useState(null);
   const [isTocVisible, setIsTocVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -35,8 +25,9 @@ const MainAppLayout = () => {
   // Handle initial hash scroll
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash && fileContent) {
-      const hash = window.location.hash;
-      const element = document.querySelector(hash);
+      const hash = window.location.hash.substring(1); // Remove the # symbol
+      const decodedHash = decodeURIComponent(hash);
+      const element = document.getElementById(decodedHash);
       if (element) {
         // Force a reflow to ensure the element is rendered
         void element.offsetHeight;
@@ -61,16 +52,9 @@ const MainAppLayout = () => {
       const response = await fetch(`/api/file-content?path=${encodeURIComponent(path)}`);
       const content = await response.text();
       setFileContent(content);
-      
-      // Bundle the MDX content with image handling
-      const bundled = await bundleMDXContent(content);
-      if (bundled) {
-        setBundledContent(bundled.code);
-      }
     } catch (error) {
       console.error('Error loading file content:', error);
       setFileContent('Error loading file content');
-      setBundledContent(null);
     }
   }, []);
 
@@ -253,7 +237,7 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {selectedFile && !isEditing ? (
-              <MDXRenderer code={bundledContent} components={{ Image: (props) => <Image {...props} loader={imageLoader} /> }} />
+              <MarkdownRenderer content={fileContent} />
             ) : selectedFile && isEditing ? (
               <MDXEditor file={selectedFile} onSave={handleSave} />
             ) : (

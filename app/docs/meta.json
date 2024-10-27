@@ -17,7 +17,17 @@
           "lastModified": "2024-10-24T14:43:42.296Z",
           "children": [],
           "deleted": true
-        },
+        }
+      ]
+    },
+    {
+      "slug": "item3",
+      "title": "Item3",
+      "path": "item3.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-20T13:12:13.164Z",
+      "children": [
         {
           "slug": "getting-started",
           "title": "Getting Started",
@@ -56,15 +66,6 @@
           ]
         }
       ]
-    },
-    {
-      "slug": "item3",
-      "title": "Item3",
-      "path": "item3.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-10-20T13:12:13.164Z",
-      "children": []
     },
     {
       "slug": "new-item",
