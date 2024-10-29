@@ -3,10 +3,10 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import UserButton from './UserButton';
 import SearchComponent from './SearchComponent';
+import Logo from './Logo';
 
 const Header = ({ onFileSelect }) => {
   const [mounted, setMounted] = useState(false);
@@ -25,7 +25,7 @@ const Header = ({ onFileSelect }) => {
     <div className="flex items-center justify-between w-full p-4">
       <div className="">
         <Link href="/">
-          <Image src="/images/YAW-Solo.png" alt="Logo" width={80} height={40} className="rounded-sm m-2 shadow-lg border"/>
+          <Logo />
         </Link>
       </div>
       <div className="flex items-center ml-4">
