@@ -1,26 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const router = useRouter();
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
     router.push('/');
   };
 
-  const avatarSrc = user.avatar?.startsWith('http') 
-    ? user.avatar 
-    : user.avatar 
-      ? `${process.env.NEXT_PUBLIC_BASE_URL || ''}${user.avatar}` 
-      : null;
+  const getAvatarUrl = (avatar) => {
+    if (!avatar) {
+      return null;
+    }
+    
+    if (avatar.startsWith('http')) {
+      return avatar;
+    } else if (avatar.startsWith('/')) {
+      return avatar;
+    } else {
+      return `/user-avatars/${avatar}`;
+    }
+  };
+
+  const avatarUrl = getAvatarUrl(user.avatar);
 
   return (
     <div className="relative">
@@ -30,13 +42,12 @@ export default function UserButton({ user }) {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        {avatarSrc ? (
-          <Image
-            src={avatarSrc}
+        {avatarUrl && !avatarError ? (
+          <img
+            src={avatarUrl}
             alt={user.name}
-            width={30}
-            height={30}
-            className="rounded-full _rounded-full object-cover"
+            className="h-[30px] w-[30px] rounded-full object-cover"
+            onError={() => setAvatarError(true)}
           />
         ) : (
           <div className="h-[30px] w-[30px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
