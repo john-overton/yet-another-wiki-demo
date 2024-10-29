@@ -13,8 +13,10 @@ const ThemingSettings = () => {
   const [font, setFont] = useState('Open Sans');
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
+  // Only load font settings initially
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -22,20 +24,19 @@ const ThemingSettings = () => {
         if (response.ok) {
           const settings = await response.json();
           setFont(settings.font);
-          if (settings.theme !== 'system') {
-            setTheme(settings.theme);
-          }
         }
       } catch (error) {
         console.error('Error loading theming settings:', error);
       }
+      setMounted(true);
     };
     loadSettings();
-  }, [setTheme]);
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const currentTheme = theme || resolvedTheme;
       const response = await fetch('/api/settings/theming', {
         method: 'POST',
         headers: {
@@ -43,7 +44,7 @@ const ThemingSettings = () => {
         },
         body: JSON.stringify({
           font,
-          theme
+          theme: currentTheme
         }),
       });
 
@@ -61,6 +62,10 @@ const ThemingSettings = () => {
       setTimeout(() => setMessage(''), 3000);
     }
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
@@ -120,7 +125,7 @@ const ThemingSettings = () => {
           <button 
             onClick={() => setTheme('light')}
             className={`px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg ${
-              theme === 'light' ? 'ring-2 ring-blue-500' : ''
+              resolvedTheme === 'light' ? 'ring-2 ring-blue-500' : ''
             }`}
           >
             <i className="ri-sun-line mr-2"></i>
@@ -129,7 +134,7 @@ const ThemingSettings = () => {
           <button 
             onClick={() => setTheme('dark')}
             className={`px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg ${
-              theme === 'dark' ? 'ring-2 ring-blue-500' : ''
+              resolvedTheme === 'dark' ? 'ring-2 ring-blue-500' : ''
             }`}
           >
             <i className="ri-moon-line mr-2"></i>

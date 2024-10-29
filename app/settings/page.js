@@ -2,12 +2,19 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 import Settings from '../components/Settings';
 
 export default function SettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!session) {
@@ -15,7 +22,7 @@ export default function SettingsPage() {
     }
   }, [session, router]);
 
-  if (!session) {
+  if (!mounted || !session) {
     return null;
   }
 
