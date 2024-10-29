@@ -142,6 +142,11 @@ const MainAppLayout = () => {
     try {
       const response = await fetch('/api/delete-item', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, type }),
+      });
+      if (response.ok) {
+        await fetchFileStructure();
         if (selectedFile && selectedFile.path === path) {
           router.push('/');
         }
@@ -213,6 +218,14 @@ const MainAppLayout = () => {
     setIsSidebarVisible((prev) => !prev);
   }, []);
 
+  const handleTrashBinClick = useCallback(() => {
+    setIsTrashBinVisible(true);
+    setSelectedFile(null);
+    setFileContent('');
+    setIsEditing(false);
+    setIsTocVisible(false);
+  }, []);
+
   const memoizedSidebar = useMemo(() => (
     <Sidebar
       fileStructure={fileStructure}
@@ -222,8 +235,9 @@ const MainAppLayout = () => {
       onRename={handleRename}
       isAuthenticated={!!session}
       refreshFileStructure={fetchFileStructure}
+      onTrashBinClick={handleTrashBinClick}
     />
-  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure]);
+  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure, handleTrashBinClick]);
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
@@ -260,13 +274,17 @@ const MainAppLayout = () => {
         </button>
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
-            {selectedFile && !isEditing ? (
-              <MarkdownRenderer content={fileContent} />
+            {isTrashBinVisible ? (
+              <TrashBinPage />
             ) : (
-              renderEditor() || <div>Select a file from the sidebar</div>
+              selectedFile && !isEditing ? (
+                <MarkdownRenderer content={fileContent} />
+              ) : (
+                renderEditor() || <div>Select a file from the sidebar</div>
+              )
             )}
           </div>
-          {!isEditing && (
+          {!isEditing && !isTrashBinVisible && (
             <>
               <div className="fixed z-[1002] top-14 right-2 flex flex-col gap-4">
                 {session && (

@@ -392,7 +392,16 @@ const filterItems = (items, isAuthenticated) => {
   }));
 };
 
-const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, refreshFileStructure, isAuthenticated }) => {
+const Sidebar = ({ 
+  fileStructure, 
+  onSelect, 
+  onCreateNew, 
+  onDelete, 
+  onRename, 
+  refreshFileStructure, 
+  isAuthenticated,
+  onTrashBinClick 
+}) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isDragOverRoot, setIsDragOverRoot] = useState(false);
@@ -510,10 +519,13 @@ const Sidebar = ({ fileStructure, onSelect, onCreateNew, onDelete, onRename, ref
             ))}
           </ul>
           {isAuthenticated && (
-            <Link href="/trash-bin" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button 
+              onClick={onTrashBinClick}
+              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
               <i className="ri-delete-bin-7-line mr-2"></i>
               <span>Trash Bin</span>
-            </Link>
+            </button>
           )}
         </div>
       </div>
