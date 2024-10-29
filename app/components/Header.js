@@ -24,9 +24,7 @@ const Header = ({ onFileSelect }) => {
   return (
     <div className="flex items-center justify-between w-full p-4">
       <div className="">
-        <Link href="/">
-          <Logo />
-        </Link>
+        <Logo />
       </div>
       <div className="flex items-center ml-4">
         <div className="mr-2">
