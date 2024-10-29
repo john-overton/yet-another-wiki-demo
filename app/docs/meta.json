@@ -36,7 +36,8 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-24T19:30:28.391Z",
-      "children": []
+      "children": [],
+      "deleted": true
     },
     {
       "slug": "getting-started",
@@ -53,6 +54,16 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-24T18:44:16.115Z",
+          "children": [],
+          "deleted": true
+        },
+        {
+          "slug": "installation",
+          "title": "Installation",
+          "path": "installation.md",
+          "isPublic": false,
+          "version": 1,
+          "lastModified": "2024-10-23T23:36:06.641Z",
           "children": []
         },
         {
@@ -62,15 +73,6 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-23T13:35:25.208Z",
-          "children": []
-        },
-        {
-          "slug": "installation",
-          "title": "Installation",
-          "path": "installation.md",
-          "isPublic": false,
-          "version": 1,
-          "lastModified": "2024-10-23T23:36:06.641Z",
           "children": []
         }
       ]
