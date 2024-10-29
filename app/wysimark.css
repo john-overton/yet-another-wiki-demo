@@ -1,0 +1,22 @@
+/* Fix for SSR warning by replacing :first-child with :first-of-type */
+.wysimark-editor > *:first-of-type {
+  margin-top: 0;
+}
+
+/* Ensure proper dark mode support */
+[data-theme='dark'] .wysimark-editor {
+  --wysimark-bg: #111827;
+  --wysimark-text: #f3f4f6;
+  --wysimark-border: #374151;
+  --wysimark-toolbar-bg: #1f2937;
+  --wysimark-hover-bg: #374151;
+}
+
+/* Light mode variables */
+.wysimark-editor {
+  --wysimark-bg: #ffffff;
+  --wysimark-text: #111827;
+  --wysimark-border: #e5e7eb;
+  --wysimark-toolbar-bg: #f9fafb;
+  --wysimark-hover-bg: #f3f4f6;
+}

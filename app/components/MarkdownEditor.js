@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MdEditor } from 'md-editor-rt';
-import 'md-editor-rt/lib/style.css';
-import '../mdeditor.css';
-import { useTheme } from 'next-themes';
+import dynamic from 'next/dynamic';
+
+// Import WysimarkWrapper with no SSR
+const WysimarkWrapper = dynamic(() => import('./WysimarkWrapper'), {
+  ssr: false
+});
 
 const MarkdownEditor = ({ file, onSave }) => {
-  const { theme } = useTheme();
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
@@ -15,7 +16,30 @@ const MarkdownEditor = ({ file, onSave }) => {
   const [version, setVersion] = useState(file.version || 1);
   const [errorMessage, setErrorMessage] = useState('');
   const [mounted, setMounted] = useState(false);
-  const [editorId] = useState(`editor-${Math.random().toString(36).substring(7)}`);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleImageUpload = useCallback(async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setErrorMessage('Failed to upload image. Please try again.');
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -40,8 +64,13 @@ const MarkdownEditor = ({ file, onSave }) => {
     fetchContent();
   }, [file.path, mounted]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
+    if (isSaving) return;
+    
     try {
+      setIsSaving(true);
+      setErrorMessage('');
+
       if (!content || content.trim() === '') {
         setErrorMessage('Cannot save empty content');
         return;
@@ -52,7 +81,7 @@ const MarkdownEditor = ({ file, onSave }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           path: file.path,
-          content: content,
+          content,
           title: title || file.title,
           isPublic,
           slug: slug || file.slug,
@@ -68,48 +97,25 @@ const MarkdownEditor = ({ file, onSave }) => {
       const updatedFile = { ...file, title, isPublic, slug, version };
       onSave(updatedFile);
       setVersion(prevVersion => prevVersion + 1);
-      setErrorMessage('');
     } catch (error) {
       console.error('Error saving file:', error);
       setErrorMessage(`An error occurred while saving the file: ${error.message}`);
+    } finally {
+      setIsSaving(false);
     }
-  };
+  }, [content, file, title, isPublic, slug, version, onSave, isSaving]);
 
-  const onUploadImg = useCallback(async (files, callback) => {
-    try {
-      const uploadPromises = files.map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
 
-        const response = await fetch('/api/upload-image', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to upload image');
-        }
-
-        const data = await response.json();
-        return {
-          url: data.url,
-          alt: file.name,
-          title: file.name
-        };
-      });
-
-      const uploadedFiles = await Promise.all(uploadPromises);
-      callback(uploadedFiles);
-    } catch (error) {
-      console.error('Error uploading images:', error);
-      setErrorMessage('Failed to upload images. Please try again.');
-    }
-  }, []);
-
-  const onError = useCallback((err) => {
-    console.error('Editor error:', err);
-    setErrorMessage(`Editor error: ${err.message}`);
-  }, []);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave]);
 
   if (!mounted) {
     return <div>Loading editor...</div>;
@@ -150,56 +156,26 @@ const MarkdownEditor = ({ file, onSave }) => {
           </div>
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+            disabled={isSaving}
+            className={`flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 ${
+              isSaving ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             style={{ fontSize: '1.5rem' }}
-            title="Save"
+            title={`Save (Ctrl+S)${isSaving ? ' - Saving...' : ''}`}
           >
-            <i className="ri-save-line"></i>
+            <i className={`ri-save-line ${isSaving ? 'animate-pulse' : ''}`}></i>
           </button>
         </div>
       </div>
       {errorMessage && (
         <div className="text-red-500 mb-4">{errorMessage}</div>
       )}
-      <div className="flex-grow" style={{ minHeight: 'calc(100vh - 300px)' }}>
-        <MdEditor
-          editorId={editorId}
-          modelValue={content}
+      <div className="flex-grow">
+        <WysimarkWrapper
+          value={content}
           onChange={setContent}
-          language="en-US"
-          theme={theme === 'dark' ? 'dark' : 'light'}
-          previewTheme='github'
-          onSave={handleSave}
-          onUploadImg={onUploadImg}
-          onError={onError}
-          previewOnly={false}
-          showCodeRowNumber={true}
-          autoFocus={false}
-          noMacButtons={true}
-          showCodeBlockLang={true}
-          toolbars={[
-            'bold', 'underline', 'italic', '-',
-            'strikeThrough', 'title', 'sub', 'sup',
-            'quote', 'unorderedList', 'orderedList',
-            'task', '-', 'codeRow', 'code', 'link',
-            'image', 'table', '-', 'revoke', 'next',
-            'save', '=', 'pageFullscreen', 'fullscreen',
-            'preview', 'htmlPreview', 'catalog'
-          ]}
-          style={{
-            height: '100%',
-            borderRadius: '6px',
-          }}
-          preview={{
-            theme: 'github',
-            hljs: {
-              lineNumbers: true
-            }
-          }}
-          defToolbars={[]}
-          formatCopiedText={(text) => text}
-          inputBoxWitdh="50%"
-          scrollAuto={true}
+          onUpload={handleImageUpload}
+          className="wysimark-editor"
         />
       </div>
     </div>
