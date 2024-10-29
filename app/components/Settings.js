@@ -4,11 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import ThemingSettings from './settings.theming';
 import LicensingSettings from './settings.licensing';
+import UserManagementSettings from './settings.users';
 
 const Settings = () => {
   const [expandedSections, setExpandedSections] = useState({
     theming: true,
-    licensing: true
+    licensing: true,
+    users: true
   });
 
   const toggleSection = (section) => {
@@ -41,6 +43,22 @@ const Settings = () => {
           <i className="ri-arrow-left-line"></i>
           Back to Home
         </Link>
+      </div>
+
+      {/* User Management Section */}
+      <div className="mb-4">
+        <div className="rounded-lg overflow-hidden border border-gray-700">
+          <SectionHeader 
+            title="User Management"
+            isExpanded={expandedSections.users}
+            onToggle={() => toggleSection('users')}
+          />
+          <div className={`transition-all duration-200 ${
+            expandedSections.users ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}>
+            <UserManagementSettings />
+          </div>
+        </div>
       </div>
 
       {/* Theming Section */}

@@ -11,8 +11,6 @@ export default function UserButton({ user }) {
 
   if (!user) return null;
 
-  const avatarSrc = user.avatar || '/images/default-avatar.png';
-
   const handleLogout = async () => {
     await signOut({ redirect: false });
     router.push('/');
@@ -26,13 +24,19 @@ export default function UserButton({ user }) {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <Image
-          src={avatarSrc}
-          alt={user.name}
-          width={30}
-          height={30}
-          className="rounded-full _rounded-full"
-        />
+        {user.avatar ? (
+          <Image
+            src={user.avatar}
+            alt={user.name}
+            width={30}
+            height={30}
+            className="rounded-full _rounded-full"
+          />
+        ) : (
+          <div className="h-[30px] w-[30px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            <i className="ri-user-line text-gray-500 dark:text-gray-400"></i>
+          </div>
+        )}
       </button>
 
       {isOpen && (
