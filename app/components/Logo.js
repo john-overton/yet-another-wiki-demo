@@ -2,7 +2,7 @@
 
 const Logo = () => {
   return (
-    <div className="text-lg font-medium m-2 flex items-center">
+    <div className="text-lg font-medium m-2">
       <span className="group relative mr-8">
         <span className="group-hover:opacity-0 transition-opacity">Y.</span>
         <span className="absolute left-0 scale-0 group-hover:scale-100 transition-transform origin-left">
