@@ -124,10 +124,10 @@ const CopyButton = ({ text }) => {
   return (
     <button
       onClick={handleCopy}
-      className={`absolute right-2 top-[calc(2.5rem+8px)] px-2 py-1 rounded text-sm transition-all duration-200 ${
+      className={`text-xs uppercase tracking-wider opacity-75 hover:opacity-100 hover:text-white transition-colors ml-4 ${
         copied
-          ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-          : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+          ? 'text-gray-300'
+          : 'text-gray-300'
       }`}
     >
       {copied ? 'Copied!' : 'Copy'}
@@ -137,17 +137,21 @@ const CopyButton = ({ text }) => {
 
 const CodeBlock = ({ children, language }) => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const code = children?.props?.children || '';
 
   return (
     <div className="relative not-prose">
       <div className="flex justify-between items-center bg-[#717171] dark:bg-[#1F2937] text-gray-300 px-4 py-2 rounded-t text-sm border-b border-gray-700">
         <span className="font-mono opacity-75">{language}</span>
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hover:text-white transition-colors text-xs uppercase tracking-wider opacity-75 hover:opacity-100"
-        >
-          {isCollapsed ? '▼ Show Code' : '▲ Hide Code'}
-        </button>
+        <div className="flex items-center">
+          <CopyButton text={code} />
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hover:text-white transition-colors text-xs uppercase tracking-wider opacity-75 hover:opacity-100 ml-4"
+          >
+            {isCollapsed ? '▼ Show Code' : '▲ Hide Code'}
+          </button>
+        </div>
       </div>
       <div className={`transition-all duration-200 ${isCollapsed ? 'h-0 overflow-hidden' : ''}`}>
         {children}
@@ -196,7 +200,6 @@ const MarkdownRenderer = ({ content }) => {
             return (
               <CodeBlock language={language}>
                 <pre className="relative group font-mono text-sm leading-relaxed !rounded-t-none !mt-0">
-                  <CopyButton text={code} />
                   {children}
                 </pre>
               </CodeBlock>
