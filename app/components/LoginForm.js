@@ -9,12 +9,14 @@ import StandardizedComponent, {
   StandardizedLink,
   StandardizedForm
 } from './StandardizedComponent';
+import SecretQuestionsForm from './SecretQuestionsForm';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [needsSecurityQuestions, setNeedsSecurityQuestions] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -32,19 +34,22 @@ export default function LoginForm() {
       if (result.error) {
         setError('Invalid email or password');
       } else {
-        // Update last login
-        const updateResponse = await fetch('/api/auth/update-last-login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // Check if user has security questions set up
+        const userResponse = await fetch('/api/auth/me');
+        const userData = await userResponse.json();
 
-        if (!updateResponse.ok) {
-          console.error('Failed to update last login');
+        if (!userData.secret_question_1_id || !userData.secret_question_2_id || !userData.secret_question_3_id) {
+          setNeedsSecurityQuestions(true);
+        } else {
+          // Update last login and redirect
+          await fetch('/api/auth/update-last-login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          router.push('/');
         }
-
-        router.push('/');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
@@ -52,6 +57,14 @@ export default function LoginForm() {
 
     setLoading(false);
   };
+
+  const handleSecurityQuestionsComplete = () => {
+    router.push('/');
+  };
+
+  if (needsSecurityQuestions) {
+    return <SecretQuestionsForm onComplete={handleSecurityQuestionsComplete} />;
+  }
 
   return (
     <StandardizedComponent title="Login" error={error}>

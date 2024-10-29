@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import UserModal from './settings.user.usermodal';
+import AddUserModal from './settings.user.addmodal';
 
 const UserManagementSettings = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,6 +110,31 @@ const UserManagementSettings = () => {
     }
   };
 
+  const handleAddSubmit = async (e, newUserData) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/users/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUserData),
+      });
+
+      if (response.ok) {
+        setMessage('User created successfully');
+        loadUsers();
+        setIsAddModalOpen(false);
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('Failed to create user');
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+      setMessage('Failed to create user');
+    }
+  };
+
   const Pagination = () => (
     <div className="flex items-center justify-between mt-4">
       <div className="flex items-center gap-2">
@@ -150,7 +177,10 @@ const UserManagementSettings = () => {
     <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">User Management</h2>
-        <button className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2">
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+        >
           <i className="ri-user-add-line"></i>
           Add User
         </button>
@@ -297,6 +327,12 @@ const UserManagementSettings = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleEditSubmit}
+      />
+
+      <AddUserModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddSubmit}
       />
     </div>
   );

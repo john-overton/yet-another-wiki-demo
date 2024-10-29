@@ -84,7 +84,8 @@ export default function RegisterForm() {
         body: JSON.stringify({ 
           name,
           email, 
-          password, 
+          password,
+          auth_type: 'local', // Changed from 'Email' to 'local'
           secretQuestions: selectedQuestions, 
           secretAnswers 
         }),
