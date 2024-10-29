@@ -3,15 +3,6 @@
   margin-top: 0;
 }
 
-/* Ensure proper dark mode support */
-[data-theme='dark'] .wysimark-editor {
-  --wysimark-bg: #111827;
-  --wysimark-text: #f3f4f6;
-  --wysimark-border: #374151;
-  --wysimark-toolbar-bg: #1f2937;
-  --wysimark-hover-bg: #374151;
-}
-
 /* Light mode variables */
 .wysimark-editor {
   --wysimark-bg: #ffffff;
@@ -19,4 +10,42 @@
   --wysimark-border: #e5e7eb;
   --wysimark-toolbar-bg: #f9fafb;
   --wysimark-hover-bg: #f3f4f6;
+}
+
+/* Dark mode support - match the app's dark mode selector */
+.dark .wysimark-editor {
+  --wysimark-bg: #111827;
+  --wysimark-text: #f3f4f6;
+  --wysimark-border: #374151;
+  --wysimark-toolbar-bg: #1f2937;
+  --wysimark-hover-bg: #374151;
+}
+
+/* Ensure the editor uses the theme variables */
+.wysimark-editor {
+  background-color: var(--wysimark-bg) !important;
+  color: var(--wysimark-text) !important;
+}
+
+.wysimark-editor .wysimark-toolbar {
+  background-color: var(--wysimark-toolbar-bg) !important;
+  border-color: var(--wysimark-border) !important;
+}
+
+.wysimark-editor .wysimark-toolbar button:hover {
+  background-color: var(--wysimark-hover-bg) !important;
+}
+
+.wysimark-editor .wysimark-toolbar button {
+  color: var(--wysimark-text) !important;
+}
+
+.wysimark-editor pre {
+  background-color: var(--wysimark-toolbar-bg) !important;
+  border-color: var(--wysimark-border) !important;
+}
+
+.wysimark-editor code {
+  color: var(--wysimark-text) !important;
+  background-color: var(--wysimark-toolbar-bg) !important;
 }
