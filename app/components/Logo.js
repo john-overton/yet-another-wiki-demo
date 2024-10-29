@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import './logo.css';
 
 const Logo = () => {
   const [displayText, setDisplayText] = useState('');
+  const { resolvedTheme } = useTheme();
   
   const words = [
     'Y.A.W.',
@@ -40,7 +42,7 @@ const Logo = () => {
           i++;
           offset = 0;
           if (i >= words.length) {
-            i = 0; // Reset to first word to create loop
+            i = 0;
           }
         }
       }
@@ -61,12 +63,12 @@ const Logo = () => {
 
   return (
     <Link href="/">
-      <div className="text-lg font-medium m-2 flex flex-col">
-        <span className="flex">
-          <span className="mr-2">{`>`}</span>
-          <span dangerouslySetInnerHTML={{ __html: displayText }} />
-          <span className="animate-blink">_</span>
-        </span>
+      <div className="text-lg font-medium m-2">
+        <div className={`console-text text-sm inline-flex items-center ${resolvedTheme === 'dark' ? 'console-text-dark' : 'console-text-light'}`}>
+        <span className="mr-2">{'wikis\\yaw>'}</span>
+          <span className="text-gray-100" dangerouslySetInnerHTML={{ __html: displayText }} />
+          <span className="animate-blink text-gray-100">_</span>
+        </div>
       </div>
     </Link>
   );
