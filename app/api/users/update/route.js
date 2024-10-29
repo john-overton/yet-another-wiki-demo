@@ -6,15 +6,30 @@ const prisma = new PrismaClient();
 export async function PUT(request) {
   try {
     const data = await request.json();
-    const { id, name, email, is_active, password } = data;
+    const { id, name, email, is_active, password, role, avatar } = data;
+
+    // Validate role
+    const validRoles = ['User', 'PowerUser', 'Admin'];
+    if (role && !validRoles.includes(role)) {
+      return Response.json(
+        { error: 'Invalid role specified' },
+        { status: 400 }
+      );
+    }
 
     // Prepare update data
     const updateData = {
       name,
       email,
       is_active,
+      role,
       updated_at: new Date(),
     };
+
+    // Only include avatar if it's provided
+    if (avatar) {
+      updateData.avatar = avatar;
+    }
 
     // Only hash and update password if it's provided
     if (password) {
@@ -23,7 +38,7 @@ export async function PUT(request) {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data: updateData,
       select: {
         id: true,
