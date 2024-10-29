@@ -18,7 +18,7 @@ const ThemingSettings = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch('/api/settings/json-config/theming.json');
+        const response = await fetch('/api/settings/theming');
         if (response.ok) {
           const settings = await response.json();
           setFont(settings.font);
@@ -36,7 +36,7 @@ const ThemingSettings = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch('/api/settings/json-config/theming.json', {
+      const response = await fetch('/api/settings/theming', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const ThemingSettings = () => {
   };
 
   return (
-    <div className="mb-8 p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+    <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Theming</h2>
         <button

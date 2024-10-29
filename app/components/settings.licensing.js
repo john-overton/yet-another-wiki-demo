@@ -11,7 +11,7 @@ const LicensingSettings = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch('/api/settings/json-config/licensing.json');
+        const response = await fetch('/api/settings/licensing');
         if (response.ok) {
           const settings = await response.json();
           setEmail(settings.email);
@@ -27,7 +27,7 @@ const LicensingSettings = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch('/api/settings/json-config/licensing.json', {
+      const response = await fetch('/api/settings/licensing', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const LicensingSettings = () => {
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+    <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Licensing</h2>
         <button
