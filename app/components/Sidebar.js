@@ -519,13 +519,22 @@ const Sidebar = ({
             ))}
           </ul>
           {isAuthenticated && (
-            <button 
-              onClick={onTrashBinClick}
-              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <i className="ri-delete-bin-7-line mr-2"></i>
-              <span>Trash Bin</span>
-            </button>
+            <>
+              <Link 
+                href="/settings"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"
+              >
+                <i className="ri-settings-3-line mr-2"></i>
+                <span>Settings</span>
+              </Link>
+              <button 
+                onClick={onTrashBinClick}
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <i className="ri-delete-bin-7-line mr-2"></i>
+                <span>Trash Bin</span>
+              </button>
+            </>
           )}
         </div>
       </div>

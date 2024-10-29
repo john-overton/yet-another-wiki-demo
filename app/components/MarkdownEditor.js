@@ -15,8 +15,27 @@ const MarkdownEditor = ({ file, onSave }) => {
   const [slug, setSlug] = useState(file.slug);
   const [version, setVersion] = useState(file.version || 1);
   const [errorMessage, setErrorMessage] = useState('');
+  const [slugError, setSlugError] = useState('');
   const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const validateSlug = (value) => {
+    // Only allow lowercase letters, numbers, and hyphens
+    const slugRegex = /^[a-z0-9-]*$/;
+    if (!slugRegex.test(value)) {
+      setSlugError('Slug can only contain lowercase letters, numbers, and hyphens');
+      return false;
+    }
+    setSlugError('');
+    return true;
+  };
+
+  const handleSlugChange = (e) => {
+    const newSlug = e.target.value.toLowerCase();
+    if (validateSlug(newSlug)) {
+      setSlug(newSlug);
+    }
+  };
 
   const handleImageUpload = useCallback(async (file) => {
     try {
@@ -76,6 +95,10 @@ const MarkdownEditor = ({ file, onSave }) => {
         return;
       }
 
+      if (!validateSlug(slug)) {
+        return;
+      }
+
       const response = await fetch('/api/update-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -84,8 +107,9 @@ const MarkdownEditor = ({ file, onSave }) => {
           content,
           title: title || file.title,
           isPublic,
-          slug: slug || file.slug,
+          slug: slug || file.title,
           version,
+          oldPath: file.path // Send the old path for renaming
         }),
       });
 
@@ -94,7 +118,7 @@ const MarkdownEditor = ({ file, onSave }) => {
         throw new Error(errorData.error || 'Failed to save file');
       }
 
-      const updatedFile = { ...file, title, isPublic, slug, version };
+      const updatedFile = { ...file, title, isPublic, slug, version, path: `${slug}.md` };
       onSave(updatedFile);
       setVersion(prevVersion => prevVersion + 1);
     } catch (error) {
@@ -138,9 +162,12 @@ const MarkdownEditor = ({ file, onSave }) => {
           <input
             type="text"
             value={slug || ''}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={handleSlugChange}
             className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
+          {slugError && (
+            <div className="text-red-500 text-sm mt-1">{slugError}</div>
+          )}
         </div>
         <div className="flex items-center justify-between">
           <div className="flex gap-2">

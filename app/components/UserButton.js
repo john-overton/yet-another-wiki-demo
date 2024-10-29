@@ -15,7 +15,7 @@ export default function UserButton({ user }) {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    router.push('/login'); // This now uses the new App Router
+    router.push('/');
   };
 
   return (

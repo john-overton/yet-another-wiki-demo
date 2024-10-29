@@ -108,11 +108,19 @@ const TrashBin = () => {
     }
   };
 
-  const handlePermanentDelete = async (path) => {
+  const handlePermanentDelete = async (e, path) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Close preview if the deleted item was being previewed
     if (previewItem?.path === path) {
       setPreviewContent(null);
       setPreviewItem(null);
     }
+
+    // Optimistically remove the item from the UI
+    setDeletedItems(prev => prev.filter(item => item.path !== path));
+    setSelectedItems(prev => prev.filter(item => item !== path));
 
     try {
       const response = await fetch('/api/delete-item', {
@@ -126,14 +134,14 @@ const TrashBin = () => {
         }),
       });
 
-      if (response.ok) {
-        fetchDeletedItems();
-        setSelectedItems(prev => prev.filter(item => item !== path));
-      } else {
+      if (!response.ok) {
+        // If the deletion failed, revert the optimistic update
         console.error('Failed to permanently delete item');
+        fetchDeletedItems(); // Refresh the list to restore the item
       }
     } catch (error) {
       console.error('Error permanently deleting item:', error);
+      fetchDeletedItems(); // Refresh the list to restore the item
     }
   };
 
@@ -232,7 +240,7 @@ const TrashBin = () => {
                     <i className="ri-eye-line"></i>
                   </button>
                   <button
-                    onClick={() => handlePermanentDelete(item.path)}
+                    onClick={(e) => handlePermanentDelete(e, item.path)}
                     className="text-red-500 hover:text-red-700"
                     title={`Permanently Delete ${item.title}`}
                     aria-label={`Permanently Delete ${item.title}`}

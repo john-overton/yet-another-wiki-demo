@@ -12,22 +12,11 @@
     {
       "slug": "code-examples",
       "title": "Code Examples",
-      "path": "item3.md",
+      "path": "code-examples.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-29T15:56:20.105Z",
-      "children": [
-        {
-          "slug": "new-item",
-          "title": "New Item",
-          "path": "new-item.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-24T19:30:28.391Z",
-          "children": [],
-          "deleted": true
-        }
-      ]
+      "lastModified": "2024-10-29T19:35:28.370Z",
+      "children": []
     },
     {
       "slug": "getting-started",
@@ -37,16 +26,6 @@
       "version": 1,
       "lastModified": "2024-10-20T20:08:16.526Z",
       "children": [
-        {
-          "slug": "configuration2456",
-          "title": "Configuration23",
-          "path": "configuration.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-24T18:44:16.115Z",
-          "children": [],
-          "deleted": true
-        },
         {
           "slug": "installation",
           "title": "Installation",
@@ -66,15 +45,6 @@
           "children": []
         }
       ]
-    },
-    {
-      "slug": "item2",
-      "title": "Item2",
-      "path": "item2.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-10-24T14:43:42.296Z",
-      "children": []
     }
   ]
 }

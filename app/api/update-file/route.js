@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function POST(request) {
-  const { path: filePath, content, title, isPublic, slug, version } = await request.json();
+  const { path: filePath, content, title, isPublic, slug, version, oldPath } = await request.json();
 
   if (!filePath || title === undefined || isPublic === undefined || slug === undefined) {
     return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
@@ -18,6 +18,7 @@ export async function POST(request) {
 
     // Normalize the incoming file path to remove any 'app/docs/' prefix
     const normalizedFilePath = filePath.replace(/^(app\/docs\/)?/, '');
+    const newFilePath = `${slug}.md`;
     console.log('Normalized file path:', normalizedFilePath); // Debug log
 
     const updateInStructure = async (items) => {
@@ -35,14 +36,27 @@ export async function POST(request) {
           item.title = title;
           item.isPublic = isPublic;
           item.slug = slug;
+          item.path = newFilePath;
           item.lastModified = new Date().toISOString();
           item.version = version || item.version || 1;
           
-          // Update file content - ensure we save in app/docs directory
-          const fullPath = path.join(process.cwd(), 'app', 'docs', normalizedFilePath);
-          console.log('Writing file to:', fullPath); // Debug log
-          await fs.writeFile(fullPath, content, 'utf8');
+          // Handle file renaming if slug changed
+          const oldFullPath = path.join(process.cwd(), 'app', 'docs', normalizedFilePath);
+          const newFullPath = path.join(process.cwd(), 'app', 'docs', newFilePath);
 
+          if (oldFullPath !== newFullPath) {
+            // Rename the file if it exists
+            try {
+              await fs.access(oldFullPath);
+              await fs.rename(oldFullPath, newFullPath);
+            } catch (error) {
+              // If old file doesn't exist, just create the new one
+              console.log('Old file not found, creating new file');
+            }
+          }
+
+          // Write content to the new path
+          await fs.writeFile(newFullPath, content, 'utf8');
           return true;
         }
         if (item.children && item.children.length > 0) {
@@ -60,7 +74,7 @@ export async function POST(request) {
       metaData.pages.push({
         slug,
         title,
-        path: normalizedFilePath,
+        path: newFilePath,
         isPublic,
         version: version || 1,
         lastModified: new Date().toISOString(),
@@ -68,7 +82,7 @@ export async function POST(request) {
       });
 
       // Create the new file - ensure we save in app/docs directory
-      const fullPath = path.join(process.cwd(), 'app', 'docs', normalizedFilePath);
+      const fullPath = path.join(process.cwd(), 'app', 'docs', newFilePath);
       console.log('Creating new file at:', fullPath); // Debug log
       
       // Ensure directory exists

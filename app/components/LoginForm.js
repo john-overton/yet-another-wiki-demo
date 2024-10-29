@@ -44,7 +44,7 @@ export default function LoginForm() {
           console.error('Failed to update last login');
         }
 
-        router.push('/success');
+        router.push('/');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
