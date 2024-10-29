@@ -9,7 +9,7 @@ import MarkdownEditor from './MarkdownEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
-import TrashBinPage from '../trash-bin/page';
+import TrashBin from './TrashBin';
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
@@ -275,7 +275,7 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {isTrashBinVisible ? (
-              <TrashBinPage />
+              <TrashBin />
             ) : (
               selectedFile && !isEditing ? (
                 <MarkdownRenderer content={fileContent} />

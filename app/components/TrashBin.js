@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import MarkdownRenderer from '../components/MarkdownRenderer';
+import MarkdownRenderer from './MarkdownRenderer';
 
-const TrashBinPage = () => {
+const TrashBin = () => {
   const [deletedItems, setDeletedItems] = useState([]);
   const [availableParents, setAvailableParents] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -275,4 +275,4 @@ const TrashBinPage = () => {
   );
 };
 
-export default TrashBinPage;
+export default TrashBin;
