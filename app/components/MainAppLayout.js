@@ -9,6 +9,7 @@ import MarkdownEditor from './MarkdownEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
+import TrashBinPage from '../trash-bin/page';
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
@@ -17,6 +18,7 @@ const MainAppLayout = () => {
   const [isTocVisible, setIsTocVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isTrashBinVisible, setIsTrashBinVisible] = useState(false);
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -94,6 +96,7 @@ const MainAppLayout = () => {
       if (file && (file.isPublic || session)) {
         setSelectedFile(file);
         loadFileContent(file.path);
+        setIsTrashBinVisible(false);
       } else if (!file || (!file.isPublic && !session)) {
         router.push('/');
       }
@@ -102,6 +105,7 @@ const MainAppLayout = () => {
       if (homeFile) {
         setSelectedFile(homeFile);
         loadFileContent(homeFile.path);
+        setIsTrashBinVisible(false);
       }
     }
   }, [params, fileStructure, loadFileContent, session, router, findFileBySlug]);
@@ -111,6 +115,7 @@ const MainAppLayout = () => {
       setSelectedFile(file);
       loadFileContent(file.path);
       router.push(`/${file.slug}`, undefined, { shallow: true });
+      setIsTrashBinVisible(false);
     }
   }, [router, session, loadFileContent]);
 
@@ -137,11 +142,6 @@ const MainAppLayout = () => {
     try {
       const response = await fetch('/api/delete-item', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path, type }),
-      });
-      if (response.ok) {
-        await fetchFileStructure();
         if (selectedFile && selectedFile.path === path) {
           router.push('/');
         }
