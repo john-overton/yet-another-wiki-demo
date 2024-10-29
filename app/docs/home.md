@@ -1,107 +1,132 @@
-# Welcome to Yet Another Wiki\!
+# Welcome to Yet Another Wiki!
 
-\#\#Code Block  This is a new change
+Your centralized knowledge hub for creating, organizing, and sharing documentation with the simplicity and power of Markdown. Transform your ideas into beautifully formatted content while keeping everything organized and accessible.
 
-```text
- POST /home 200 in 43ms
- GET /api/auth/session 200 in 14ms
-Reading file from: C:\Projects\yet-another-wiki\app\docs\home.mdx
- GET /api/file-content?path=home.mdx 200 in 7ms
-Starting MDX bundling...
-MDX bundling successful
- POST /home 200 in 52ms
-```
+## Interactive Features
 
-## Table
+### Dynamic Navigation
 
-|stuff|things|other things|
-|---|---|---|
-|does this work|i think so|this needs to be edited|
-|hmm|its|dark|
+- **Table of Contents**: A dynamic table of contents is automatically generated from your page headers, making navigation effortless
+- **Magnet Links**: Click the magnet icon next to any header to get a direct link to that section
+- **Hierarchical Sidebar**: Organize your content with a drag-and-drop sidebar that supports nested pages and folders
+- **Edit Button**: Easily edit any page by clicking the edit button in the top-right corner
 
-Hello and welcome to Yet Another Wiki\! We\'re excited to have you here\. This platform is designed to be your go\-to place for creating\, organizing\, and sharing knowledge using the power of MDX \(Markdown \+ JSX\)\.
+### Sidebar Organization
 
-## What You Can Do with Yet Another Wiki
+The sidebar provides powerful organization features:
+- Drag and drop pages to reorder them
+- Create nested hierarchies by dragging pages into folders
+- Add new pages with the '+' button
+- Delete pages with the trash icon
+- Expand/collapse folders to manage your view
 
-Here\'s a quick overview of what you can accomplish\:
+## Markdown Magic
 
-1. **Create Rich Content**\: MDX allows you to combine the simplicity of Markdown with the power of JSX components\.
+Markdown makes documentation a breeze! Here's what you can do:
 
-2. **Organize Your Knowledge**\: Easily create a hierarchical structure for your documentation\.
+### Text Formatting
 
-3. **Collaborate**\: Share your wiki with others and work together to build a knowledge base\.
+- **Bold** text using `**text**`
+- *Italic* text using `*text*`
+- ~~Strikethrough~~ using `~~text~~`
+- `Inline code` using backticks
+- [Links](https://example.com) using `[text](url)`
 
-4. **Customize**\: Tailor the appearance and functionality of your wiki pages\.
+### Lists
 
-## Working with MDX Files
+1. Ordered lists
+2. Are easy
+3. To create
 
-MDX is a powerful format that extends Markdown with JSX capabilities\. Here\'s what you need to know\:
-
-### Basic Markdown Syntax
-
-You can use all the standard Markdown syntax\:
-
-- **Headers**\: Use `#` for h1\, `##` for h2\, etc\.
-
-- **Lists**\: Create bullet points with `-` or `*`\, and numbered lists with `1.`\, `2.`\, etc\.
-
-- **Emphasis**\: Use `*italic*` for _italic_ and `**bold**` for **bold**\.
-
-- **Links**\: Create links with `[text](url)`\.
-
-### JSX Components
-
-You can also use custom React components directly in your MDX\:
-
-```jsx
-<UserCard name="John Doe" role="Admin" />
-```
+- Unordered lists
+- Use simple
+- Dash or asterisk
 
 ### Code Blocks
 
-Code blocks are automatically highlighted\:
-
 ```javascript
-function greet(name) {
-  console.log(`Hello, ${name}!`);
+// Syntax highlighted code blocks
+function greet() {
+    return "Hello, Wiki!";
 }
 ```
 
-## Managing Your Wiki
+### Tables
 
-### Adding Files
+| Feature | Support | Notes |
+|---------|---------|-------|
+| Tables | ✅ | Easy to create |
+| Lists | ✅ | Ordered and unordered |
+| Code Blocks | ✅ | With syntax highlighting |
 
-To add a new page to your wiki\:
+### Quotes
 
-1. Create a new `.mdx` file in the `app/docs/` directory\.
+> Knowledge is power
+> 
+> > But sharing knowledge is even more powerful
+> >
+> > > - Yet Another Wiki
 
-2. Start writing your content using Markdown and MDX syntax\.
+## File Organization
 
-3. The file will automatically appear in your wiki\'s structure\.
+Your wiki content is organized in the `app/docs/` directory. Here's how to manage it:
 
-### Removing Files
+### Creating Content
 
-To remove a page\:
+1. Create `.md` files in the `app/docs/` directory
+2. Use descriptive filenames (e.g., `getting-started.md`)
+3. Start with a clear title using `# Title`
+4. Add your content using Markdown syntax
 
-1. Simply delete the `.mdx` file from the `app/docs/` directory\.
-
-2. The page will be automatically removed from your wiki\'s structure\.
-
-### Organizing Files
-
-You can create subdirectories within `app/docs/` to organize your content hierarchically\. For example\:
+### Directory Structure
 
 ```plaintext
 app/docs/
-├── getting-started.mdx
-├── advanced-topics/
-│   ├── customization.mdx
-│   └── api-integration.mdx
-└── tutorials/
-    ├── first-steps.mdx
-    └── advanced-usage.mdx
+├── home.md
+├── getting-started.md
+├── guides/
+│   ├── basics.md
+│   └── advanced.md
+└── reference/
+    ├── markdown-syntax.md
+    └── best-practices.md
 ```
 
-## Start Exploring\!
+## Advanced Features
 
-Now that you know the basics\, start exploring and creating your own wiki pages\. Remember\, the power of Yet Another Wiki lies in its flexibility and ease of use\. Happy documenting\!
+### Task Lists
+
+- [x] Create documentation
+- [x] Add formatting examples
+- [ ] Share with team
+- [ ] Gather feedback
+
+### Images
+
+Include images using: `![Alt text](image-path.png)`
+
+### Horizontal Rules
+
+Create visual separators with three dashes:
+
+---
+
+### Footnotes
+
+Add footnotes to your content[^1]
+
+[^1]: This is a footnote!
+
+## Tips & Tricks
+
+1. **Use Headers Wisely**: Structure your content with clear hierarchy for better table of contents
+2. **Keep it Simple**: Markdown shines in its simplicity
+3. **Preview Often**: Check how your content looks while writing
+4. **Use References**: Link between pages to create a connected knowledge base
+5. **Stay Consistent**: Maintain a consistent formatting style
+6. **Leverage Magnet Links**: Share direct links to specific sections using the magnet icon
+7. **Organize Thoughtfully**: Use the sidebar's hierarchy to create logical content groupings
+
+## Ready to Start?
+
+Begin your documentation journey by clicking the edit button to modify this page or creating a new page using the sidebar. Remember, great documentation is clear, concise, and well-organized. Happy documenting!
