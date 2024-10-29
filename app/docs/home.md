@@ -51,6 +51,8 @@ function greet() {
 }
 ```
 
+Check out our [Code Examples](/code-examples) page for more comprehensive examples in JavaScript, C, HTML, SQL, and other languages!
+
 ### Tables
 
 | Feature | Support | Notes |

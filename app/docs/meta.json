@@ -21,12 +21,12 @@
       ]
     },
     {
-      "slug": "item3",
-      "title": "Item3",
+      "slug": "code-examples",
+      "title": "Code Examples",
       "path": "item3.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-20T13:12:13.164Z",
+      "lastModified": "2024-10-29T15:56:20.105Z",
       "children": []
     },
     {
