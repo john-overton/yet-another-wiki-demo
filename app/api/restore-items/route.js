@@ -48,28 +48,33 @@ export async function POST(request) {
 
       if (!itemToMove) return false;
 
-      const addItem = (items) => {
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].path === targetPath) {
-            if (!items[i].children) items[i].children = [];
-            items[i].children.push(itemToMove);
-            return true;
+      if (target === 'root') {
+        // Simply add the item at the root level (same level as 'home')
+        metaData.pages.push(itemToMove);
+      } else {
+        // Add to specific target
+        const addItem = (items) => {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].path === targetPath) {
+              if (!items[i].children) items[i].children = [];
+              items[i].children.push(itemToMove);
+              return true;
+            }
+            if (items[i].children && addItem(items[i].children)) {
+              return true;
+            }
           }
-          if (items[i].children && addItem(items[i].children)) {
-            return true;
-          }
-        }
-        return false;
-      };
+          return false;
+        };
+        addItem(items);
+      }
 
-      return target === 'root' ? items.push(itemToMove) : addItem(items);
+      return true;
     };
 
     items.forEach(itemPath => {
       restoreItem(metaData.pages, itemPath);
-      if (target !== 'root') {
-        moveItem(metaData.pages, itemPath, target);
-      }
+      moveItem(metaData.pages, itemPath, target);
     });
 
     // Write updated meta data

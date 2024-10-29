@@ -260,9 +260,8 @@ const MainAppLayout = () => {
         </div>
         <button
           onClick={toggleSidebar}
-          className="fixed z-[1002] transition-all duration-300"
-          style={{ 
-            top: '9.5%', 
+          className="fixed z-[1002] top-24 transition-all duration-300"
+          style={{
             transform: 'translateY(-55%)',
             left: isSidebarVisible ? '15.25rem' : '0'
           }}

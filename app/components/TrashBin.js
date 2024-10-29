@@ -1,8 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import MarkdownRenderer from './MarkdownRenderer';
+import { Open_Sans } from 'next/font/google';
+
+const openSans = Open_Sans({
+    subsets: ['latin'],
+    display: 'swap',
+  });
 
 const TrashBin = () => {
   const [deletedItems, setDeletedItems] = useState([]);
@@ -149,11 +154,11 @@ const TrashBin = () => {
               <select 
                 value={restoreTarget}
                 onChange={(e) => setRestoreTarget(e.target.value)}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 font-sans"
+                className={`w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 ${openSans.className}`}
               >
-                <option value="root" className="font-sans">Root (Top Level)</option>
+                <option value="root">Root (Top Level)</option>
                 {availableParents.map(item => (
-                  <option key={item.path} value={item.path} className="font-sans">
+                  <option key={item.path} value={item.path}>
                     {item.title}
                   </option>
                 ))}
@@ -264,13 +269,6 @@ const TrashBin = () => {
           </div>
         </div>
       )}
-
-      <Link href="/" className="block mt-4">
-        <button className="bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 px-4 py-2 rounded-lg flex items-center gap-2">
-          <i className="ri-arrow-left-circle-line" style={{ fontSize: '1.2rem' }}></i>
-          Back to Home
-        </button>
-      </Link>
     </div>
   );
 };

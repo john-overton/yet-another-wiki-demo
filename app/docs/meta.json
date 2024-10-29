@@ -7,18 +7,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-29T15:29:19.229Z",
-      "children": [
-        {
-          "slug": "item2",
-          "title": "Item2",
-          "path": "item2.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-10-24T14:43:42.296Z",
-          "children": [],
-          "deleted": true
-        }
-      ]
+      "children": []
     },
     {
       "slug": "code-examples",
@@ -27,17 +16,18 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-29T15:56:20.105Z",
-      "children": []
-    },
-    {
-      "slug": "new-item",
-      "title": "New Item",
-      "path": "new-item.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-10-24T19:30:28.391Z",
-      "children": [],
-      "deleted": true
+      "children": [
+        {
+          "slug": "new-item",
+          "title": "New Item",
+          "path": "new-item.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-24T19:30:28.391Z",
+          "children": [],
+          "deleted": true
+        }
+      ]
     },
     {
       "slug": "getting-started",
@@ -76,6 +66,15 @@
           "children": []
         }
       ]
+    },
+    {
+      "slug": "item2",
+      "title": "Item2",
+      "path": "item2.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-10-24T14:43:42.296Z",
+      "children": []
     }
   ]
 }
