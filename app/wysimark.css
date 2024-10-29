@@ -12,13 +12,27 @@
   --wysimark-hover-bg: #f3f4f6;
 }
 
-/* Dark mode support - match the app's dark mode selector */
-.dark .wysimark-editor {
+/* Dark mode support - using both theme class and data attribute */
+.dark .wysimark-editor,
+[data-theme='dark'] .wysimark-editor {
   --wysimark-bg: #111827;
   --wysimark-text: #f3f4f6;
   --wysimark-border: #374151;
-  --wysimark-toolbar-bg: #1f2937;
+  --wysimark-toolbar-bg: #1F2937;
   --wysimark-hover-bg: #374151;
+}
+
+/* Override default Wysimark CSS variables in dark mode */
+.dark,
+[data-theme='dark'] {
+  --shade-50: #1F2937 !important;
+  --shade-100: #1F2937 !important;
+  --shade-200: #374151 !important;
+  --shade-300: #4B5563 !important;
+  --code-block-bgcolor: #1F2937 !important;
+  --code-block-border-color: #374151 !important;
+  --inline-code-bgcolor: #1F2937 !important;
+  --inline-code-border-color: #374151 !important;
 }
 
 /* Ensure the editor uses the theme variables */
@@ -40,6 +54,7 @@
   color: var(--wysimark-text) !important;
 }
 
+/* Code block styling */
 .wysimark-editor pre {
   background-color: var(--wysimark-toolbar-bg) !important;
   border-color: var(--wysimark-border) !important;
@@ -48,4 +63,16 @@
 .wysimark-editor code {
   color: var(--wysimark-text) !important;
   background-color: var(--wysimark-toolbar-bg) !important;
+}
+
+/* Language selector styling */
+.wysimark-editor .wysimark-language-selector {
+  background-color: var(--wysimark-toolbar-bg) !important;
+  color: var(--wysimark-text) !important;
+  border-color: var(--wysimark-border) !important;
+}
+
+.wysimark-editor .wysimark-language-selector option {
+  background-color: var(--wysimark-bg) !important;
+  color: var(--wysimark-text) !important;
 }

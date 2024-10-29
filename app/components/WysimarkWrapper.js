@@ -3,6 +3,7 @@
 import React from 'react';
 import { Editable, useEditor } from "@wysimark/react";
 import { Open_Sans } from 'next/font/google';
+import { useTheme } from 'next-themes';
 import '../wysimark.css';
 
 const openSans = Open_Sans({
@@ -11,6 +12,8 @@ const openSans = Open_Sans({
 });
 
 const WysimarkWrapper = ({ value, onChange, onUpload, style, className }) => {
+  const { resolvedTheme } = useTheme();
+
   const editor = useEditor({
     minHeight: 'calc(100vh - 300px)',
     onUpload,
@@ -21,22 +24,23 @@ const WysimarkWrapper = ({ value, onChange, onUpload, style, className }) => {
       fontFamily: openSans.style.fontFamily,
       ...style
     },
-    // Match language support with MarkdownRenderer
-    codeBlockLanguages: [
-      'javascript',
-      'typescript',
-      'jsx',
-      'tsx',
-      'html',
-      'css',
-      'json',
-      'markdown',
-      'python',
-      'bash',
-      'sql',
-      'yaml',
-      'text'
-    ]
+    darkMode: resolvedTheme === 'dark',
+    // Explicitly define supported languages with their display names
+    codeBlockLanguages: {
+      javascript: 'JavaScript',
+      typescript: 'TypeScript',
+      jsx: 'JSX',
+      tsx: 'TSX',
+      html: 'HTML',
+      css: 'CSS',
+      json: 'JSON',
+      markdown: 'Markdown',
+      python: 'Python',
+      bash: 'Bash',
+      sql: 'SQL',
+      yaml: 'YAML',
+      text: 'Plain Text'
+    }
   });
 
   return (
