@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import './logo.css';
 
 const Logo = () => {
   const [displayText, setDisplayText] = useState('');
@@ -61,7 +62,11 @@ const Logo = () => {
   return (
     <Link href="/">
       <div className="text-lg font-medium m-2 flex flex-col">
-        <span dangerouslySetInnerHTML={{ __html: displayText }} />
+        <span className="flex">
+          <span className="mr-2">{`>`}</span>
+          <span dangerouslySetInnerHTML={{ __html: displayText }} />
+          <span className="animate-blink">_</span>
+        </span>
       </div>
     </Link>
   );
