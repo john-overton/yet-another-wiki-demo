@@ -8,7 +8,7 @@ const WysimarkWrapper = dynamic(() => import('./WysimarkWrapper'), {
   ssr: false
 });
 
-const MarkdownEditor = ({ file, onSave }) => {
+const MarkdownEditor = ({ file, onSave, onCancel }) => {
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
@@ -181,17 +181,27 @@ const MarkdownEditor = ({ file, onSave }) => {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Public</span>
             </label>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className={`flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 ${
-              isSaving ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            style={{ fontSize: '1.5rem' }}
-            title={`Save (Ctrl+S)${isSaving ? ' - Saving...' : ''}`}
-          >
-            <i className={`ri-save-line ${isSaving ? 'animate-pulse' : ''}`}></i>
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onCancel}
+              className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+              style={{ fontSize: '1.5rem' }}
+              title="Cancel"
+            >
+              <i className="ri-close-line"></i>
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 ${
+                isSaving ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              style={{ fontSize: '1.5rem' }}
+              title={`Save (Ctrl+S)${isSaving ? ' - Saving...' : ''}`}
+            >
+              <i className={`ri-save-line ${isSaving ? 'animate-pulse' : ''}`}></i>
+            </button>
+          </div>
         </div>
       </div>
       {errorMessage && (

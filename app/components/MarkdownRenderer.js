@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypePrismPlus from 'rehype-prism-plus';
@@ -33,6 +33,34 @@ const createHeadingComponent = (level) => {
     const text = typeof children === 'string' ? children : '';
     const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
     const Tag = level;
+
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            window.dispatchEvent(new CustomEvent('sectionInView', { 
+              detail: { id, text }
+            }));
+          }
+        },
+        { 
+          threshold: 0,
+          rootMargin: '-20px 0px -80% 0px'  // This focuses on the top 20% of the viewport
+        }
+      );
+
+      const element = document.getElementById(id);
+      if (element) {
+        observer.observe(element);
+      }
+
+      return () => {
+        if (element) {
+          observer.unobserve(element);
+        }
+      };
+    }, [id]);
+
     return (
       <Tag id={id} className={`${baseStyle} ${styles[level]}`} {...props}>
         {children}
