@@ -285,37 +285,29 @@ const MainAppLayout = () => {
           </div>
           {!isEditing && !isTrashBinVisible && (
             <>
-              <div className="fixed z-[1002] top-14 right-2 flex flex-col gap-4">
+              <div className="fixed z-[2010] border top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
                 {session && (
                   <button
                     onClick={toggleEdit}
-                    className={`p-2 rounded-full transition-colors duration-200
-                      ${theme === 'dark' 
-                        ? 'bg-primary text-white' 
-                        : 'text-black'}`}
+                    className="transition-colors duration-200"
                   >
                     <i 
-                      className="ri-edit-2-line bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm"
+                      className="ri-edit-2-line text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
                       style={{ fontSize: '1.5rem' }}
                     ></i>
                   </button>
                 )}
                 <button
                   onClick={toggleToc}
-                  className={`p-2 rounded-full transition-colors duration-200
-                    ${theme === 'dark' 
-                      ? 'bg-primary text-white' 
-                      : 'text-black'}`}
+                  className="transition-colors duration-200"
                 >
                   <i 
-                    className={`ri-${isTocVisible 
-                      ? 'arrow-right-double-line border shadow-lg border-gray-200 text-white hover:bg-gray-600 p-1 rounded-sm' 
-                      : 'list-unordered bg-white shadow-lg border border-gray-200 dark:text-white dark:bg-gray-800 text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm'}`}
+                    className={`ri-${isTocVisible ? 'list-unordered border bg-gray-300 p-1' : 'list-unordered p-1'} text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300`}
                     style={{ fontSize: '1.5rem' }}
                   ></i>
                 </button>
               </div>
-              <div className={`fixed z-[1001] right-0 transition-transform duration-300 ease-in-out ${isTocVisible ? 'translate-x-0' : 'translate-x-full'}`} style={{ top: session ? '7.5rem' : '3rem' }}>
+              <div className={`fixed z-[998] right-4 top-28 transition-opacity duration-300 ${isTocVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <TableOfContents source={fileContent} isVisible={isTocVisible} />
               </div>
             </>
