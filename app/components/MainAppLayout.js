@@ -246,15 +246,16 @@ const MainAppLayout = () => {
         </div>
         <button
           onClick={toggleSidebar}
-          className={`fixed z-[1002] top-16 transition-all duration-300 ${
-            isSidebarVisible 
-              ? 'left-[15rem]' 
-              : 'left-0'
-          }`}
+          className="fixed z-[1002] transition-all duration-300"
+          style={{ 
+            top: '15%', 
+            transform: 'translateY(-55%)',
+            left: isSidebarVisible ? '15.75rem' : '0'
+          }}
         >
           <i 
-            className={`ri-${isSidebarVisible ? 'contract-left-line' : 'contract-right-line'} bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-1 rounded-sm`}
-            style={{ fontSize: '1.5rem' }}
+            className={`ri-${isSidebarVisible ? 'contract-left-line' : 'contract-right-line'} bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 p-2 rounded-r-xl`}
+            style={{ fontSize: '1.125rem', display: 'block' }}
           ></i>
         </button>
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
