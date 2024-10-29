@@ -83,6 +83,31 @@ const UserManagementSettings = () => {
     }
   };
 
+  const handleDelete = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      try {
+        const response = await fetch('/api/users/delete', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: userId }),
+        });
+
+        if (response.ok) {
+          setMessage('User deleted successfully');
+          loadUsers();
+          setTimeout(() => setMessage(''), 3000);
+        } else {
+          setMessage('Failed to delete user');
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        setMessage('Failed to delete user');
+      }
+    }
+  };
+
   const Pagination = () => (
     <div className="flex items-center justify-between mt-4">
       <div className="flex items-center gap-2">
@@ -251,6 +276,7 @@ const UserManagementSettings = () => {
                     <i className="ri-edit-line"></i>
                   </button>
                   <button
+                    onClick={() => handleDelete(user.id)}
                     className="text-red-500 hover:text-red-700"
                     title={`Delete ${user.name}`}
                     aria-label={`Delete ${user.name}`}
