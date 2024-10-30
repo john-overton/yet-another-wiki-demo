@@ -178,8 +178,9 @@ const TrashBin = () => {
                   <option 
                     key={item.path} 
                     value={item.path}
+                    className={`${openSans.className}`}
                     >
-                    <p className={`${openSans.className}`}>{item.title}</p>
+                    {item.title}
                   </option>
                 ))}
               </select>
