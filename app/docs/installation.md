@@ -52,7 +52,7 @@ npm run dev
 
 Open your web browser and visit:
 
-```
+```text
 http://localhost:3000
 ```
 

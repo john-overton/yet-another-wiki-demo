@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 import { bundleMDXContent } from '../actions/mdx';
+import SortOrderEditor from './SortOrderEditor';
 import {
   MDXEditor,
   UndoRedo,
@@ -114,7 +115,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const MDXEditorComponent = ({ file, onSave }) => {
+const MDXEditorComponent = ({ file, onSave, onCancel }) => {
   const { theme } = useTheme();
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
@@ -128,6 +129,28 @@ const MDXEditorComponent = ({ file, onSave }) => {
   const [bundledContent, setBundledContent] = useState(null);
   const editorRef = useRef(null);
   const contentRef = useRef('');
+
+  const handleSortOrderChange = async (path, newSortOrder) => {
+    try {
+      const response = await fetch('/api/update-sort-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path,
+          newSortOrder
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update sort order');
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating sort order:', error);
+      setErrorMessage('Failed to update sort order. Please try again.');
+    }
+  };
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -170,7 +193,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
       }
 
       const data = await response.json();
-      return data.url; // Returns the URL of the uploaded image
+      return data.url;
     } catch (error) {
       console.error('Error uploading image:', error);
       throw error;
@@ -187,7 +210,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
         return;
       }
 
-      console.log('Saving content:', currentContent); // Debug log
+      console.log('Saving content:', currentContent);
 
       const response = await fetch('/api/update-file', {
         method: 'POST',
@@ -218,13 +241,16 @@ const MDXEditorComponent = ({ file, onSave }) => {
   };
 
   const handleEditorChange = (newContent) => {
-    // Update both the state and ref with the new content
     setContent(newContent);
     contentRef.current = newContent;
-    console.log('Editor content updated:', newContent); // Debug log
   };
 
-  // Define available languages with descriptive names
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
   const codeBlockLanguages = {
     'text': 'Plain Text',
     'c': 'C',
@@ -282,11 +308,9 @@ const MDXEditorComponent = ({ file, onSave }) => {
               className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+          <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
           <div className="flex items-center justify-between">
             <div>
-
-            </div>
-            <div className="flex gap-2">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -296,6 +320,8 @@ const MDXEditorComponent = ({ file, onSave }) => {
                 />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Public</span>
               </label>
+            </div>
+            <div className="flex gap-2">
               <button
                 onClick={() => setIsPreview(!isPreview)}
                 className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -303,6 +329,14 @@ const MDXEditorComponent = ({ file, onSave }) => {
                 title="Preview"
               >
                 <i className="ri-eye-line"></i>
+              </button>
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                style={{ fontSize: '1.5rem' }}
+                title="Cancel"
+              >
+                <i className="ri-close-line"></i>
               </button>
               <button
                 onClick={handleSave}

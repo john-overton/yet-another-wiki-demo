@@ -244,7 +244,7 @@ const MainAppLayout = () => {
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
-    return <MDXEditor file={selectedFile} onSave={handleSave} />;
+    return <MDXEditor file={selectedFile} onSave={handleSave} onCancel={handleCancel} />;
   };
 
   return (
