@@ -119,6 +119,7 @@ const TrashBin = () => {
     }
 
     // Optimistically remove the item from the UI
+    const itemToDelete = deletedItems.find(item => item.path === path);
     setDeletedItems(prev => prev.filter(item => item.path !== path));
     setSelectedItems(prev => prev.filter(item => item !== path));
 
@@ -137,11 +138,19 @@ const TrashBin = () => {
       if (!response.ok) {
         // If the deletion failed, revert the optimistic update
         console.error('Failed to permanently delete item');
-        fetchDeletedItems(); // Refresh the list to restore the item
+        // Instead of fetching all items again, just add the item back to the state
+        setDeletedItems(prev => [...prev, itemToDelete]);
+        if (selectedItems.includes(path)) {
+          setSelectedItems(prev => [...prev, path]);
+        }
       }
     } catch (error) {
       console.error('Error permanently deleting item:', error);
-      fetchDeletedItems(); // Refresh the list to restore the item
+      // Instead of fetching all items again, just add the item back to the state
+      setDeletedItems(prev => [...prev, itemToDelete]);
+      if (selectedItems.includes(path)) {
+        setSelectedItems(prev => [...prev, path]);
+      }
     }
   };
 
