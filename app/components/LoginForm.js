@@ -37,10 +37,27 @@ export default function LoginForm() {
         // Check if user has security questions set up
         const userResponse = await fetch('/api/auth/me');
         const userData = await userResponse.json();
+        
+        // Debug logging
+        console.log('User data from /api/auth/me:', userData);
+        console.log('Security questions:', {
+          q1: userData.secret_question_1_id,
+          q2: userData.secret_question_2_id,
+          q3: userData.secret_question_3_id
+        });
 
-        if (!userData.secret_question_1_id || !userData.secret_question_2_id || !userData.secret_question_3_id) {
+        // Check if user has NO security questions set up at all
+        const hasNoSecurityQuestions = !userData.secret_question_1_id && 
+                                     !userData.secret_question_2_id && 
+                                     !userData.secret_question_3_id;
+
+        console.log('Has no security questions:', hasNoSecurityQuestions);
+
+        if (hasNoSecurityQuestions) {
+          console.log('Setting needsSecurityQuestions to true');
           setNeedsSecurityQuestions(true);
         } else {
+          console.log('User has security questions, updating last login and redirecting');
           // Update last login and redirect
           await fetch('/api/auth/update-last-login', {
             method: 'POST',
@@ -52,6 +69,7 @@ export default function LoginForm() {
         }
       }
     } catch (error) {
+      console.error('Login error:', error);
       setError('An error occurred. Please try again.');
     }
 

@@ -35,7 +35,7 @@ export async function GET(request) {
 
     console.log('Found user:', user); // Debug log
 
-    // Return all user fields except password and secret answers
+    // Return user fields including security question IDs but excluding sensitive data
     const sanitizedUser = {
       id: user.id,
       email: user.email,
@@ -47,6 +47,10 @@ export async function GET(request) {
       created_at: user.created_at,
       updated_at: user.updated_at,
       last_login: user.last_login,
+      // Include security question IDs but not the answers
+      secret_question_1_id: user.secret_question_1_id,
+      secret_question_2_id: user.secret_question_2_id,
+      secret_question_3_id: user.secret_question_3_id
     };
 
     return NextResponse.json(sanitizedUser);
