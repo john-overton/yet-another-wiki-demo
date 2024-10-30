@@ -155,6 +155,28 @@ const MDXEditorComponent = ({ file, onSave }) => {
     fetchContent();
   }, [file.path]);
 
+  const handleImageUpload = async (image) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', image);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      return data.url; // Returns the URL of the uploaded image
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  };
+
   const handleSave = async () => {
     try {
       const currentContent = contentRef.current;
@@ -205,6 +227,8 @@ const MDXEditorComponent = ({ file, onSave }) => {
   // Define available languages with descriptive names
   const codeBlockLanguages = {
     'text': 'Plain Text',
+    'c': 'C',
+    'c++': 'C++',
     'javascript': 'JavaScript',
     'typescript': 'TypeScript',
     'jsx': 'React JSX',
@@ -305,7 +329,7 @@ const MDXEditorComponent = ({ file, onSave }) => {
               markdown={content}
               onChange={handleEditorChange}
               contentEditableClassName="mdxeditor-content-editable"
-              className={`${openSans.className} mdxeditor flex-grow p-2 bg-gray-100 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
+              className={`${openSans.className} mdxeditor flex-grow p-2 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
               plugins={[
                 toolbarPlugin({
                   toolbarContents: () => (
@@ -344,7 +368,9 @@ const MDXEditorComponent = ({ file, onSave }) => {
                 }),
                 linkPlugin(),
                 linkDialogPlugin(),
-                imagePlugin(),
+                imagePlugin({
+                  imageUploadHandler: handleImageUpload
+                }),
                 tablePlugin(),
                 thematicBreakPlugin(),
                 frontmatterPlugin(),

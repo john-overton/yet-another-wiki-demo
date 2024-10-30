@@ -16,9 +16,19 @@
       "path": "code-examples.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-29T19:35:28.370Z",
-      "sortOrder": 3,
-      "children": []
+      "lastModified": "2024-10-30T12:58:51.650Z",
+      "sortOrder": 2,
+      "children": [
+        {
+          "slug": "new-file-test",
+          "title": "New File Test",
+          "path": "new-file-test.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-30T12:51:39.589Z",
+          "children": []
+        }
+      ]
     },
     {
       "slug": "getting-started",
@@ -27,7 +37,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T20:08:16.526Z",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "children": [
         {
           "slug": "installation",

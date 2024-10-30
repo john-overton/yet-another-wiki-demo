@@ -5,7 +5,6 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
-import MarkdownEditor from './MarkdownEditor';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -245,15 +244,7 @@ const MainAppLayout = () => {
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
-    
-    // Use MarkdownEditor for .md files and MDXEditor for .mdx files
-    const isMarkdownFile = selectedFile.path.endsWith('.md');
-    
-    if (isMarkdownFile) {
-      return <MarkdownEditor file={selectedFile} onSave={handleSave} onCancel={handleCancel} />;
-    } else {
-      return <MDXEditor file={selectedFile} onSave={handleSave} />;
-    }
+    return <MDXEditor file={selectedFile} onSave={handleSave} />;
   };
 
   return (
