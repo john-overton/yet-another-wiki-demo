@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
   const [sortedItems, setSortedItems] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     setSortedItems(
@@ -16,7 +17,8 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
   if (!sortedItems || sortedItems.length <= 0) return null;
 
   const handleMoveUp = async (item, index) => {
-    if (index > 0) {
+    if (index > 0 && !isUpdating) {
+      setIsUpdating(true);
       const newSortOrder = sortedItems[index - 1].sortOrder;
       const oldSortOrder = item.sortOrder;
 
@@ -26,19 +28,21 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
       newItems[index - 1].sortOrder = oldSortOrder;
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
-      // Make the API call
       try {
         await onSortOrderChange(item.path, newSortOrder);
       } catch (error) {
-        // Revert on error
         console.error('Failed to update sort order:', error);
+        // Revert on error
         setSortedItems(sortedItems);
+      } finally {
+        setIsUpdating(false);
       }
     }
   };
 
   const handleMoveDown = async (item, index) => {
-    if (index < sortedItems.length - 1) {
+    if (index < sortedItems.length - 1 && !isUpdating) {
+      setIsUpdating(true);
       const newSortOrder = sortedItems[index + 1].sortOrder;
       const oldSortOrder = item.sortOrder;
 
@@ -48,13 +52,14 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
       newItems[index + 1].sortOrder = oldSortOrder;
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
-      // Make the API call
       try {
         await onSortOrderChange(item.path, newSortOrder);
       } catch (error) {
-        // Revert on error
         console.error('Failed to update sort order:', error);
+        // Revert on error
         setSortedItems(sortedItems);
+      } finally {
+        setIsUpdating(false);
       }
     }
   };
@@ -77,15 +82,15 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
                   onClick={() => handleMoveUp(item, index)}
-                  disabled={index === 0}
-                  className={`mr-2 ${index === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300'}`}
+                  disabled={index === 0 || isUpdating}
+                  className={`mr-2 ${index === 0 || isUpdating ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300'}`}
                 >
                   <i className="ri-arrow-up-line"></i>
                 </button>
                 <button
                   onClick={() => handleMoveDown(item, index)}
-                  disabled={index === sortedItems.length - 1}
-                  className={`${index === sortedItems.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300'}`}
+                  disabled={index === sortedItems.length - 1 || isUpdating}
+                  className={`${index === sortedItems.length - 1 || isUpdating ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300'}`}
                 >
                   <i className="ri-arrow-down-line"></i>
                 </button>
@@ -115,14 +120,20 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
   const [childItems, setChildItems] = useState([]);
   const [debugInfo, setDebugInfo] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchFileStructure = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/file-structure');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       
       if (!data || !data.pages) {
-        setDebugInfo('No file structure data available');
+        setError('No file structure data available');
         return;
       }
 
@@ -171,12 +182,15 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
         setDebugInfo(
           `Found ${result.rootSiblings.length} root siblings and ${result.childItems.length} child items`
         );
+        setError(null);
       } else {
-        setDebugInfo('Item not found in file structure');
+        setError('Item not found in file structure');
       }
     } catch (error) {
       console.error('Error fetching file structure:', error);
-      setDebugInfo(`Error: ${error.message}`);
+      setError(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   }, [file.path]);
 
@@ -188,19 +202,43 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
 
   const handleSortOrderChange = async (path, newSortOrder) => {
     try {
-      await parentOnSortOrderChange(path, newSortOrder);
-      // Refresh the file structure after a short delay to ensure the API has processed the change
-      setTimeout(fetchFileStructure, 100);
+      const response = await fetch('/api/update-sort-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path, newSortOrder }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update sort order');
+      }
+
+      // Only refresh the file structure if the update was successful
+      await fetchFileStructure();
     } catch (error) {
       console.error('Error updating sort order:', error);
+      throw error; // Re-throw to let the SortTable handle the error
     }
   };
 
-  // Show debug info in development
-  if (process.env.NODE_ENV === 'development' && rootSiblings.length === 0 && childItems.length === 0) {
+  if (isLoading) {
     return (
-      <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
-        <p className="text-sm text-gray-600 dark:text-gray-400">Debug: {debugInfo}</p>
+      <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded">
+        <p className="text-sm text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         <p className="text-sm text-gray-600 dark:text-gray-400">File path: {file?.path}</p>
       </div>
     );

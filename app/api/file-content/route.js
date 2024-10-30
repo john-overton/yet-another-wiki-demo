@@ -13,8 +13,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'No path provided' }, { status: 400 });
     }
 
-    // Resolve the path relative to the app/docs directory
-    const fullPath = path.join(process.cwd(), 'app', 'docs', filePath);
+    // Resolve the path relative to the public/docs directory
+    const fullPath = path.join(process.cwd(), 'public', 'docs', filePath);
     console.log('Reading file from:', fullPath);
 
     const content = await fs.readFile(fullPath, 'utf8');
@@ -25,6 +25,25 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('Error reading file:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  try {
+    const { path: filePath, content } = await request.json();
+
+    if (!filePath) {
+      return NextResponse.json({ error: 'No path provided' }, { status: 400 });
+    }
+
+    // Write to the public/docs directory
+    const fullPath = path.join(process.cwd(), 'public', 'docs', filePath);
+    await fs.writeFile(fullPath, content, 'utf8');
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error writing file:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -166,6 +166,18 @@ const CodeBlock = ({ children, language }) => {
 };
 
 const MarkdownRenderer = ({ content }) => {
+  // If content is a string that looks like JSON, try to parse it
+  let markdownContent = content;
+  if (typeof content === 'string' && content.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(content);
+      markdownContent = parsed.content || content;
+    } catch (e) {
+      // If parsing fails, use the original content
+      console.warn('Failed to parse content as JSON:', e);
+    }
+  }
+
   return (
     <div className="mdx-content prose dark:prose-invert max-w-none">
       <ReactMarkdown
@@ -232,7 +244,7 @@ const MarkdownRenderer = ({ content }) => {
           },
         }}
       >
-        {content}
+        {markdownContent}
       </ReactMarkdown>
     </div>
   );

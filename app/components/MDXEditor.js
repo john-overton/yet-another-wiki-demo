@@ -157,16 +157,30 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
       setIsLoading(true);
       try {
         const response = await fetch(`/api/file-content?path=${encodeURIComponent(file.path)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch content');
+        }
+        
         const fileContent = await response.text();
-        if (fileContent) {
-          setContent(fileContent);
-          contentRef.current = fileContent;
-          
-          // Bundle the initial content
-          const bundled = await bundleMDXContent(fileContent);
-          if (bundled) {
-            setBundledContent(bundled.code);
+        // Try to parse as JSON in case it's still coming back in the old format
+        let actualContent = fileContent;
+        try {
+          const parsed = JSON.parse(fileContent);
+          if (parsed.content) {
+            actualContent = parsed.content;
           }
+        } catch (e) {
+          // If parsing fails, use the original content
+          actualContent = fileContent;
+        }
+
+        setContent(actualContent);
+        contentRef.current = actualContent;
+        
+        // Bundle the initial content
+        const bundled = await bundleMDXContent(actualContent);
+        if (bundled) {
+          setBundledContent(bundled.code);
         }
       } catch (error) {
         console.error('Error fetching file content:', error);
@@ -426,3 +440,4 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
 };
 
 export default MDXEditorComponent;
+

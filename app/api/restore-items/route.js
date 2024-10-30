@@ -2,80 +2,73 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function POST(request) {
-  const { items, target } = await request.json();
+  const { items: paths, target } = await request.json();
 
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    return new Response(JSON.stringify({ error: 'Invalid items to restore' }), {
+  if (!paths || !Array.isArray(paths)) {
+    return new Response(JSON.stringify({ error: 'Invalid paths provided' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
   try {
-    const metaFilePath = path.join(process.cwd(), 'app', 'docs', 'meta.json');
+    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    const restoreItem = (items, itemPath) => {
+    // Function to find and remove an item from its current location
+    const findAndRemoveItem = (items, targetPath) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].path === itemPath) {
-          delete items[i].deleted;
-          return true;
+        if (items[i].path === targetPath) {
+          const [removedItem] = items.splice(i, 1);
+          delete removedItem.deleted; // Remove the deleted flag
+          return removedItem;
         }
-        if (items[i].children && restoreItem(items[i].children, itemPath)) {
-          return true;
+        if (items[i].children) {
+          const found = findAndRemoveItem(items[i].children, targetPath);
+          if (found) return found;
         }
       }
-      return false;
+      return null;
     };
 
-    const moveItem = (items, itemPath, targetPath) => {
-      let itemToMove;
-      const removeItem = (items) => {
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].path === itemPath) {
-            itemToMove = items.splice(i, 1)[0];
-            return true;
+    // Function to find a target parent
+    const findParent = (items, targetPath) => {
+      for (const item of items) {
+        if (item.path === targetPath) {
+          if (!item.children) {
+            item.children = [];
           }
-          if (items[i].children && removeItem(items[i].children)) {
-            return true;
+          return item;
+        }
+        if (item.children) {
+          const found = findParent(item.children, targetPath);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    // Process each path
+    for (const itemPath of paths) {
+      const item = findAndRemoveItem(metaData.pages, itemPath);
+      if (item) {
+        if (target === 'root') {
+          // Add to root level
+          metaData.pages.push(item);
+        } else {
+          // Add to target parent
+          const parent = findParent(metaData.pages, target);
+          if (parent) {
+            parent.children.push(item);
+          } else {
+            console.error(`Parent not found for target: ${target}`);
+            // Add to root if parent not found
+            metaData.pages.push(item);
           }
         }
-        return false;
-      };
-
-      removeItem(items);
-
-      if (!itemToMove) return false;
-
-      if (target === 'root') {
-        // Simply add the item at the root level (same level as 'home')
-        metaData.pages.push(itemToMove);
-      } else {
-        // Add to specific target
-        const addItem = (items) => {
-          for (let i = 0; i < items.length; i++) {
-            if (items[i].path === targetPath) {
-              if (!items[i].children) items[i].children = [];
-              items[i].children.push(itemToMove);
-              return true;
-            }
-            if (items[i].children && addItem(items[i].children)) {
-              return true;
-            }
-          }
-          return false;
-        };
-        addItem(items);
       }
-
-      return true;
-    };
-
-    items.forEach(itemPath => {
-      restoreItem(metaData.pages, itemPath);
-      moveItem(metaData.pages, itemPath, target);
-    });
+    }
 
     // Write updated meta data
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));

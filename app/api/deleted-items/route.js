@@ -3,26 +3,27 @@ import path from 'path';
 
 export async function GET() {
   try {
-    const metaFilePath = path.join(process.cwd(), 'app', 'docs', 'meta.json');
+    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    const getDeletedItems = (items, deletedItems = []) => {
+    // Function to collect deleted items recursively
+    const collectDeletedItems = (items) => {
+      let deletedItems = [];
       items.forEach(item => {
         if (item.deleted) {
-          deletedItems.push({ path: item.path, title: item.title });
+          deletedItems.push(item);
         }
-        if (item.children) {
-          getDeletedItems(item.children, deletedItems);
+        if (item.children && item.children.length > 0) {
+          deletedItems = deletedItems.concat(collectDeletedItems(item.children));
         }
       });
       return deletedItems;
     };
 
-    const deletedItems = getDeletedItems(metaData.pages);
+    const deletedItems = collectDeletedItems(metaData.pages);
 
     return new Response(JSON.stringify({ deletedItems }), {
-      status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {

@@ -66,16 +66,18 @@
               "isPublic": true,
               "version": 1,
               "lastModified": "2024-10-30T15:47:58.578Z",
-              "children": []
+              "children": [],
+              "deleted": true
             },
             {
-              "slug": "test-item",
-              "title": "test item",
-              "path": "test-item.md",
+              "slug": "another-test",
+              "title": "another test",
+              "path": "another-test.md",
               "isPublic": true,
               "version": 1,
-              "lastModified": "2024-10-30T15:48:08.331Z",
-              "children": []
+              "lastModified": "2024-10-30T16:00:53.253Z",
+              "children": [],
+              "deleted": true
             }
           ]
         }

@@ -12,9 +12,25 @@ export async function POST(request) {
   }
 
   try {
-    const metaFilePath = path.join(process.cwd(), 'app', 'docs', 'meta.json');
-    const metaContent = await fs.readFile(metaFilePath, 'utf8');
-    const metaData = JSON.parse(metaContent);
+    // Change meta.json location to public/docs
+    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
+    
+    // Ensure the docs directory exists
+    const docsDir = path.join(process.cwd(), 'public', 'docs');
+    try {
+      await fs.access(docsDir);
+    } catch {
+      await fs.mkdir(docsDir, { recursive: true });
+    }
+
+    // Read or create meta.json
+    let metaData;
+    try {
+      const metaContent = await fs.readFile(metaFilePath, 'utf8');
+      metaData = JSON.parse(metaContent);
+    } catch {
+      metaData = { pages: [] };
+    }
 
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/\.md$/, '');
     const newItemPath = `${slug}.md`;
@@ -54,11 +70,11 @@ export async function POST(request) {
       });
     }
 
-    // Write updated meta data
+    // Write updated meta data to public/docs
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    // Create an empty MD file
-    const filePath = path.join(process.cwd(), 'app', 'docs', newItemPath);
+    // Create an empty MD file in public/docs
+    const filePath = path.join(process.cwd(), 'public', 'docs', newItemPath);
     await fs.writeFile(filePath, `# ${newItem.title}\n\nYour content here.`);
 
     return new Response(JSON.stringify({ message: 'Item created successfully', newItem }), {
