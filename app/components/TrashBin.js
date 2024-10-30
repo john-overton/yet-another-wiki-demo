@@ -175,8 +175,11 @@ const TrashBin = () => {
               >
                 <option value="root">Root (Top Level)</option>
                 {availableParents.map(item => (
-                  <option key={item.path} value={item.path}>
-                    {item.title}
+                  <option 
+                    key={item.path} 
+                    value={item.path}
+                    >
+                    <p className={`${openSans.className}`}>{item.title}</p>
                   </option>
                 ))}
               </select>
