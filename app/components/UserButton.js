@@ -41,12 +41,13 @@ export default function UserButton({ user }) {
         className="focus:outline-none"
         aria-haspopup="true"
         aria-expanded={isOpen}
+        title={`Logged in as ${user.name}, ${user.email}`}
       >
         {avatarUrl && !avatarError ? (
           <img
             src={avatarUrl}
             alt={user.name}
-            className="h-[30px] w-[30px] rounded-full object-cover"
+            className="h-[40px] w-[40px] mt-1 rounded-full object-cover"
             onError={() => setAvatarError(true)}
           />
         ) : (
