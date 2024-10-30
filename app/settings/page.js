@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
+import Head from 'next/head';
 import Settings from '../components/Settings';
 
 export default function SettingsPage() {
@@ -26,5 +27,12 @@ export default function SettingsPage() {
     return null;
   }
 
-  return <Settings />;
+  return (
+    <>
+      <Head>
+        <title>Settings - Yet Another Wiki</title>
+      </Head>
+      <Settings />
+    </>
+  );
 }

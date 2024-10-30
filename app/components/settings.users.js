@@ -299,7 +299,7 @@ const UserManagementSettings = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button
                     onClick={() => handleEditClick(user)}
-                    className="text-blue-500 hover:text-blue-700 mr-2"
+                    className="text-gray-500 text-xl hover:text-blue-500 mr-2"
                     title={`Edit ${user.name}`}
                     aria-label={`Edit ${user.name}`}
                   >
@@ -307,7 +307,7 @@ const UserManagementSettings = () => {
                   </button>
                   <button
                     onClick={() => handleDelete(user.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-gray-500 text-xl hover:text-red-500"
                     title={`Delete ${user.name}`}
                     aria-label={`Delete ${user.name}`}
                   >
