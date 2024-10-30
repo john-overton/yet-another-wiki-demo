@@ -21,27 +21,42 @@ const SecretQuestionsForm = ({ onComplete }) => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchUserAndQuestions = async () => {
       try {
-        const response = await fetch('/api/secret-questions');
-        if (response.ok) {
-          const data = await response.json();
+        // Fetch current user
+        const userResponse = await fetch('/api/auth/me');
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUserId(userData.id);
+        }
+
+        // Fetch questions
+        const questionsResponse = await fetch('/api/secret-questions');
+        if (questionsResponse.ok) {
+          const data = await questionsResponse.json();
           setQuestions(data);
         }
       } catch (error) {
-        console.error('Error fetching secret questions:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchQuestions();
+    fetchUserAndQuestions();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!userId) {
+      setError('User ID not found. Please try logging in again.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('/api/users/update', {
@@ -50,6 +65,7 @@ const SecretQuestionsForm = ({ onComplete }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          id: userId,
           secret_question_1_id: parseInt(selectedQuestions.question1),
           secret_answer_1: answers.answer1,
           secret_question_2_id: parseInt(selectedQuestions.question2),
@@ -62,9 +78,11 @@ const SecretQuestionsForm = ({ onComplete }) => {
       if (response.ok) {
         onComplete();
       } else {
-        setError('Failed to save security questions');
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to save security questions');
       }
     } catch (error) {
+      console.error('Error saving security questions:', error);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);

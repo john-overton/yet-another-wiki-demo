@@ -5,10 +5,12 @@ import { useState, useEffect } from 'react';
 const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [resetSecurityQuestions, setResetSecurityQuestions] = useState(false);
 
   useEffect(() => {
     // Reset avatar preview when user changes
     setAvatarPreview(user?.avatar || null);
+    setResetSecurityQuestions(false); // Reset the checkbox when user changes
   }, [user]);
 
   if (!isOpen) return null;
@@ -65,6 +67,11 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
       is_active: formData.get('is_active') === 'on',
       avatar: avatarPreview,
     };
+
+    // Only include security question reset if checkbox is checked
+    if (resetSecurityQuestions) {
+      updatedUser.resetSecurityQuestions = true;
+    }
 
     await onSubmit(e, updatedUser);
   };
@@ -196,6 +203,19 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
             />
             <label htmlFor="is_active" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Active
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="reset_security"
+              checked={resetSecurityQuestions}
+              onChange={(e) => setResetSecurityQuestions(e.target.checked)}
+              className="rounded border-gray-300 mr-2"
+            />
+            <label htmlFor="reset_security" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Reset Security Questions
             </label>
           </div>
 

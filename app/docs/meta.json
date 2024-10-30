@@ -26,7 +26,8 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-30T12:51:39.589Z",
-          "children": []
+          "children": [],
+          "deleted": true
         }
       ]
     },
