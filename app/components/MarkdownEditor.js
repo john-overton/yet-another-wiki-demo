@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import SortOrderEditor from './SortOrderEditor';
 
 // Import WysimarkWrapper with no SSR
 const WysimarkWrapper = dynamic(() => import('./WysimarkWrapper'), {
@@ -59,6 +60,28 @@ const MarkdownEditor = ({ file, onSave, onCancel }) => {
       return null;
     }
   }, []);
+
+  const handleSortOrderChange = async (path, newSortOrder) => {
+    try {
+      const response = await fetch('/api/update-sort-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path,
+          newSortOrder
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update sort order');
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error('Error updating sort order:', error);
+      setErrorMessage('Failed to update sort order. Please try again.');
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -169,6 +192,7 @@ const MarkdownEditor = ({ file, onSave, onCancel }) => {
             <div className="text-red-500 text-sm mt-1">{slugError}</div>
           )}
         </div>
+        <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
             <label className="flex items-center gap-2">

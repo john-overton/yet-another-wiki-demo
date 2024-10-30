@@ -10,6 +10,9 @@ export async function GET() {
     const validateAndFilterItems = async (items) => {
       const validItems = [];
       for (const item of items) {
+        // Skip deleted items
+        if (item.deleted) continue;
+
         const fullPath = path.join(process.cwd(), 'app', 'docs', item.path);
         try {
           await fs.access(fullPath);

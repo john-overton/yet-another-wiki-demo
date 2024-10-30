@@ -7,6 +7,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-29T15:29:19.229Z",
+      "sortOrder": 1,
       "children": []
     },
     {
@@ -16,6 +17,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-29T19:35:28.370Z",
+      "sortOrder": 3,
       "children": []
     },
     {
@@ -25,6 +27,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-20T20:08:16.526Z",
+      "sortOrder": 2,
       "children": [
         {
           "slug": "installation",
@@ -33,7 +36,8 @@
           "isPublic": false,
           "version": 1,
           "lastModified": "2024-10-23T23:36:06.641Z",
-          "children": []
+          "children": [],
+          "sortOrder": 2
         },
         {
           "slug": "theming",
@@ -42,6 +46,7 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-23T13:35:25.208Z",
+          "sortOrder": 2,
           "children": []
         }
       ]
