@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 
 const FileItem = ({ 
@@ -18,6 +18,12 @@ const FileItem = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
 
+  const handleOutsideClick = useCallback((e) => {
+    if (inputRef.current && !inputRef.current.contains(e.target)) {
+      handleSubmit();
+    }
+  }, []);
+
   useEffect(() => {
     if (isCreating) {
       document.addEventListener('click', handleOutsideClick);
@@ -25,16 +31,10 @@ const FileItem = ({
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [isCreating]);
+  }, [isCreating, handleOutsideClick]);
 
   const handleCreateNew = () => {
     setIsCreating(true);
-  };
-
-  const handleOutsideClick = (e) => {
-    if (inputRef.current && !inputRef.current.contains(e.target)) {
-      handleSubmit();
-    }
   };
 
   const handleSubmit = () => {
@@ -166,18 +166,18 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
   const inputRef = useRef(null);
 
+  const handleOutsideClick = useCallback((e) => {
+    if (inputRef.current && !inputRef.current.contains(e.target)) {
+      onClose();
+    }
+  }, [onClose]);
+
   useEffect(() => {
     document.addEventListener('click', handleOutsideClick);
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, []);
-
-  const handleOutsideClick = (e) => {
-    if (inputRef.current && !inputRef.current.contains(e.target)) {
-      onClose();
-    }
-  };
+  }, [handleOutsideClick]);
 
   const handleSubmit = () => {
     if (newItemName.trim()) {

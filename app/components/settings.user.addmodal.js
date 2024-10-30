@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -171,11 +172,16 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="flex justify-center mb-4">
             <div className="relative">
               {avatarPreview ? (
-                <img 
-                  src={avatarPreview} 
-                  alt="Avatar preview"
-                  className="h-24 w-24 rounded-full object-cover"
-                />
+                <div className="h-24 w-24 rounded-full overflow-hidden relative">
+                  <Image 
+                    src={avatarPreview} 
+                    alt="Avatar preview"
+                    width={96}
+                    height={96}
+                    className="object-cover"
+                    priority
+                  />
+                </div>
               ) : (
                 <div className="h-24 w-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                   <i className="ri-user-line text-3xl text-gray-500 dark:text-gray-400"></i>

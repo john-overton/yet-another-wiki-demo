@@ -111,7 +111,7 @@ export default function LoginForm() {
       </StandardizedForm>
       <div className="mt-4 text-sm text-center text-gray">
         <p>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <StandardizedLink href="/register">
             Register here
           </StandardizedLink>

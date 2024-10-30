@@ -4,21 +4,22 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import './logo.css';
 
+// Move words array outside component since it's constant
+const LOGO_WORDS = [
+  'Y.A.W.',
+  '<u>Y</u>et <u>A</u>nother <u>W</u>iki',
+  'Markdown, minus complexity',
+  '<i>Pages bloom like spring</i>',
+  '<i>No code needed to flourish</i>',
+  '<i>Just write and inspire</i>',
+  'Another Wiki? Obviously.',
+  'The last wiki, I promise.'
+];
+
 const Logo = () => {
   const [displayText, setDisplayText] = useState('');
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { resolvedTheme } = useTheme();
-  
-  const words = [
-    'Y.A.W.',
-    '<u>Y</u>et <u>A</u>nother <u>W</u>iki',
-    'Markdown, minus complexity',
-    '<i>Pages bloom like spring</i>',
-    '<i>No code needed to flourish</i>',
-    '<i>Just write and inspire</i>',
-    'Another Wiki? Obviously.',
-    'The last wiki, I promise.'
-  ];
 
   useEffect(() => {
     const checkWidth = () => {
@@ -50,7 +51,7 @@ const Logo = () => {
 
     const wordflick = setInterval(() => {
       if (forwards) {
-        if (offset >= words[i].length) {
+        if (offset >= LOGO_WORDS[i].length) {
           ++skipCount;
           if (skipCount === skipDelay) {
             forwards = false;
@@ -62,13 +63,13 @@ const Logo = () => {
           forwards = true;
           i++;
           offset = 0;
-          if (i >= words.length) {
+          if (i >= LOGO_WORDS.length) {
             i = 0;
           }
         }
       }
 
-      const part = words[i].substr(0, offset);
+      const part = LOGO_WORDS[i].substr(0, offset);
       if (skipCount === 0) {
         if (forwards) {
           offset++;
@@ -80,7 +81,7 @@ const Logo = () => {
     }, speed);
 
     return () => clearInterval(wordflick);
-  }, [isSmallScreen]);
+  }, [isSmallScreen]); // Now LOGO_WORDS is not needed in deps as it's constant
 
   return (
     <Link href="/">

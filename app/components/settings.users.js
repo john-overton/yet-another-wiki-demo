@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import UserModal from './settings.user.usermodal';
 import AddUserModal from './settings.user.addmodal';
 
@@ -260,11 +261,16 @@ const UserManagementSettings = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
                     {user.avatar ? (
-                      <img 
-                        src={user.avatar} 
-                        alt={user.name}
-                        className="h-8 w-8 rounded-full mr-2"
-                      />
+                      <div className="h-8 w-8 rounded-full overflow-hidden relative mr-2">
+                        <Image 
+                          src={user.avatar} 
+                          alt={user.name}
+                          width={32}
+                          height={32}
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 mr-2 flex items-center justify-center">
                         <i className="ri-user-line text-gray-500 dark:text-gray-400"></i>

@@ -166,7 +166,7 @@ const TrashBin = () => {
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                Select a location to restore the items. Choose 'Root' for top level, or select a page as the parent.
+                Select a location to restore the items. Choose &apos;Root&apos; for top level, or select a page as the parent.
               </p>
               <select 
                 value={restoreTarget}

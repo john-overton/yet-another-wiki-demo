@@ -29,7 +29,7 @@ const createHeadingComponent = (level) => {
     h6: "text-base mt-2 mb-1"
   };
 
-  return ({ children, ...props }) => {
+  const HeadingComponent = ({ children, ...props }) => {
     const text = typeof children === 'string' ? children : '';
     const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
     const Tag = level;
@@ -59,7 +59,7 @@ const createHeadingComponent = (level) => {
           observer.unobserve(element);
         }
       };
-    }, [id]);
+    }, [id, text]); // Added text to dependency array
 
     return (
       <Tag id={id} className={`${baseStyle} ${styles[level]}`} {...props}>
@@ -68,6 +68,11 @@ const createHeadingComponent = (level) => {
       </Tag>
     );
   };
+
+  // Add display name to the component
+  HeadingComponent.displayName = `Heading${level.toUpperCase()}`;
+
+  return HeadingComponent;
 };
 
 const Table = ({ children }) => (

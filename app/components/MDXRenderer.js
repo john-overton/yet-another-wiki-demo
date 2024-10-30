@@ -122,7 +122,7 @@ const createHeadingComponent = (level) => {
     h6: "text-base mt-2 mb-1"
   };
 
-  return ({ children, ...props }) => {
+  const HeadingComponent = ({ children, ...props }) => {
     const id = typeof children === 'string' ? children.toLowerCase().replace(/\s+/g, '-') : '';
     const Tag = level;
     return (
@@ -132,6 +132,11 @@ const createHeadingComponent = (level) => {
       </Tag>
     );
   };
+
+  // Add display name to the component
+  HeadingComponent.displayName = `Heading${level.toUpperCase()}`;
+
+  return HeadingComponent;
 };
 
 const MDXRenderer = ({ code }) => {
