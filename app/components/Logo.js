@@ -17,7 +17,7 @@ const Logo = () => {
     '<i>No code needed to flourish</i>',
     '<i>Just write and inspire</i>',
     'Another Wiki? Obviously.',
-    'The last wiki, I promise...'
+    'The last wiki, I promise.'
   ];
 
   useEffect(() => {

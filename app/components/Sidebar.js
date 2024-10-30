@@ -260,13 +260,13 @@ const Sidebar = ({
           onMouseEnter={() => setIsHeaderHovered(true)}
           onMouseLeave={() => setIsHeaderHovered(false)}
         >
-          <h2 className="text-lg text-gray-900 dark:text-white">Pages</h2>
+          <div className="text-xl text-gray-900 dark:text-white"><b>Pages</b></div>
           {isAuthenticated && (
             <button
               onClick={handleCreateRoot}
               className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
             >
-              <i className="ri-add-line"></i>
+              <p><i className="ri-add-line"></i>Add Page</p>
             </button>
           )}
         </div>
