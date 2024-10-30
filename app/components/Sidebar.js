@@ -10,7 +10,9 @@ const FileItem = ({
   onDelete, 
   onRename, 
   level = 0, 
-  isAuthenticated
+  isAuthenticated,
+  refreshFileStructure,
+  onSortOrderChange
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -18,9 +20,9 @@ const FileItem = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (newItemName.trim()) {
-      onCreateNew(item.path, newItemName.trim());
+      await onCreateNew(item.path, newItemName.trim());
     }
     setIsCreating(false);
     setNewItemName('');
@@ -154,6 +156,8 @@ const FileItem = ({
               onRename={onRename} 
               level={level + 1} 
               isAuthenticated={isAuthenticated}
+              refreshFileStructure={refreshFileStructure}
+              onSortOrderChange={onSortOrderChange}
             />
           ))}
         </ul>
@@ -179,9 +183,9 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
     };
   }, [handleOutsideClick]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (newItemName.trim()) {
-      onCreateNew('/', newItemName.trim());
+      await onCreateNew('/', newItemName.trim());
     }
     onClose();
   };
@@ -236,7 +240,8 @@ const Sidebar = ({
   onRename, 
   refreshFileStructure, 
   isAuthenticated,
-  onTrashBinClick 
+  onTrashBinClick,
+  onSortOrderChange
 }) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -247,7 +252,6 @@ const Sidebar = ({
 
   const handleDelete = async (path) => {
     await onDelete(path);
-    refreshFileStructure();
   };
 
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
@@ -286,6 +290,8 @@ const Sidebar = ({
               onDelete={handleDelete} 
               onRename={onRename} 
               isAuthenticated={isAuthenticated}
+              refreshFileStructure={refreshFileStructure}
+              onSortOrderChange={onSortOrderChange}
             />
           ))}
         </ul>

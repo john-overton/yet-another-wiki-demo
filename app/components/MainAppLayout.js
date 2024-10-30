@@ -18,6 +18,7 @@ const MainAppLayout = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isTrashBinVisible, setIsTrashBinVisible] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -36,11 +37,10 @@ const MainAppLayout = () => {
   // Handle initial hash scroll
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash && fileContent) {
-      const hash = window.location.hash.substring(1); // Remove the # symbol
+      const hash = window.location.hash.substring(1);
       const decodedHash = decodeURIComponent(hash);
       const element = document.getElementById(decodedHash);
       if (element) {
-        // Force a reflow to ensure the element is rendered
         void element.offsetHeight;
         element.scrollIntoView();
       }
@@ -49,7 +49,20 @@ const MainAppLayout = () => {
 
   const fetchFileStructure = useCallback(async () => {
     try {
-      const response = await fetch('/api/file-structure');
+      // Add cache-busting query parameter
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/file-structure?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       setFileStructure(data.pages);
     } catch (error) {
@@ -57,10 +70,28 @@ const MainAppLayout = () => {
     }
   }, []);
 
+  // Single useEffect for file structure refresh
+  useEffect(() => {
+    fetchFileStructure();
+
+    // Set up production refresh interval
+    if (process.env.NODE_ENV === 'production') {
+      const interval = setInterval(fetchFileStructure, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [fetchFileStructure, refreshTrigger]);
+
   const loadFileContent = useCallback(async (path) => {
     if (!path) return;
     try {
-      const response = await fetch(`/api/file-content?path=${encodeURIComponent(path)}`);
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/file-content?path=${encodeURIComponent(path)}&t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       const content = await response.text();
       setFileContent(content);
     } catch (error) {
@@ -68,10 +99,6 @@ const MainAppLayout = () => {
       setFileContent('Error loading file content');
     }
   }, []);
-
-  useEffect(() => {
-    fetchFileStructure();
-  }, [fetchFileStructure]);
 
   const findFileBySlug = useCallback((items, slug) => {
     for (const item of items) {
@@ -118,34 +145,48 @@ const MainAppLayout = () => {
     }
   }, [router, session, loadFileContent]);
 
+  const triggerRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
     if (!session) return;
     try {
       const response = await fetch('/api/create-item', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
         body: JSON.stringify({ parentPath, name, type }),
       });
       if (response.ok) {
-        await fetchFileStructure();
+        triggerRefresh();
+        await fetchFileStructure(); // Immediate refresh after creation
       } else {
         console.error('Failed to create new item');
       }
     } catch (error) {
       console.error('Error creating new item:', error);
     }
-  }, [fetchFileStructure, session]);
+  }, [session, triggerRefresh, fetchFileStructure]);
 
   const handleDelete = useCallback(async (path, type) => {
     if (!session) return;
     try {
       const response = await fetch('/api/delete-item', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
         body: JSON.stringify({ path, type }),
       });
       if (response.ok) {
-        await fetchFileStructure();
+        triggerRefresh();
+        await fetchFileStructure(); // Immediate refresh after deletion
         if (selectedFile && selectedFile.path === path) {
           router.push('/');
         }
@@ -155,19 +196,24 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [fetchFileStructure, selectedFile, router, session]);
+  }, [selectedFile, router, session, triggerRefresh, fetchFileStructure]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
     if (!session) return;
     try {
       const response = await fetch('/api/rename-item', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
         body: JSON.stringify({ oldPath, newName, type }),
       });
       const data = await response.json();
       if (response.ok) {
-        await fetchFileStructure();
+        triggerRefresh();
+        await fetchFileStructure(); // Immediate refresh after rename
         if (selectedFile && selectedFile.path === oldPath) {
           router.push(`/${data.newSlug}`, undefined, { shallow: true });
         }
@@ -179,20 +225,25 @@ const MainAppLayout = () => {
       console.error('Error renaming item:', error);
       alert(`Error renaming item: ${error.message}`);
     }
-  }, [fetchFileStructure, selectedFile, router, session]);
+  }, [selectedFile, router, session, triggerRefresh, fetchFileStructure]);
 
   const handleSave = useCallback(async (updatedFile) => {
     if (!session) return;
     try {
       const response = await fetch('/api/update-file', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
         body: JSON.stringify(updatedFile),
       });
       if (response.ok) {
         setSelectedFile(updatedFile);
         setIsEditing(false);
-        await fetchFileStructure();
+        triggerRefresh();
+        await fetchFileStructure(); // Immediate refresh after save
         router.push(`/${updatedFile.slug}`, undefined, { shallow: true });
       } else {
         console.error('Failed to update file');
@@ -200,7 +251,30 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error updating file:', error);
     }
-  }, [fetchFileStructure, router, session]);
+  }, [router, session, triggerRefresh, fetchFileStructure]);
+
+  const handleSortOrderChange = useCallback(async (path, newSortOrder) => {
+    if (!session) return;
+    try {
+      const response = await fetch('/api/update-sort-order', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        body: JSON.stringify({ path, newSortOrder }),
+      });
+      if (response.ok) {
+        triggerRefresh();
+        await fetchFileStructure(); // Immediate refresh after sort order change
+      } else {
+        console.error('Failed to update sort order');
+      }
+    } catch (error) {
+      console.error('Error updating sort order:', error);
+    }
+  }, [session, triggerRefresh, fetchFileStructure]);
 
   const toggleToc = useCallback(() => {
     setIsTocVisible((prev) => !prev);
@@ -239,8 +313,9 @@ const MainAppLayout = () => {
       isAuthenticated={!!session}
       refreshFileStructure={fetchFileStructure}
       onTrashBinClick={handleTrashBinClick}
+      onSortOrderChange={handleSortOrderChange}
     />
-  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure, handleTrashBinClick]);
+  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;

@@ -57,7 +57,6 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-23T13:35:25.208Z",
-          "sortOrder": 2,
           "children": [
             {
               "slug": "test-item",
@@ -80,6 +79,37 @@
               "deleted": true
             }
           ]
+        },
+        {
+          "slug": "test-document",
+          "title": "Test Document",
+          "path": "test-document.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-30T16:05:37.864Z",
+          "children": [],
+          "deleted": true,
+          "sortOrder": 2
+        },
+        {
+          "slug": "another-test",
+          "title": "Another test",
+          "path": "another-test.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-30T16:13:47.309Z",
+          "children": [],
+          "sortOrder": 2
+        },
+        {
+          "slug": "testing-2",
+          "title": "Testing 2",
+          "path": "testing-2.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-10-30T16:30:32.465Z",
+          "children": [],
+          "sortOrder": 2
         }
       ]
     }
