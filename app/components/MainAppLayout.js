@@ -271,7 +271,7 @@ const MainAppLayout = () => {
           }}
         >
           <i 
-            className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-white pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
+            className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-white pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
             style={{ fontSize: '1rem', display: 'block' }}
           ></i>
         </button>
@@ -289,7 +289,7 @@ const MainAppLayout = () => {
           </div>
           {!isEditing && !isTrashBinVisible && (
             <>
-              <div className="fixed z-[2010] border top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
+              <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
                 {session && (
                   <button
                     onClick={toggleEdit}
@@ -306,7 +306,7 @@ const MainAppLayout = () => {
                   className="transition-colors duration-200"
                 >
                   <i 
-                    className={`ri-${isTocVisible ? 'list-unordered border bg-gray-300 p-1' : 'list-unordered p-1'} text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300`}
+                    className={`ri-list-unordered p-1 ${isTocVisible ? 'border border-gray-200 dark:border-gray-600 bg-gray-300 dark:bg-gray-700' : ''} text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300`}
                     style={{ fontSize: '1.25rem' }}
                   ></i>
                 </button>
