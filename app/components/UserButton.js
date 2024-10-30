@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,12 +45,16 @@ export default function UserButton({ user }) {
         title={`Logged in as ${user.name}, ${user.email}`}
       >
         {avatarUrl && !avatarError ? (
-          <img
-            src={avatarUrl}
-            alt={user.name}
-            className="h-[40px] w-[40px] mt-1 rounded-full object-cover"
-            onError={() => setAvatarError(true)}
-          />
+          <div className="relative h-[40px] w-[40px] mt-1">
+            <Image
+              src={avatarUrl}
+              alt={user.name}
+              fill
+              className="rounded-full object-cover"
+              onError={() => setAvatarError(true)}
+              sizes="40px"
+            />
+          </div>
         ) : (
           <div className="h-[30px] w-[30px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <i className="ri-user-line text-gray-500 dark:text-gray-400"></i>

@@ -6,6 +6,8 @@ import { Session } from 'next-auth';
 
 const prisma = new PrismaClient();
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions) as Session | null;

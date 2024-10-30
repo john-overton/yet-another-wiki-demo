@@ -18,11 +18,19 @@ const FileItem = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const inputRef = useRef(null);
 
+  const handleSubmit = useCallback(() => {
+    if (newItemName.trim()) {
+      onCreateNew(item.path, newItemName.trim());
+    }
+    setIsCreating(false);
+    setNewItemName('');
+  }, [newItemName, onCreateNew, item.path]);
+
   const handleOutsideClick = useCallback((e) => {
     if (inputRef.current && !inputRef.current.contains(e.target)) {
       handleSubmit();
     }
-  }, []);
+  }, [handleSubmit]);
 
   useEffect(() => {
     if (isCreating) {
@@ -35,14 +43,6 @@ const FileItem = ({
 
   const handleCreateNew = () => {
     setIsCreating(true);
-  };
-
-  const handleSubmit = () => {
-    if (newItemName.trim()) {
-      onCreateNew(item.path, newItemName.trim());
-    }
-    setIsCreating(false);
-    setNewItemName('');
   };
 
   const handleKeyDown = (e) => {
