@@ -3,6 +3,14 @@
   margin-top: 0;
 }
 
+/* Additional override for package's internal styles */
+.wysimark-custom > *:first-of-type,
+.wysimark-custom div:first-of-type,
+.wysimark-custom p:first-of-type,
+.wysimark-custom section:first-of-type {
+  margin-top: 0;
+}
+
 /* Dark mode styles */
 .dark .wysimark-custom .css-hnubqc,
 [data-theme='dark'] .wysimark-custom .css-hnubqc {

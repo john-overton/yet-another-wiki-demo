@@ -35,7 +35,7 @@ const WysimarkWrapper = ({ value, onChange, onUpload, style, className }) => {
         display: 'flex',
         flexDirection: 'column'
       }}
-      className={`wysimark-custom ${className} ${openSans.className}`}
+      className={`wysimark-custom wysimark-editor ${className} ${openSans.className}`}
     />
   );
 };
