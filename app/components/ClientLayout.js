@@ -36,8 +36,8 @@ export function ClientLayout({ children }) {
       <main className="flex-1 z-1 overflow-auto">
         {children}
       </main>
-      <footer className="h-12 p-1 text-center bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-footer">
-        <p>Footer</p>
+      <footer className="h-12 p-1 text-sm text-center bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-footer">
+        <p>© 2024 - Yet Another Wiki - All Rights Reserved</p>
       </footer>
     </div>
   );
