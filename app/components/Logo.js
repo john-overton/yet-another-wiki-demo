@@ -6,6 +6,7 @@ import './logo.css';
 
 const Logo = () => {
   const [displayText, setDisplayText] = useState('');
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { resolvedTheme } = useTheme();
   
   const words = [
@@ -20,6 +21,26 @@ const Logo = () => {
   ];
 
   useEffect(() => {
+    const checkWidth = () => {
+      setIsSmallScreen(window.innerWidth < 680);
+    };
+
+    // Initial check
+    checkWidth();
+
+    // Add resize listener
+    window.addEventListener('resize', checkWidth);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setDisplayText('');
+      return;
+    }
+
     let i = 0;
     let offset = 0;
     let forwards = true;
@@ -59,13 +80,13 @@ const Logo = () => {
     }, speed);
 
     return () => clearInterval(wordflick);
-  }, []);
+  }, [isSmallScreen]);
 
   return (
     <Link href="/">
       <div className="text-lg font-medium m-2">
         <div className={`console-text text-sm inline-flex items-center ${resolvedTheme === 'dark' ? 'console-text-dark' : 'console-text-light'}`}>
-        <span className="mr-2">{'wikis\\yaw>'}</span>
+          <span className="mr-2">{'wikis\\yaw>'}</span>
           <span className="text-gray-100" dangerouslySetInnerHTML={{ __html: displayText }} />
           <span className="animate-blink text-gray-100">_</span>
         </div>
