@@ -6,19 +6,20 @@ Your centralized knowledge hub for creating, organizing, and sharing documentati
 
 ### Dynamic Navigation
 
-- **Table of Contents**: A dynamic table of contents is automatically generated from your page headers, making navigation effortless
-- **Magnet Links**: Click the magnet icon next to any header to get a direct link to that section
-- **Hierarchical Sidebar**: Organize your content with a drag-and-drop sidebar that supports nested pages and folders
-- **Edit Button**: Easily edit any page by clicking the edit button in the top-right corner
+* **Table of Contents**: A dynamic table of contents is automatically generated from your page headers, making navigation effortless
+* **Magnet Links**: Click the magnet icon next to any header to get a direct link to that section
+* **Hierarchical Sidebar**: Organize your content with a drag-and-drop sidebar that supports nested pages and folders
+* **Edit Button**: Easily edit any page by clicking the edit button in the top-right corner
 
 ### Sidebar Organization
 
 The sidebar provides powerful organization features:
-- Drag and drop pages to reorder them
-- Create nested hierarchies by dragging pages into folders
-- Add new pages with the '+' button
-- Delete pages with the trash icon
-- Expand/collapse folders to manage your view
+
+* Drag and drop pages to reorder them
+* Create nested hierarchies by dragging pages into folders
+* Add new pages with the '+' button
+* Delete pages with the trash icon
+* Expand/collapse folders to manage your view
 
 ## Markdown Magic
 
@@ -26,11 +27,11 @@ Markdown makes documentation a breeze! Here's what you can do:
 
 ### Text Formatting
 
-- **Bold** text using `**text**`
-- *Italic* text using `*text*`
-- ~~Strikethrough~~ using `~~text~~`
-- `Inline code` using backticks
-- [Links](https://example.com) using `[text](url)`
+* **Bold** text using `**text**`
+* *Italic* text using `*text*`
+* ~~Strikethrough~~ using `~~text~~`
+* `Inline code` using backticks
+* [Links](https://example.com) using `[text](url)`
 
 ### Lists
 
@@ -38,9 +39,9 @@ Markdown makes documentation a breeze! Here's what you can do:
 2. Are easy
 3. To create
 
-- Unordered lists
-- Use simple
-- Dash or asterisk
+* Unordered lists
+* Use simple
+* Dash or asterisk
 
 ### Code Blocks
 
@@ -55,19 +56,15 @@ Check out our [Code Examples](/code-examples) page for more comprehensive exampl
 
 ### Tables
 
-| Feature | Support | Notes |
-|---------|---------|-------|
-| Tables | ✅ | Easy to create |
-| Lists | ✅ | Ordered and unordered |
-| Code Blocks | ✅ | With syntax highlighting |
+| Feature     | Support | Notes                    |
+| ----------- | ------- | ------------------------ |
+| Tables      | ✅       | Easy to create           |
+| Lists       | ✅       | Ordered and unordered    |
+| Code Blocks | ✅       | With syntax highlighting |
 
 ### Quotes
 
-> Knowledge is power
-> 
-> > But sharing knowledge is even more powerful
-> >
-> > > - Yet Another Wiki
+> Knowledge is power> But sharing knowledge is even more powerful> \* Yet Another Wiki
 
 ## File Organization
 
@@ -98,10 +95,10 @@ app/docs/
 
 ### Task Lists
 
-- [x] Create documentation
-- [x] Add formatting examples
-- [ ] Share with team
-- [ ] Gather feedback
+* [x] Create documentation
+* [x] Add formatting examples
+* [ ] Share with team
+* [ ] Gather feedback
 
 ### Images
 
@@ -111,13 +108,13 @@ Include images using: `![Alt text](image-path.png)`
 
 Create visual separators with three dashes:
 
----
+***
 
 ### Footnotes
 
-Add footnotes to your content[^1]
+Add footnotes to your content\[^1]
 
-[^1]: This is a footnote!
+\[^1]: This is a footnote!
 
 ## Tips & Tricks
 

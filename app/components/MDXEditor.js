@@ -121,14 +121,12 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
   const [title, setTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
   const [slug, setSlug] = useState(file.slug);
-  const [version, setVersion] = useState(file.version || 1);
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [bundledContent, setBundledContent] = useState(null);
   const editorRef = useRef(null);
-  const contentRef = useRef('');
 
   const handleSortOrderChange = async (path, newSortOrder) => {
     try {
@@ -175,7 +173,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
         }
 
         setContent(actualContent);
-        contentRef.current = actualContent;
         
         // Bundle the initial content
         const bundled = await bundleMDXContent(actualContent);
@@ -216,27 +213,27 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
 
   const handleSave = async () => {
     try {
-      const currentContent = contentRef.current;
-      
       // Validate content before saving
-      if (!currentContent || currentContent.trim() === '') {
+      if (!content || content.trim() === '') {
         setErrorMessage('Cannot save empty content');
         return;
       }
 
-      console.log('Saving content:', currentContent);
+      const payload = {
+        path: file.path,
+        content: content,
+        title: title || file.title,
+        isPublic,
+        slug: slug || file.slug,
+        version: 1  // Always use version 1 for now
+      };
+
+      console.log('Saving with payload:', payload);
 
       const response = await fetch('/api/update-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path: file.path,
-          content: currentContent,
-          title: title || file.title,
-          isPublic,
-          slug: slug || file.slug,
-          version,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -244,9 +241,14 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
         throw new Error(errorData.error || 'Failed to save file');
       }
 
-      const updatedFile = { ...file, title, isPublic, slug, version };
+      const updatedFile = { 
+        ...file, 
+        title, 
+        isPublic, 
+        slug,
+        version: 1  // Always use version 1 for now
+      };
       onSave(updatedFile);
-      setVersion(prevVersion => prevVersion + 1);
       setErrorMessage('');
     } catch (error) {
       console.error('Error saving file:', error);
@@ -255,8 +257,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
   };
 
   const handleEditorChange = (newContent) => {
+    console.log('Editor content changed, length:', newContent ? newContent.length : 0);
     setContent(newContent);
-    contentRef.current = newContent;
   };
 
   const handleCancel = () => {
@@ -440,4 +442,3 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
 };
 
 export default MDXEditorComponent;
-
