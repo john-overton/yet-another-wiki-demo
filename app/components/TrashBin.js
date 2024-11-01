@@ -9,7 +9,7 @@ const openSans = Open_Sans({
     display: 'swap',
   });
 
-const TrashBin = () => {
+const TrashBin = ({ onDelete }) => {
   const [deletedItems, setDeletedItems] = useState([]);
   const [availableParents, setAvailableParents] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -108,50 +108,10 @@ const TrashBin = () => {
     }
   };
 
-  const handlePermanentDelete = async (e, path) => {
+  const handlePermanentDelete = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Close preview if the deleted item was being previewed
-    if (previewItem?.path === path) {
-      setPreviewContent(null);
-      setPreviewItem(null);
-    }
-
-    // Optimistically remove the item from the UI
-    const itemToDelete = deletedItems.find(item => item.path === path);
-    setDeletedItems(prev => prev.filter(item => item.path !== path));
-    setSelectedItems(prev => prev.filter(item => item !== path));
-
-    try {
-      const response = await fetch('/api/delete-item', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          path,
-          permanent: true 
-        }),
-      });
-
-      if (!response.ok) {
-        // If the deletion failed, revert the optimistic update
-        console.error('Failed to permanently delete item');
-        // Instead of fetching all items again, just add the item back to the state
-        setDeletedItems(prev => [...prev, itemToDelete]);
-        if (selectedItems.includes(path)) {
-          setSelectedItems(prev => [...prev, path]);
-        }
-      }
-    } catch (error) {
-      console.error('Error permanently deleting item:', error);
-      // Instead of fetching all items again, just add the item back to the state
-      setDeletedItems(prev => [...prev, itemToDelete]);
-      if (selectedItems.includes(path)) {
-        setSelectedItems(prev => [...prev, path]);
-      }
-    }
+    onDelete(item, 'trashbin');
   };
 
   return (
@@ -253,7 +213,7 @@ const TrashBin = () => {
                     <i className="ri-eye-line"></i>
                   </button>
                   <button
-                    onClick={(e) => handlePermanentDelete(e, item.path)}
+                    onClick={(e) => handlePermanentDelete(e, item)}
                     className="text-gray-500 text-xl hover:text-red-500"
                     title={`Permanently Delete ${item.title}`}
                     aria-label={`Permanently Delete ${item.title}`}

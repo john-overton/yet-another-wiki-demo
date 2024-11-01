@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import DeleteConfirmModal from './DeleteConfirmModal';
 
 const FileItem = ({ 
   item, 
@@ -19,7 +18,6 @@ const FileItem = ({
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const inputRef = useRef(null);
 
   const handleSubmit = useCallback(async () => {
@@ -57,28 +55,7 @@ const FileItem = ({
 
   const handleDelete = async (e) => {
     e.stopPropagation();
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = async (e) => {
-    try {
-      const response = await fetch('/api/delete-item', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ path: item.path, deleteChildren: item.children && item.children.length > 0 }),
-      });
-
-      if (response.ok) {
-        onDelete(item.path);
-      } else {
-        console.error('Failed to delete item');
-      }
-    } catch (error) {
-      console.error('Error deleting item:', error);
-    }
-    setIsDeleteModalOpen(false);
+    onDelete(item, 'sidebar');
   };
 
   const toggleExpand = (e) => {
@@ -146,13 +123,6 @@ const FileItem = ({
           </div>
         </div>
       )}
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
-        itemTitle={displayName}
-        hasChildren={item.children && item.children.length > 0}
-      />
       {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {sortedChildren.map((child, index) => (
@@ -259,10 +229,6 @@ const Sidebar = ({
     setIsCreatingRoot(true);
   };
 
-  const handleDelete = async (path) => {
-    await onDelete(path);
-  };
-
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
@@ -296,7 +262,7 @@ const Sidebar = ({
               item={item} 
               onSelect={onSelect} 
               onCreateNew={onCreateNew} 
-              onDelete={handleDelete} 
+              onDelete={onDelete} 
               onRename={onRename} 
               isAuthenticated={isAuthenticated}
               refreshFileStructure={refreshFileStructure}

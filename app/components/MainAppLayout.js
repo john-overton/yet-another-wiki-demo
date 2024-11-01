@@ -1,11 +1,14 @@
 'use client';
 
+'use client';
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
 import SavePromptModal from './SavePromptModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -23,6 +26,9 @@ const MainAppLayout = () => {
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentEditorContent, setCurrentEditorContent] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteModalSource, setDeleteModalSource] = useState(null);
 
   const { theme } = useTheme();
   const router = useRouter();
@@ -188,7 +194,8 @@ const MainAppLayout = () => {
       });
       if (response.ok) {
         await fetchFileStructure();
-        if (selectedFile && selectedFile.path === path) {
+        // Only redirect to home if deleting from sidebar and it's the currently selected file
+        if (selectedFile && selectedFile.path === path && !isTrashBinVisible) {
           router.push('/');
         }
       } else {
@@ -197,7 +204,45 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [selectedFile, router, session, fetchFileStructure]);
+  }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible]);
+
+  const handleDeleteClick = useCallback((item, source) => {
+    setItemToDelete(item);
+    setDeleteModalSource(source);
+    setIsDeleteModalOpen(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!itemToDelete) return;
+
+    if (deleteModalSource === 'trashbin') {
+      try {
+        const response = await fetch('/api/delete-item', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            path: itemToDelete.path,
+            permanent: true 
+          }),
+        });
+
+        if (response.ok) {
+          // Refresh trash bin items
+          fetchFileStructure();
+        }
+      } catch (error) {
+        console.error('Error permanently deleting item:', error);
+      }
+    } else {
+      await handleDelete(itemToDelete.path);
+    }
+
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
+    setDeleteModalSource(null);
+  }, [itemToDelete, deleteModalSource, handleDelete, fetchFileStructure]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
     if (!session) return;
@@ -336,14 +381,14 @@ const MainAppLayout = () => {
       fileStructure={fileStructure}
       onSelect={handleFileSelect}
       onCreateNew={handleCreateNew}
-      onDelete={handleDelete}
+      onDelete={handleDeleteClick}
       onRename={handleRename}
       isAuthenticated={!!session}
       refreshFileStructure={fetchFileStructure}
       onTrashBinClick={handleTrashBinClick}
       onSortOrderChange={handleSortOrderChange}
     />
-  ), [fileStructure, handleFileSelect, handleCreateNew, handleDelete, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
+  ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
@@ -380,7 +425,7 @@ const MainAppLayout = () => {
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {isTrashBinVisible ? (
-              <TrashBin />
+              <TrashBin onDelete={handleDeleteClick} />
             ) : (
               selectedFile && !isEditing ? (
                 <MarkdownRenderer content={fileContent} />
@@ -426,8 +471,20 @@ const MainAppLayout = () => {
         onDiscard={handleDiscardAndNavigate}
         onClose={() => setIsPromptOpen(false)}
       />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+          setDeleteModalSource(null);
+        }}
+        itemTitle={itemToDelete?.title}
+        hasChildren={itemToDelete?.children?.length > 0}
+        source={deleteModalSource}
+      />
     </div>
-);
+  );
 };
 
 export default React.memo(MainAppLayout);
