@@ -46,3 +46,6 @@ pocketbase.exe
 
 #backups
 *.backup
+
+#public files
+/public

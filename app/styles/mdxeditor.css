@@ -337,3 +337,40 @@
 .mdxeditor .cm-editor .cm-activeLineGutter {
   background-color: transparent;
 }
+
+/* File attachment styles */
+.file-attachment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: var(--editor-bg);
+  border: 1px solid var(--editor-border);
+  border-radius: 0.375rem;
+}
+
+.file-attachment:hover {
+  background-color: var(--editor-bg-hover);
+}
+
+.file-attachment i {
+  font-size: 1.25rem;
+  color: var(--editor-solid);
+}
+
+.file-attachment a {
+  color: var(--editor-accent-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.file-attachment a:hover {
+  color: var(--editor-accent-solid-hover);
+  text-decoration: underline;
+}
+
+/* Toolbar file upload button styles */
+.toolbar-item i.ri-file-line {
+  font-size: 1.1rem;
+}

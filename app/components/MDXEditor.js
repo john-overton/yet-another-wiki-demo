@@ -39,6 +39,7 @@ import {
 import "@mdxeditor/editor/style.css";
 import '../styles/mdxeditor.css';
 import { Open_Sans } from 'next/font/google';
+import { fileUploadPlugin, InsertFile } from './mdxeditor.fileupload';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -329,6 +330,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
               onChange={handleEditorChange}
               contentEditableClassName="mdxeditor-content-editable"
               className={`${openSans.className} mdxeditor flex-grow p-2 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
+
               plugins={[
                 toolbarPlugin({
                   toolbarContents: () => (
@@ -340,6 +342,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                       <InsertImage />
                       <InsertTable />
                       <InsertThematicBreak />
+                      <InsertFile />
                       <ListsToggle />
                       <CodeToggle />
                       <ConditionalContents
@@ -365,7 +368,10 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 headingsPlugin({
                   allowedHeadingLevels: [1, 2, 3, 4, 5, 6]
                 }),
-                linkPlugin(),
+                // Link plugins need to be before fileUploadPlugin
+                linkPlugin({
+                  validateUrl: () => true, // Allow all URLs
+                }),
                 linkDialogPlugin(),
                 imagePlugin({
                   imageUploadHandler: handleImageUpload
@@ -380,14 +386,15 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),
                 diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
-                markdownShortcutPlugin()
+                markdownShortcutPlugin(),
+                fileUploadPlugin()
               ]}
-            />
-          </ErrorBoundary>
-        )}
-      </div>
-    </>
-  );
-};
-
-export default MDXEditorComponent;
+              />
+              </ErrorBoundary>
+            )}
+          </div>
+        </>
+      );
+    };
+    
+    export default MDXEditorComponent;
