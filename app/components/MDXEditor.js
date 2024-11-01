@@ -283,7 +283,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
               >
                 <i className={isPublic ? "ri-eye-line" : "ri-eye-off-line"}></i>
-                <span className={isPublic ? "text-primary" : "text-gray-500"}>Public</span>
+                <span className={isPublic ? "" : "text-gray-500"}>Public</span>
               </button>
             </div>
             <div className="flex gap-2">
