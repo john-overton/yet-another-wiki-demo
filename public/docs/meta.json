@@ -16,7 +16,7 @@
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-01T16:17:52.897Z",
+      "lastModified": "2024-11-01T16:20:03.263Z",
       "sortOrder": 2,
       "children": [
         {
@@ -25,7 +25,7 @@
           "path": "installation.md",
           "isPublic": false,
           "version": 1,
-          "lastModified": "2024-11-01T16:18:23.331Z",
+          "lastModified": "2024-11-01T16:20:11.158Z",
           "children": [],
           "sortOrder": 2
         },
@@ -35,7 +35,7 @@
           "path": "theming.md",
           "isPublic": true,
           "version": 1,
-          "lastModified": "2024-10-23T13:35:25.208Z",
+          "lastModified": "2024-11-01T16:20:08.208Z",
           "children": [],
           "sortOrder": 0
         }
