@@ -4,12 +4,15 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import UserModal from './settings.user.usermodal';
 import AddUserModal from './settings.user.addmodal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 const UserManagementSettings = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,27 +90,34 @@ const UserManagementSettings = () => {
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      try {
-        const response = await fetch('/api/users/delete', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id: userId }),
-        });
+    const userToDelete = users.find(user => user.id === userId);
+    setUserToDelete(userToDelete);
+    setIsDeleteModalOpen(true);
+  };
 
-        if (response.ok) {
-          setMessage('User deleted successfully');
-          loadUsers();
-          setTimeout(() => setMessage(''), 3000);
-        } else {
-          setMessage('Failed to delete user');
-        }
-      } catch (error) {
-        console.error('Error deleting user:', error);
+  const handleDeleteConfirm = async () => {
+    try {
+      const response = await fetch('/api/users/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: userToDelete.id }),
+      });
+
+      if (response.ok) {
+        setMessage('User deleted successfully');
+        loadUsers();
+        setTimeout(() => setMessage(''), 3000);
+      } else {
         setMessage('Failed to delete user');
       }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setMessage('Failed to delete user');
+    } finally {
+      setIsDeleteModalOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -339,6 +349,16 @@ const UserManagementSettings = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSubmit}
+      />
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setUserToDelete(null);
+        }}
+        itemTitle={userToDelete?.name || ''}
       />
     </div>
   );
