@@ -1,0 +1,339 @@
+@import url('@radix-ui/colors/slate.css');
+@import url('@radix-ui/colors/slate-dark.css');
+@import url('@radix-ui/colors/blue.css');
+@import url('@radix-ui/colors/blue-dark.css');
+
+/* Light theme variables */
+:root,
+.light {
+  --editor-base: var(--slate-1);
+  --editor-bg-subtle: var(--slate-2);
+  --editor-bg: #F6F8FA;
+  --editor-bg-hover: var(--slate-4);
+  --editor-bg-active: var(--slate-6);
+  --editor-line: var(--slate-6);
+  --editor-border: var(--slate-7);
+  --editor-border-hover: var(--slate-8);
+  --editor-solid: var(--slate-9);
+  --editor-solid-hover: var(--slate-10);
+  --editor-text: #1C2024;
+  --editor-text-contrast: var(--slate-12);
+
+  --editor-accent-base: var(--blue-1);
+  --editor-accent-bg-subtle: var(--blue-2);
+  --editor-accent-bg: var(--blue-3);
+  --editor-accent-bg-hover: var(--blue-4);
+  --editor-accent-bg-active: var(--blue-5);
+  --editor-accent-line: var(--blue-6);
+  --editor-accent-border: var(--blue-7);
+  --editor-accent-border-hover: var(--blue-8);
+  --editor-accent-solid: var(--blue-9);
+  --editor-accent-solid-hover: var(--blue-10);
+  --editor-accent-text: var(--blue-11);
+  --editor-accent-text-contrast: var(--blue-12);
+
+  --editor-toolbar-bg: #F3F4F6;
+  --editor-code-bg: var(--slate-2);
+  --editor-code-block-bg: var(--slate-1);
+  --editor-code-block-border: var(--slate-1);
+  --editor-code-block-text: #999999;
+  --editor-code-block-gutter-bg: #F6F8FA;
+  --editor-code-block-gutter-text: #999999;
+  --editor-code-block-gutter-border: #E1E4E8;
+
+  --editor-box-shadow: 0px 3px 8px #888888;
+}
+
+/* Dark theme variables */
+.dark {
+  --editor-base: #1a1a1a;
+  --editor-bg-subtle: #2a2a2a;
+  --editor-bg: ;
+  --editor-bg-hover: #404040;
+  --editor-bg-active: #4d4d4d;
+  --editor-line: #666666;
+  --editor-border: #4B5563;
+  --editor-border-hover: #999999;
+  --editor-solid: #b3b3b3;
+  --editor-solid-hover: #cccccc;
+  --editor-text: #e6e6e6;
+  --editor-text-contrast: #ffffff;
+
+  --editor-accent-base: var(--blue-1);
+  --editor-accent-bg-subtle: var(--blue-2);
+  --editor-accent-bg: var(--blue-3);
+  --editor-accent-bg-hover: var(--blue-4);
+  --editor-accent-bg-active: var(--blue-5);
+  --editor-accent-line: var(--blue-6);
+  --editor-accent-border: var(--blue-7);
+  --editor-accent-border-hover: var(--blue-8);
+  --editor-accent-solid: var(--blue-9);
+  --editor-accent-solid-hover: var(--blue-10);
+  --editor-accent-text: var(--blue-11);
+  --editor-accent-text-contrast: var(--blue-12);
+
+  --editor-toolbar-bg: #2B2A33;
+  --editor-code-bg: #2B2A33;
+  --editor-code-block-bg: #2B2A33;
+  --editor-code-block-border: #2B2A33;
+  --editor-code-block-text: #dadada;
+  --editor-code-block-gutter-bg: #2B2A33;
+  --editor-code-block-gutter-text: #b6b6b6;
+  --editor-code-block-gutter-border: #444444;
+
+  --editor-box-shadow: ;
+}
+
+/* Editor root styles */
+.mdxeditor {
+  --baseBase: var(--editor-base);
+  --baseBgSubtle: var(--editor-bg-subtle);
+  --baseBg: var(--editor-bg);
+  --baseBgHover: var(--editor-bg-hover);
+  --baseBgActive: var(--editor-bg-active);
+  --baseLine: var(--editor-line);
+  --baseBorder: var(--editor-border);
+  --baseBorderHover: var(--editor-border-hover);
+  --baseSolid: var(--editor-solid);
+  --baseSolidHover: var(--editor-solid-hover);
+  --baseText: var(--editor-text);
+  --baseTextContrast: var(--editor-text-contrast);
+
+  --accentBase: var(--editor-accent-base);
+  --accentBgSubtle: var(--editor-accent-bg-subtle);
+  --accentBg: var(--editor-accent-bg);
+  --accentBgHover: var(--editor-accent-bg-hover);
+  --accentBgActive: var(--editor-accent-bg-active);
+  --accentLine: var(--editor-accent-line);
+  --accentBorder: var(--editor-accent-border);
+  --accentBorderHover: var(--editor-accent-border-hover);
+  --accentSolid: var(--editor-accent-solid);
+  --accentSolidHover: var(--editor-accent-solid-hover);
+  --accentText: var(--editor-accent-text);
+  --accentTextContrast: var(--editor-accent-text-contrast);
+}
+
+/* Editor content styles */
+.mdxeditor-content-editable {
+  font-family: var(--font-open-sans);
+  line-height: 1.6;
+  color: var(--editor-text);
+}
+
+/* Heading styles */
+.mdxeditor-content-editable h1 {
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor-content-editable h2 {
+  font-size: 2em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor-content-editable h3 {
+  font-size: 1.75em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor-content-editable h4 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor-content-editable h5 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor-content-editable h6 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: var(--editor-text-contrast);
+}
+
+/* List Styles */
+.mdxeditor-content-editable ul {
+  list-style-type: disc;
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.mdxeditor-content-editable ul ul {
+  list-style-type: circle;
+}
+
+.mdxeditor-content-editable ul ul ul {
+  list-style-type: square;
+}
+
+/* Number List Styles */
+.mdxeditor-content-editable ol {
+  list-style-type: decimal;
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.mdxeditor-content-editable ol ol {
+  list-style-type: lower-alpha;
+}
+
+.mdxeditor-content-editable ol ol ol {
+  list-style-type: lower-roman;
+}
+
+/* Nested Quotes Styles */
+.mdxeditor-content-editable blockquote {
+  border-left: 4px solid var(--editor-border);
+  margin: 1em 0;
+  padding-left: 1em;
+  color: var(--editor-solid);
+}
+
+.mdxeditor-content-editable blockquote blockquote {
+  border-left-color: var(--editor-border-hover);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.mdxeditor-content-editable blockquote blockquote blockquote {
+  border-left-color: var(--editor-solid);
+}
+
+/* Toolbar styles */
+.mdxeditor-toolbar {
+  background-color: var(--editor-toolbar-bg);
+  border: 1px solid var(--editor-border);
+}
+
+/* Code block styles */
+.mdxeditor .cm-editor {
+  background-color: var(--editor-code-block-bg);
+  border: 1px solid var(--editor-code-block-border);
+  border-radius: 0.375rem;
+  color: var(--editor-code-block-text);
+}
+
+/* Inline code styles */
+.mdxeditor-content-editable code {
+  background-color: var(--editor-code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Link styles */
+.mdxeditor-content-editable a {
+  color: var(--editor-accent-text);
+  text-decoration: none;
+}
+
+.mdxeditor-content-editable a:hover {
+  color: var(--editor-accent-solid-hover);
+  text-decoration: underline;
+}
+
+/* Quote styles */
+.mdxeditor-content-editable blockquote {
+  border-left: 4px solid var(--editor-border);
+  margin: 1em 0;
+  padding-left: 1em;
+  color: var(--editor-solid);
+}
+
+/* CodeMirror wrapper styles */
+.mdxeditor [class*='_codeMirrorWrapper'] {
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--editor-border);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  padding: 5px;
+  position: relative;
+  background-color: var(--editor-code-block-bg);
+  box-shadow: var(--editor-box-shadow);
+}
+
+/* CodeMirror toolbar styles */
+.mdxeditor [class*='_codeMirrorToolbar'] {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  z-index: 1;
+  background-color: var(--editor-toolbar-bg);
+  border-bottom-left-radius: 0.25rem;
+  border: 1px solid var(--editor-border);
+  border-top: none;
+  border-right: none;
+}
+
+.mdxeditor [class*='_codeMirrorToolbar'] button {
+  padding: 0.25rem;
+  color: var(--editor-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mdxeditor [class*='_codeMirrorToolbar'] button:hover {
+  background-color: var(--editor-bg-hover);
+  color: var(--editor-text-contrast);
+}
+
+.mdxeditor [class*='_codeMirrorToolbar'] button svg {
+  width: 1rem;
+  height: 1rem;
+  color: currentColor;
+}
+
+/* Dark theme specific overrides */
+.dark .mdxeditor [class*='_codeMirrorToolbar'] {
+  background-color: var(--editor-toolbar-bg);
+  box-shadow: none;
+}
+
+.dark .mdxeditor [class*='_codeMirrorWrapper'] {
+  box-shadow: none;
+}
+
+/* CodeMirror gutter styles */
+.mdxeditor .cm-editor .cm-gutters {
+  background-color: var(--editor-code-block-gutter-bg);
+  color: var(--editor-code-block-gutter-text);
+  border-right: 1px solid var(--editor-code-block-gutter-border);
+  padding-right: 0.5rem;
+  min-width: 2rem;
+  text-align: right;
+}
+
+.mdxeditor .cm-editor .cm-lineNumbers {
+  color: var(--editor-code-block-gutter-text);
+}
+
+.mdxeditor .cm-editor .cm-activeLineGutter {
+  background-color: transparent;
+}

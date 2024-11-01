@@ -37,61 +37,13 @@ import {
   DiffSourceToggleWrapper
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import '../styles/mdxeditor.css';
 import { Open_Sans } from 'next/font/google';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
   display: 'swap',
 });
-
-const editorStyles = `
-.mdxeditor-content-editable {
-  font-family: var(--font-open-sans);
-  line-height: 1.6;
-}
-
-.mdxeditor-content-editable h1 {
-  font-size: 2.5em;
-  font-weight: 700;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-
-.mdxeditor-content-editable h2 {
-  font-size: 2em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-
-.mdxeditor-content-editable h3 {
-  font-size: 1.75em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-
-.mdxeditor-content-editable h4 {
-  font-size: 1.5em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-
-.mdxeditor-content-editable h5 {
-  font-size: 1.25em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-
-.mdxeditor-content-editable h6 {
-  font-size: 1.1em;
-  font-weight: 600;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
-`;
 
 const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
 
@@ -303,7 +255,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
 
   return (
     <>
-      <style jsx global>{editorStyles}</style>
       <div className="flex flex-col h-full">
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex flex-col gap-2">
