@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
+import SavePromptModal from './SavePromptModal';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -18,6 +19,11 @@ const MainAppLayout = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isTrashBinVisible, setIsTrashBinVisible] = useState(false);
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [currentEditorContent, setCurrentEditorContent] = useState(null);
+
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -67,7 +73,6 @@ const MainAppLayout = () => {
     }
   }, []);
 
-  // Initial file structure fetch
   useEffect(() => {
     fetchFileStructure();
   }, [fetchFileStructure]);
@@ -127,14 +132,25 @@ const MainAppLayout = () => {
     }
   }, [params, fileStructure, loadFileContent, session, router, findFileBySlug]);
 
+  const handleNavigation = useCallback((destination) => {
+    if (isEditing && hasUnsavedChanges) {
+      setIsPromptOpen(true);
+      setPendingNavigation(destination);
+      return false;
+    }
+    return true;
+  }, [isEditing, hasUnsavedChanges]);
+
   const handleFileSelect = useCallback((file) => {
     if (file.isPublic || session) {
-      setSelectedFile(file);
-      loadFileContent(file.path);
-      router.push(`/${file.slug}`, undefined, { shallow: true });
-      setIsTrashBinVisible(false);
+      if (handleNavigation(`/${file.slug}`)) {
+        setSelectedFile(file);
+        loadFileContent(file.path);
+        router.push(`/${file.slug}`, undefined, { shallow: true });
+        setIsTrashBinVisible(false);
+      }
     }
-  }, [router, session, loadFileContent]);
+  }, [router, session, loadFileContent, handleNavigation]);
 
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
     if (!session) return;
@@ -226,15 +242,48 @@ const MainAppLayout = () => {
       if (response.ok) {
         setSelectedFile(updatedFile);
         setIsEditing(false);
+        setHasUnsavedChanges(false);
         await fetchFileStructure();
-        router.push(`/${updatedFile.slug}`, undefined, { shallow: true });
+        if (pendingNavigation) {
+          router.push(pendingNavigation);
+          setPendingNavigation(null);
+        } else {
+          router.push(`/${updatedFile.slug}`, undefined, { shallow: true });
+        }
       } else {
         console.error('Failed to update file');
       }
     } catch (error) {
       console.error('Error updating file:', error);
     }
-  }, [router, session, fetchFileStructure]);
+  }, [router, session, fetchFileStructure, pendingNavigation]);
+
+  const handleSaveAndNavigate = useCallback(async () => {
+    if (selectedFile && currentEditorContent) {
+      try {
+        const updatedFile = {
+          ...selectedFile,
+          ...currentEditorContent,
+          lastModified: new Date().toISOString(),
+          version: 1
+        };
+
+        await handleSave(updatedFile);
+        setIsPromptOpen(false);
+      } catch (error) {
+        console.error('Error saving file:', error);
+      }
+    }
+  }, [selectedFile, currentEditorContent, handleSave]);
+
+  const handleDiscardAndNavigate = useCallback(() => {
+    setIsPromptOpen(false);
+    setHasUnsavedChanges(false);
+    if (pendingNavigation) {
+      router.push(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  }, [pendingNavigation, router]);
 
   const handleSortOrderChange = useCallback(async (path, newSortOrder) => {
     if (!session) return;
@@ -258,6 +307,7 @@ const MainAppLayout = () => {
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
+    setHasUnsavedChanges(false);
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -265,11 +315,20 @@ const MainAppLayout = () => {
   }, []);
 
   const handleTrashBinClick = useCallback(() => {
-    setIsTrashBinVisible(true);
-    setSelectedFile(null);
-    setFileContent('');
-    setIsEditing(false);
-    setIsTocVisible(false);
+    if (handleNavigation('/trash')) {
+      setIsTrashBinVisible(true);
+      setSelectedFile(null);
+      setFileContent('');
+      setIsEditing(false);
+      setIsTocVisible(false);
+    }
+  }, [handleNavigation]);
+
+  const handleChangesPending = useCallback((isPending, editorState = null) => {
+    setHasUnsavedChanges(isPending);
+    if (editorState) {
+      setCurrentEditorContent(editorState);
+    }
   }, []);
 
   const memoizedSidebar = useMemo(() => (
@@ -294,6 +353,7 @@ const MainAppLayout = () => {
         onSave={handleSave} 
         onCancel={handleCancel} 
         refreshFileStructure={fetchFileStructure}
+        onChangesPending={handleChangesPending}
       />
     );
   };
@@ -360,8 +420,14 @@ const MainAppLayout = () => {
           )}
         </main>
       </div>
+      <SavePromptModal 
+        isOpen={isPromptOpen}
+        onSave={handleSaveAndNavigate}
+        onDiscard={handleDiscardAndNavigate}
+        onClose={() => setIsPromptOpen(false)}
+      />
     </div>
-  );
+);
 };
 
 export default React.memo(MainAppLayout);

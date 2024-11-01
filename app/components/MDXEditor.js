@@ -44,7 +44,6 @@ const openSans = Open_Sans({
   display: 'swap',
 });
 
-// Define editor styles
 const editorStyles = `
 .mdxeditor-content-editable {
   font-family: var(--font-open-sans);
@@ -110,12 +109,11 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return <div className="error-message">Error rendering MDX content. Please check your markdown syntax.</div>;
     }
-
     return this.props.children;
   }
 }
 
-const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) => {
+const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onChangesPending }) => {
   const { theme } = useTheme();
   const [content, setContent] = useState('');
   const [initialContent, setInitialContent] = useState('');
@@ -130,7 +128,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [bundledContent, setBundledContent] = useState(null);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const editorRef = useRef(null);
 
   // Track changes
@@ -140,23 +137,24 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
     const hasSlugChanged = slug !== initialSlug;
     const hasPublicStateChanged = isPublic !== initialIsPublic;
 
-    setHasUnsavedChanges(
-      hasContentChanged || 
+    const hasChanges = hasContentChanged || 
       hasTitleChanged || 
       hasSlugChanged || 
-      hasPublicStateChanged
-    );
-  }, [content, title, slug, isPublic, initialContent, initialTitle, initialSlug, initialIsPublic]);
+      hasPublicStateChanged;
 
-  const handleSortOrderChange = async (path, newSortOrder) => {
-    try {
-      // Immediately refresh the file structure after sort order changes
-      await refreshFileStructure();
-    } catch (error) {
-      console.error('Error refreshing file structure:', error);
-      setErrorMessage('Failed to refresh file structure. Please try again.');
+    // Pass both the change status and current editor state
+    if (onChangesPending) {
+      onChangesPending(hasChanges, hasChanges ? {
+        content,
+        title,
+        slug,
+        isPublic,
+        path: file.path,
+        sortOrder: file.sortOrder,
+        children: file.children || []
+      } : null);
     }
-  };
+  }, [content, title, slug, isPublic, initialContent, initialTitle, initialSlug, initialIsPublic, onChangesPending, file]);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -168,7 +166,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
         }
         
         const fileContent = await response.text();
-        // Try to parse as JSON in case it's still coming back in the old format
         let actualContent = fileContent;
         try {
           const parsed = JSON.parse(fileContent);
@@ -222,49 +219,28 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
 
   const handleSave = async () => {
     try {
-      // Validate content before saving
       if (!content || content.trim() === '') {
         setErrorMessage('Cannot save empty content');
         return;
       }
 
-      const payload = {
-        path: file.path,
-        content: content,
-        title: title || file.title,
+      const updatedFile = {
+        ...file,
+        content,
+        title,
         isPublic,
-        slug: slug || file.slug,
-        version: 1  // Always use version 1 for now
+        slug,
+        lastModified: new Date().toISOString(),
+        version: 1
       };
 
-      console.log('Saving with payload:', payload);
-
-      const response = await fetch('/api/update-file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save file');
-      }
-
+      await onSave(updatedFile);
+      
       // Update initial values after successful save
       setInitialContent(content);
       setInitialTitle(title);
       setInitialSlug(slug);
       setInitialIsPublic(isPublic);
-      setHasUnsavedChanges(false);
-
-      const updatedFile = { 
-        ...file, 
-        title, 
-        isPublic, 
-        slug,
-        version: 1  // Always use version 1 for now
-      };
-      onSave(updatedFile);
       setErrorMessage('');
     } catch (error) {
       console.error('Error saving file:', error);
@@ -273,24 +249,21 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
   };
 
   const handleEditorChange = (newContent) => {
-    console.log('Editor content changed, length:', newContent ? newContent.length : 0);
     setContent(newContent);
   };
 
   const handleCancel = () => {
-    if (hasUnsavedChanges) {
-      const confirmLeave = window.confirm('Changes have been made. Do you want to save or discard?');
-      if (confirmLeave) {
-        handleSave();
-      } else {
-        if (onCancel) {
-          onCancel();
-        }
-      }
-    } else {
-      if (onCancel) {
-        onCancel();
-      }
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
+  const handleSortOrderChange = async (path, newSortOrder) => {
+    try {
+      await refreshFileStructure();
+    } catch (error) {
+      console.error('Error refreshing file structure:', error);
+      setErrorMessage('Failed to refresh file structure. Please try again.');
     }
   };
 
