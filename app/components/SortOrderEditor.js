@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
+const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath = null }) => {
   const [sortedItems, setSortedItems] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -29,7 +29,14 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
       try {
-        await onSortOrderChange(item.path, newSortOrder);
+        // Pass both items that need updating along with parent path context
+        await onSortOrderChange(
+          item.path, 
+          newSortOrder, 
+          sortedItems[index - 1].path, 
+          oldSortOrder,
+          parentPath
+        );
       } catch (error) {
         console.error('Failed to update sort order:', error);
         // Revert on error
@@ -53,7 +60,14 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title }) => {
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
       try {
-        await onSortOrderChange(item.path, newSortOrder);
+        // Pass both items that need updating along with parent path context
+        await onSortOrderChange(
+          item.path, 
+          newSortOrder, 
+          sortedItems[index + 1].path, 
+          oldSortOrder,
+          parentPath
+        );
       } catch (error) {
         console.error('Failed to update sort order:', error);
         // Revert on error
@@ -118,6 +132,7 @@ const SectionHeader = ({ title, isExpanded, onToggle }) => (
 const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) => {
   const [rootSiblings, setRootSiblings] = useState([]);
   const [childItems, setChildItems] = useState([]);
+  const [parentPath, setParentPath] = useState(null);
   const [debugInfo, setDebugInfo] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [error, setError] = useState(null);
@@ -126,7 +141,13 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
   const fetchFileStructure = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/file-structure');
+      const response = await fetch('/api/file-structure', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -179,6 +200,7 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
       if (result.found) {
         setRootSiblings(result.rootSiblings);
         setChildItems(result.childItems);
+        setParentPath(result.parent ? result.parent.path : null);
         setDebugInfo(
           `Found ${result.rootSiblings.length} root siblings and ${result.childItems.length} child items`
         );
@@ -200,14 +222,22 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
     }
   }, [file, fetchFileStructure]);
 
-  const handleSortOrderChange = async (path, newSortOrder) => {
+  const handleSortOrderChange = async (path, newSortOrder, swapPath, swapSortOrder, itemParentPath) => {
     try {
       const response = await fetch('/api/update-sort-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
         },
-        body: JSON.stringify({ path, newSortOrder }),
+        body: JSON.stringify({ 
+          path, 
+          newSortOrder,
+          swapPath,
+          swapSortOrder,
+          parentPath: itemParentPath
+        }),
       });
 
       if (!response.ok) {
@@ -219,11 +249,16 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
         throw new Error(data.error || 'Failed to update sort order');
       }
 
-      // Only refresh the file structure if the update was successful
+      // Immediately call the parent's onSortOrderChange to trigger a refresh
+      if (parentOnSortOrderChange) {
+        await parentOnSortOrderChange(path, newSortOrder);
+      }
+
+      // Fetch updated file structure
       await fetchFileStructure();
     } catch (error) {
       console.error('Error updating sort order:', error);
-      throw error; // Re-throw to let the SortTable handle the error
+      throw error;
     }
   };
 
@@ -272,6 +307,7 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
                 items={childItems}
                 currentPath={file.path}
                 onSortOrderChange={handleSortOrderChange}
+                parentPath={parentPath}
               />
             </div>
           )}

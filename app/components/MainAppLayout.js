@@ -18,7 +18,6 @@ const MainAppLayout = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isTrashBinVisible, setIsTrashBinVisible] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { theme } = useTheme();
   const router = useRouter();
   const params = useParams();
@@ -49,9 +48,7 @@ const MainAppLayout = () => {
 
   const fetchFileStructure = useCallback(async () => {
     try {
-      // Add cache-busting query parameter
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/file-structure?t=${timestamp}`, {
+      const response = await fetch('/api/file-structure', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
@@ -70,16 +67,10 @@ const MainAppLayout = () => {
     }
   }, []);
 
-  // Single useEffect for file structure refresh
+  // Initial file structure fetch
   useEffect(() => {
     fetchFileStructure();
-
-    // Set up production refresh interval
-    if (process.env.NODE_ENV === 'production') {
-      const interval = setInterval(fetchFileStructure, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [fetchFileStructure, refreshTrigger]);
+  }, [fetchFileStructure]);
 
   const loadFileContent = useCallback(async (path) => {
     if (!path) return;
@@ -145,10 +136,6 @@ const MainAppLayout = () => {
     }
   }, [router, session, loadFileContent]);
 
-  const triggerRefresh = useCallback(() => {
-    setRefreshTrigger(prev => prev + 1);
-  }, []);
-
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
     if (!session) return;
     try {
@@ -162,15 +149,14 @@ const MainAppLayout = () => {
         body: JSON.stringify({ parentPath, name, type }),
       });
       if (response.ok) {
-        triggerRefresh();
-        await fetchFileStructure(); // Immediate refresh after creation
+        await fetchFileStructure();
       } else {
         console.error('Failed to create new item');
       }
     } catch (error) {
       console.error('Error creating new item:', error);
     }
-  }, [session, triggerRefresh, fetchFileStructure]);
+  }, [session, fetchFileStructure]);
 
   const handleDelete = useCallback(async (path, type) => {
     if (!session) return;
@@ -185,8 +171,7 @@ const MainAppLayout = () => {
         body: JSON.stringify({ path, type }),
       });
       if (response.ok) {
-        triggerRefresh();
-        await fetchFileStructure(); // Immediate refresh after deletion
+        await fetchFileStructure();
         if (selectedFile && selectedFile.path === path) {
           router.push('/');
         }
@@ -196,7 +181,7 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [selectedFile, router, session, triggerRefresh, fetchFileStructure]);
+  }, [selectedFile, router, session, fetchFileStructure]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
     if (!session) return;
@@ -212,8 +197,7 @@ const MainAppLayout = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        triggerRefresh();
-        await fetchFileStructure(); // Immediate refresh after rename
+        await fetchFileStructure();
         if (selectedFile && selectedFile.path === oldPath) {
           router.push(`/${data.newSlug}`, undefined, { shallow: true });
         }
@@ -225,7 +209,7 @@ const MainAppLayout = () => {
       console.error('Error renaming item:', error);
       alert(`Error renaming item: ${error.message}`);
     }
-  }, [selectedFile, router, session, triggerRefresh, fetchFileStructure]);
+  }, [selectedFile, router, session, fetchFileStructure]);
 
   const handleSave = useCallback(async (updatedFile) => {
     if (!session) return;
@@ -242,8 +226,7 @@ const MainAppLayout = () => {
       if (response.ok) {
         setSelectedFile(updatedFile);
         setIsEditing(false);
-        triggerRefresh();
-        await fetchFileStructure(); // Immediate refresh after save
+        await fetchFileStructure();
         router.push(`/${updatedFile.slug}`, undefined, { shallow: true });
       } else {
         console.error('Failed to update file');
@@ -251,30 +234,16 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error updating file:', error);
     }
-  }, [router, session, triggerRefresh, fetchFileStructure]);
+  }, [router, session, fetchFileStructure]);
 
   const handleSortOrderChange = useCallback(async (path, newSortOrder) => {
     if (!session) return;
     try {
-      const response = await fetch('/api/update-sort-order', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        },
-        body: JSON.stringify({ path, newSortOrder }),
-      });
-      if (response.ok) {
-        triggerRefresh();
-        await fetchFileStructure(); // Immediate refresh after sort order change
-      } else {
-        console.error('Failed to update sort order');
-      }
+      await fetchFileStructure();
     } catch (error) {
       console.error('Error updating sort order:', error);
     }
-  }, [session, triggerRefresh, fetchFileStructure]);
+  }, [session, fetchFileStructure]);
 
   const toggleToc = useCallback(() => {
     setIsTocVisible((prev) => !prev);
@@ -319,7 +288,14 @@ const MainAppLayout = () => {
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
-    return <MDXEditor file={selectedFile} onSave={handleSave} onCancel={handleCancel} />;
+    return (
+      <MDXEditor 
+        file={selectedFile} 
+        onSave={handleSave} 
+        onCancel={handleCancel} 
+        refreshFileStructure={fetchFileStructure}
+      />
+    );
   };
 
   return (

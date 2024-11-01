@@ -6,7 +6,7 @@
       "path": "home.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-01T13:03:39.213Z",
+      "lastModified": "2024-11-01T13:15:46.169Z",
       "sortOrder": 1,
       "children": []
     },
@@ -16,7 +16,7 @@
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-20T20:08:16.526Z",
+      "lastModified": "2024-11-01T13:30:55.782Z",
       "sortOrder": 2,
       "children": [
         {
@@ -36,7 +36,8 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-10-23T13:35:25.208Z",
-          "children": []
+          "children": [],
+          "sortOrder": 0
         }
       ]
     },
@@ -47,7 +48,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-10-30T12:58:51.650Z",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "children": []
     },
     {
@@ -57,7 +58,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-11-01T13:01:50.450Z",
-      "sortOrder": 4,
+      "sortOrder": 3,
       "children": []
     }
   ]

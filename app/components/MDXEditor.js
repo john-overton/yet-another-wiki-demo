@@ -115,7 +115,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const MDXEditorComponent = ({ file, onSave, onCancel }) => {
+const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) => {
   const { theme } = useTheme();
   const [content, setContent] = useState('');
   const [title, setTitle] = useState(file.title);
@@ -130,23 +130,11 @@ const MDXEditorComponent = ({ file, onSave, onCancel }) => {
 
   const handleSortOrderChange = async (path, newSortOrder) => {
     try {
-      const response = await fetch('/api/update-sort-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path,
-          newSortOrder
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update sort order');
-      }
-
-      window.location.reload();
+      // Immediately refresh the file structure after sort order changes
+      await refreshFileStructure();
     } catch (error) {
-      console.error('Error updating sort order:', error);
-      setErrorMessage('Failed to update sort order. Please try again.');
+      console.error('Error refreshing file structure:', error);
+      setErrorMessage('Failed to refresh file structure. Please try again.');
     }
   };
 

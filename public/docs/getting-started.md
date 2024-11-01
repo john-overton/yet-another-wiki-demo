@@ -7,29 +7,32 @@ Welcome to Yet Another Wiki! This guide will help you get started with setting u
 ### Prerequisites
 
 Before you begin, ensure you have:
+
 * Node.js (version 14.0.0 or later)
 * npm (comes with Node.js)
 
 ### Setting Up Your Environment
 
 1. Create a new Next.js project:
+
 ```bash
 npx create-next-app@latest my-wiki-project
 ```
 
-2. During setup, you'll be prompted with several configuration options:
+1. During setup, you'll be prompted with several configuration options:
    * TypeScript support (Recommended: Yes)
    * ESLint (Recommended: Yes)
    * Tailwind CSS (Optional)
    * App Router (Recommended: Yes)
    * Custom import alias (Optional)
+2. Navigate to your project directory:
 
-3. Navigate to your project directory:
 ```bash
 cd my-wiki-project
 ```
 
-4. Start the development server:
+1. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -39,6 +42,7 @@ Your wiki should now be running at `http://localhost:3000`
 ## Project Structure
 
 Key directories in your wiki:
+
 * `app/`: Contains your application's pages and components
 * `public/`: Stores static assets
 * `styles/`: Houses your CSS files
@@ -49,6 +53,7 @@ Key directories in your wiki:
 ### Available Theming Options
 
 1. **CSS Modules**
+
 ```jsx
 // styles/WikiPage.module.css
 .container {
@@ -64,7 +69,8 @@ const WikiPage = ({ children }) => (
 )
 ```
 
-2. **Global Styles**
+1. **Global Styles**
+
 ```css
 /* styles/globals.css */
 :root {
@@ -78,7 +84,8 @@ const WikiPage = ({ children }) => (
 }
 ```
 
-3. **Theme Context**
+1. **Theme Context**
+
 ```jsx
 // contexts/ThemeContext.js
 import React, { createContext, useState } from 'react'
@@ -109,17 +116,14 @@ export const ThemeProvider = ({ children }) => {
    * Keep related files together
    * Use clear, consistent naming conventions
    * Maintain a logical folder structure
-
 2. **Performance**
    * Optimize images before adding to the wiki
    * Use appropriate image formats
    * Implement lazy loading for large content
-
 3. **Content Management**
    * Regular backups of wiki content
    * Version control for documentation
    * Clear documentation structure
-
 4. **Accessibility**
    * Maintain proper heading hierarchy
    * Ensure sufficient color contrast
@@ -131,14 +135,12 @@ Common issues and solutions:
 
 1. **Installation Problems**
    * Clear npm cache: `npm cache clean --force`
-   * Delete node_modules and reinstall
+   * Delete node\_modules and reinstall
    * Verify Node.js version compatibility
-
 2. **Styling Issues**
    * Check CSS module imports
    * Verify theme context implementation
    * Inspect browser dev tools for conflicts
-
 3. **Content Display**
    * Verify markdown syntax
    * Check file permissions

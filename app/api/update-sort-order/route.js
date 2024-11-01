@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function POST(request) {
   try {
-    const { path: filePath, newSortOrder } = await request.json();
+    const { path: filePath, newSortOrder, swapPath, swapSortOrder, parentPath } = await request.json();
 
     // Read the current meta.json from public/docs
     const metaPath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
@@ -12,36 +12,61 @@ export async function POST(request) {
     const meta = JSON.parse(metaContent);
 
     // Function to update sort orders in a list of items
-    const updateSortOrders = (items, targetPath, newOrder) => {
-      const itemIndex = items.findIndex(item => item.path === targetPath);
-      if (itemIndex === -1) {
-        // Search in children
-        for (const item of items) {
-          if (item.children) {
-            const updated = updateSortOrders(item.children, targetPath, newOrder);
-            if (updated) return true;
+    const updateSortOrders = (items, targetPath, newOrder, swapTargetPath, swapOrder, parentTargetPath = null) => {
+      // If we have a parent path, we need to find that parent first
+      if (parentTargetPath) {
+        const findAndUpdateInParent = (parentItems) => {
+          for (const item of parentItems) {
+            if (item.path === parentTargetPath && item.children) {
+              // Found the parent, update its children
+              const targetIndex = item.children.findIndex(child => child.path === targetPath);
+              const swapIndex = item.children.findIndex(child => child.path === swapTargetPath);
+              
+              if (targetIndex !== -1 && swapIndex !== -1) {
+                item.children[targetIndex].sortOrder = newOrder;
+                item.children[swapIndex].sortOrder = swapOrder;
+                return true;
+              }
+            }
+            
+            // Recursively search in children
+            if (item.children) {
+              const found = findAndUpdateInParent(item.children);
+              if (found) return true;
+            }
           }
-        }
-        return false;
+          return false;
+        };
+
+        return findAndUpdateInParent(items);
       }
 
-      // Get current sort order
-      const currentOrder = items[itemIndex].sortOrder || 0;
+      // If no parent path, update at root level
+      let foundTarget = false;
+      let foundSwap = false;
 
-      // Update sort orders
-      items.forEach(item => {
-        if (item.path === targetPath) {
-          item.sortOrder = newOrder;
-        } else if (item.sortOrder === newOrder) {
-          item.sortOrder = currentOrder;
+      const searchAndUpdate = (itemList) => {
+        for (const item of itemList) {
+          if (item.path === targetPath) {
+            item.sortOrder = newOrder;
+            foundTarget = true;
+          } else if (item.path === swapTargetPath) {
+            item.sortOrder = swapOrder;
+            foundSwap = true;
+          }
+
+          if (item.children) {
+            searchAndUpdate(item.children);
+          }
         }
-      });
+      };
 
-      return true;
+      searchAndUpdate(items);
+      return foundTarget && foundSwap;
     };
 
     // Update the sort orders
-    updateSortOrders(meta.pages, filePath, newSortOrder);
+    updateSortOrders(meta.pages, filePath, newSortOrder, swapPath, swapSortOrder, parentPath);
 
     // Write back to meta.json in public/docs
     await fs.writeFile(metaPath, JSON.stringify(meta, null, 2), 'utf8');
