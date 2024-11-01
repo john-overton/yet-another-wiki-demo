@@ -144,19 +144,24 @@ const MainAppLayout = () => {
       setPendingNavigation(destination);
       return false;
     }
+    setIsEditing(false); // Reset editing state when navigation is allowed
     return true;
   }, [isEditing, hasUnsavedChanges]);
 
   const handleFileSelect = useCallback((file) => {
     if (file.isPublic || session) {
+      const isSameFile = selectedFile && selectedFile.path === file.path;
       if (handleNavigation(`/${file.slug}`)) {
         setSelectedFile(file);
         loadFileContent(file.path);
         router.push(`/${file.slug}`, undefined, { shallow: true });
         setIsTrashBinVisible(false);
+        if (isSameFile) {
+          setIsEditing(false); // Force exit edit mode when selecting the same file
+        }
       }
     }
-  }, [router, session, loadFileContent, handleNavigation]);
+  }, [router, session, loadFileContent, handleNavigation, selectedFile]);
 
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
     if (!session) return;
@@ -324,6 +329,7 @@ const MainAppLayout = () => {
   const handleDiscardAndNavigate = useCallback(() => {
     setIsPromptOpen(false);
     setHasUnsavedChanges(false);
+    setIsEditing(false); // Reset editing state when discarding changes
     if (pendingNavigation) {
       router.push(pendingNavigation);
       setPendingNavigation(null);
