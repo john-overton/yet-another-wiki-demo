@@ -246,7 +246,7 @@ const TrashBin = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <button
                     onClick={() => handlePreview(item)}
-                    className="text-blue-500 hover:text-blue-700 mr-2"
+                    className="text-gray-500 text-xl hover:text-blue-500 mr-2"
                     title={`Preview ${item.title}`}
                     aria-label={`Preview ${item.title}`}
                   >
@@ -254,7 +254,7 @@ const TrashBin = () => {
                   </button>
                   <button
                     onClick={(e) => handlePermanentDelete(e, item.path)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-gray-500 text-xl hover:text-red-500"
                     title={`Permanently Delete ${item.title}`}
                     aria-label={`Permanently Delete ${item.title}`}
                   >
