@@ -118,15 +118,35 @@ class ErrorBoundary extends React.Component {
 const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) => {
   const { theme } = useTheme();
   const [content, setContent] = useState('');
+  const [initialContent, setInitialContent] = useState('');
   const [title, setTitle] = useState(file.title);
+  const [initialTitle, setInitialTitle] = useState(file.title);
   const [isPublic, setIsPublic] = useState(file.isPublic);
+  const [initialIsPublic, setInitialIsPublic] = useState(file.isPublic);
   const [slug, setSlug] = useState(file.slug);
+  const [initialSlug, setInitialSlug] = useState(file.slug);
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [bundledContent, setBundledContent] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const editorRef = useRef(null);
+
+  // Track changes
+  useEffect(() => {
+    const hasContentChanged = content !== initialContent;
+    const hasTitleChanged = title !== initialTitle;
+    const hasSlugChanged = slug !== initialSlug;
+    const hasPublicStateChanged = isPublic !== initialIsPublic;
+
+    setHasUnsavedChanges(
+      hasContentChanged || 
+      hasTitleChanged || 
+      hasSlugChanged || 
+      hasPublicStateChanged
+    );
+  }, [content, title, slug, isPublic, initialContent, initialTitle, initialSlug, initialIsPublic]);
 
   const handleSortOrderChange = async (path, newSortOrder) => {
     try {
@@ -161,6 +181,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
         }
 
         setContent(actualContent);
+        setInitialContent(actualContent);
         
         // Bundle the initial content
         const bundled = await bundleMDXContent(actualContent);
@@ -229,6 +250,13 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
         throw new Error(errorData.error || 'Failed to save file');
       }
 
+      // Update initial values after successful save
+      setInitialContent(content);
+      setInitialTitle(title);
+      setInitialSlug(slug);
+      setInitialIsPublic(isPublic);
+      setHasUnsavedChanges(false);
+
       const updatedFile = { 
         ...file, 
         title, 
@@ -250,8 +278,19 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
   };
 
   const handleCancel = () => {
-    if (onCancel) {
-      onCancel();
+    if (hasUnsavedChanges) {
+      const confirmLeave = window.confirm('Changes have been made. Do you want to save or discard?');
+      if (confirmLeave) {
+        handleSave();
+      } else {
+        if (onCancel) {
+          onCancel();
+        }
+      }
+    } else {
+      if (onCancel) {
+        onCancel();
+      }
     }
   };
 
@@ -315,15 +354,13 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure }) =>
           <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
           <div className="flex items-center justify-between">
             <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={isPublic}
-                  onChange={(e) => setIsPublic(e.target.checked)}
-                  className="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary"
-                />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Public</span>
-              </label>
+              <button
+                onClick={() => setIsPublic(!isPublic)}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                <i className={isPublic ? "ri-eye-line" : "ri-eye-off-line"}></i>
+                <span className={isPublic ? "text-primary" : "text-gray-500"}>Public</span>
+              </button>
             </div>
             <div className="flex gap-2">
               <button
