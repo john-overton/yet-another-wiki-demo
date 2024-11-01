@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 const FileItem = ({ 
   item, 
@@ -18,6 +19,7 @@ const FileItem = ({
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const inputRef = useRef(null);
 
   const handleSubmit = useCallback(async () => {
@@ -55,28 +57,28 @@ const FileItem = ({
 
   const handleDelete = async (e) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${item.title}"?`)) {
-      const deleteChildren = item.children && item.children.length > 0 && 
-        window.confirm("Do you want to delete child items as well?");
-      
-      try {
-        const response = await fetch('/api/delete-item', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ path: item.path, deleteChildren }),
-        });
+    setIsDeleteModalOpen(true);
+  };
 
-        if (response.ok) {
-          onDelete(item.path);
-        } else {
-          console.error('Failed to delete item');
-        }
-      } catch (error) {
-        console.error('Error deleting item:', error);
+  const handleConfirmDelete = async (e) => {
+    try {
+      const response = await fetch('/api/delete-item', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ path: item.path, deleteChildren: item.children && item.children.length > 0 }),
+      });
+
+      if (response.ok) {
+        onDelete(item.path);
+      } else {
+        console.error('Failed to delete item');
       }
+    } catch (error) {
+      console.error('Error deleting item:', error);
     }
+    setIsDeleteModalOpen(false);
   };
 
   const toggleExpand = (e) => {
@@ -144,6 +146,13 @@ const FileItem = ({
           </div>
         </div>
       )}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        itemTitle={displayName}
+        hasChildren={item.children && item.children.length > 0}
+      />
       {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {sortedChildren.map((child, index) => (
