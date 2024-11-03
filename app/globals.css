@@ -16,6 +16,8 @@
   --color-input-border: #374151;
   --color-text-gray: #374151;
   --color-success: #10b981;
+  --table-of-contents-bg: #717171AA;
+  --table-of-contents-border: #9b9b9b;
 }
 
 .dark {
@@ -27,6 +29,8 @@
   --color-input-border: #4b5563;
   --color-text-gray: #9ca3af;
   --color-success: #10b981;
+  --table-of-contents-bg: #374151AA;
+  --table-of-contents-border: #4b5563;
 }
 
 .roboto-thin {
@@ -245,11 +249,10 @@ body {
 }
 
 .table-of-contents {
-  background-color: #2D2D2DDD;
-}
-
-.z-1000{
+  background-color: var(--table-of-contents-bg);
+  border-color: var(--table-of-contents-border);
   z-index: 1000;
+  backdrop-filter: blur(5px)
 }
 
 .rot-15:hover{
