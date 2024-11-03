@@ -39,7 +39,6 @@ import {
 import "@mdxeditor/editor/style.css";
 import '../styles/mdxeditor.css';
 import { Open_Sans } from 'next/font/google';
-import { fileUploadPlugin, InsertFile } from './mdxeditor.fileupload';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -342,7 +341,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                       <InsertImage />
                       <InsertTable />
                       <InsertThematicBreak />
-                      <InsertFile />
                       <ListsToggle />
                       <CodeToggle />
                       <ConditionalContents
@@ -368,7 +366,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 headingsPlugin({
                   allowedHeadingLevels: [1, 2, 3, 4, 5, 6]
                 }),
-                // Link plugins need to be before fileUploadPlugin
                 linkPlugin({
                   validateUrl: () => true, // Allow all URLs
                 }),
@@ -386,15 +383,14 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),
                 diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
-                markdownShortcutPlugin(),
-                fileUploadPlugin()
+                markdownShortcutPlugin()
               ]}
-              />
-              </ErrorBoundary>
-            )}
-          </div>
-        </>
-      );
-    };
-    
-    export default MDXEditorComponent;
+            />
+          </ErrorBoundary>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default MDXEditorComponent;
