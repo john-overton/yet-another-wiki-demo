@@ -232,46 +232,50 @@ const Sidebar = ({
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
-    <div className="h-full overflow-hidden">
-      <div className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex flex-col">
-        <div 
-          className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
-          onMouseEnter={() => setIsHeaderHovered(true)}
-          onMouseLeave={() => setIsHeaderHovered(false)}
-        >
-          <div className="text-xl text-gray-900 dark:text-white"><b>Pages</b></div>
-          {isAuthenticated && (
-            <button
-              onClick={handleCreateRoot}
-              className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
-            >
-              <p><i className="ri-add-line"></i>Add Page</p>
-            </button>
+    <div className="h-full flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="flex-none px-3 py-5">
+          <div 
+            className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onMouseEnter={() => setIsHeaderHovered(true)}
+            onMouseLeave={() => setIsHeaderHovered(false)}
+          >
+            <div className="text-xl text-gray-900 dark:text-white"><b>Pages</b></div>
+            {isAuthenticated && (
+              <button
+                onClick={handleCreateRoot}
+                className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <p><i className="ri-add-line"></i>Add Page</p>
+              </button>
+            )}
+          </div>
+          {isCreatingRoot && isAuthenticated && (
+            <CreateItemInterface
+              onCreateNew={onCreateNew}
+              onClose={() => setIsCreatingRoot(false)}
+            />
           )}
         </div>
-        {isCreatingRoot && isAuthenticated && (
-          <CreateItemInterface
-            onCreateNew={onCreateNew}
-            onClose={() => setIsCreatingRoot(false)}
-          />
-        )}
-        <ul className="space-y-2 flex-grow">
-          {filteredFileStructure.map((item, index) => (
-            <FileItem 
-              key={index} 
-              item={item} 
-              onSelect={onSelect} 
-              onCreateNew={onCreateNew} 
-              onDelete={onDelete} 
-              onRename={onRename} 
-              isAuthenticated={isAuthenticated}
-              refreshFileStructure={refreshFileStructure}
-              onSortOrderChange={onSortOrderChange}
-            />
-          ))}
-        </ul>
+        <div className="flex-1 overflow-y-auto px-3">
+          <ul className="space-y-2">
+            {filteredFileStructure.map((item, index) => (
+              <FileItem 
+                key={index} 
+                item={item} 
+                onSelect={onSelect} 
+                onCreateNew={onCreateNew} 
+                onDelete={onDelete} 
+                onRename={onRename} 
+                isAuthenticated={isAuthenticated}
+                refreshFileStructure={refreshFileStructure}
+                onSortOrderChange={onSortOrderChange}
+              />
+            ))}
+          </ul>
+        </div>
         {isAuthenticated && (
-          <>
+          <div className="flex-none px-3 py-4 dark:border-gray-700">
             <Link 
               href="/settings"
               className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"
@@ -281,12 +285,12 @@ const Sidebar = ({
             </Link>
             <button 
               onClick={onTrashBinClick}
-              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
             >
               <i className="ri-delete-bin-7-line mr-2"></i>
               <span>Trash Bin</span>
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
