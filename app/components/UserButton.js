@@ -57,10 +57,14 @@ export default function UserButton({ user: initialUser }) {
       return null;
     }
     
-    // Add timestamp to force refresh
-    return avatar.startsWith('http') 
-      ? `${avatar}?t=${timestamp}`
-      : `/user-avatars/${avatar.split('/').pop()}?t=${timestamp}`;
+    // If it's a full URL, return it as is
+    if (avatar.startsWith('http')) {
+      return avatar;
+    }
+    
+    // For local avatars, ensure we're using the correct path
+    const filename = avatar.split('/').pop();
+    return `/user-avatars/${filename}`;
   };
 
   const avatarUrl = getAvatarUrl(user.avatar);
@@ -85,7 +89,6 @@ export default function UserButton({ user: initialUser }) {
               onError={() => setAvatarError(true)}
               priority={true}
               unoptimized={true}
-              key={timestamp} // Force remount on timestamp change
             />
           </div>
         ) : (
