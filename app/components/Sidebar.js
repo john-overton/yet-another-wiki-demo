@@ -72,32 +72,34 @@ const FileItem = ({
     <li>
       <button
         type="button"
-        className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+        className="flex items-center justify-between w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 p-2"
         onClick={() => onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {item.children && item.children.length > 0 && (
-          <i
-            className={`mr-2 font-normal cursor-pointer flex-shrink-0 ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
-            onClick={toggleExpand}
-          ></i>
-        )}
-        <span className="ml-1 break-words">{displayName}</span>
-        {isHovered && isAuthenticated && (
-          <span className="ml-auto flex items-center flex-shrink-0">
+        <div className="flex items-center min-w-0">
+          {item.children && item.children.length > 0 && (
             <i
-              className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
+              className={`mr-2 font-normal cursor-pointer flex-shrink-0 ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
+              onClick={toggleExpand}
+            ></i>
+          )}
+          <span className="truncate">{displayName}</span>
+        </div>
+        {isAuthenticated && (
+          <div className={`flex items-center flex-shrink-0 ml-2 ${isHovered ? 'opacity-100' : 'sm:opacity-0 opacity-100'} transition-opacity duration-200`}>
+            <i
+              className="ri-delete-bin-line cursor-pointer text-gray-500 hover:text-red-500 font-normal px-1"
               onClick={handleDelete}
             ></i>
             <i
-              className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal"
+              className="ri-add-line cursor-pointer text-gray-500 hover:text-green-500 font-normal px-1"
               onClick={(e) => {
                 e.stopPropagation();
                 handleCreateNew();
               }}
             ></i>
-          </span>
+          </div>
         )}
       </button>
       {isCreating && (

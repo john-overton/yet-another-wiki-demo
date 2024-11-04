@@ -411,7 +411,7 @@ const MainAppLayout = () => {
     <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
       <div className="flex flex-1 overflow-hidden relative">
         <div className="relative h-full">
-          <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? 'w-fit max-w-[16rem]' : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
+          <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
             {memoizedSidebar}
           </div>
           <button
