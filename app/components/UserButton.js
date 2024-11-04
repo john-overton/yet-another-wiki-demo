@@ -6,13 +6,18 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserSettingsModal from './UserSettingsModal';
 
-export default function UserButton({ user }) {
+export default function UserButton({ user: initialUser }) {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const [user, setUser] = useState(initialUser);
   const router = useRouter();
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -22,11 +27,29 @@ export default function UserButton({ user }) {
     };
 
     // Listen for avatar updates with timestamp
-    const handleAvatarUpdate = (event) => {
-      // Use the timestamp from the event if available, otherwise generate new one
-      const newTimestamp = event.detail?.timestamp || Date.now();
-      setTimestamp(newTimestamp);
-      setAvatarError(false);
+    const handleAvatarUpdate = async (event) => {
+      try {
+        // Fetch latest user data
+        const response = await fetch('/api/auth/me', {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        if (response.ok) {
+          const updatedUser = await response.json();
+          setUser(updatedUser);
+        }
+
+        // Update timestamp for cache busting
+        const newTimestamp = event.detail?.timestamp || Date.now();
+        setTimestamp(newTimestamp);
+        setAvatarError(false);
+      } catch (error) {
+        console.error('Error fetching updated user data:', error);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
