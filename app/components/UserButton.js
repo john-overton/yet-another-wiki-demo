@@ -4,10 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import UserSettingsModal from './UserSettingsModal';
 
 export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef(null);
 
@@ -81,6 +83,15 @@ export default function UserButton({ user }) {
             <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
           </div>
           <button
+            onClick={() => {
+              setShowSettingsModal(true);
+              setIsOpen(false);
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+          >
+            Settings
+          </button>
+          <button
             onClick={handleLogout}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
           >
@@ -88,6 +99,12 @@ export default function UserButton({ user }) {
           </button>
         </div>
       )}
+
+      <UserSettingsModal
+        user={user}
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
     </div>
   );
 }

@@ -63,7 +63,6 @@ const decrypt = (encryptedText) => {
 export async function PUT(request) {
   try {
     const data = await request.json();
-    console.log('Received update data:', data); // Debug log
 
     const { 
       id, 
@@ -143,12 +142,6 @@ export async function PUT(request) {
       if (secret_question_3_id !== undefined) updateData.secret_question_3_id = secret_question_3_id;
       if (secret_answer_3 !== undefined) updateData.secret_answer_3 = encrypt(secret_answer_3);
     }
-
-    console.log('Update data:', { 
-      ...updateData, 
-      userId,
-      hasSecurityAnswers: !!(updateData.secret_answer_1 || updateData.secret_answer_2 || updateData.secret_answer_3)
-    }); // Debug log
 
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(userId) },
