@@ -3,6 +3,41 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1002] flex items-center justify-center p-1">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-sm" onClick={e => e.stopPropagation()}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const NewItemInput = ({ value, onChange, onKeyDown, onClose, inputRef, isModal = false }) => {
+  return (
+    <div className="flex items-center p-1">
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder="New item name"
+        className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
+        ref={inputRef}
+        autoFocus
+      />
+      <button
+        onClick={onClose}
+        className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+      >
+        <i className="ri-close-line shadow-sm"></i>
+      </button>
+    </div>
+  );
+};
+
 const FileItem = ({ 
   item, 
   onSelect, 
@@ -18,7 +53,19 @@ const FileItem = ({
   const [isCreating, setIsCreating] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef(null);
+  const itemRef = useRef(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 600);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     if (newItemName.trim()) {
@@ -35,13 +82,16 @@ const FileItem = ({
   }, [handleSubmit]);
 
   useEffect(() => {
-    if (isCreating) {
+    if (isCreating && !isMobile) {
       document.addEventListener('click', handleOutsideClick);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [isCreating, handleOutsideClick]);
+  }, [isCreating, handleOutsideClick, isMobile]);
 
   const handleCreateNew = () => {
     setIsCreating(true);
@@ -69,7 +119,7 @@ const FileItem = ({
   const sortedChildren = item.children ? [...item.children].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)) : [];
 
   return (
-    <li>
+    <li ref={itemRef}>
       <button
         type="button"
         className="flex items-center justify-between w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 p-2"
@@ -102,29 +152,39 @@ const FileItem = ({
           </div>
         )}
       </button>
-      {isCreating && (
-        <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1001]" ref={inputRef}>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[1002]">
-            <div className="flex items-center">
-              <input
-                type="text"
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="New item name"
-                className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
-                autoFocus
-              />
-              <button
-                onClick={() => setIsCreating(false)}
-                className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
-              >
-                <i className="ri-close-line shadow-sm"></i>
-              </button>
-            </div>
+
+      {/* Mobile Modal */}
+      {isMobile && (
+        <Modal isOpen={isCreating} onClose={() => setIsCreating(false)}>
+          <div className="p-4">
+            <h3 className="text-lg font-medium mb-4 dark:text-white">Add New Item</h3>
+            <NewItemInput
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onClose={() => setIsCreating(false)}
+              inputRef={inputRef}
+              isModal={true}
+            />
+          </div>
+        </Modal>
+      )}
+
+      {/* Desktop Inline Input */}
+      {!isMobile && isCreating && (
+        <div className="relative ml-1 mt-1 mb-1 shadow-lg z-[1001]">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+            <NewItemInput
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onClose={() => setIsCreating(false)}
+              inputRef={inputRef}
+            />
           </div>
         </div>
       )}
+
       {item.children && item.children.length > 0 && isExpanded && (
         <ul className="space-y-2 ml-4 border-l border-gray-200 dark:border-gray-700">
           {sortedChildren.map((child, index) => (
@@ -149,7 +209,18 @@ const FileItem = ({
 
 const CreateItemInterface = ({ onCreateNew, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 600);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleOutsideClick = useCallback((e) => {
     if (inputRef.current && !inputRef.current.contains(e.target)) {
@@ -158,11 +229,16 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
   }, [onClose]);
 
   useEffect(() => {
-    document.addEventListener('click', handleOutsideClick);
+    if (!isMobile) {
+      document.addEventListener('click', handleOutsideClick);
+    }
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
     return () => {
       document.removeEventListener('click', handleOutsideClick);
     };
-  }, [handleOutsideClick]);
+  }, [handleOutsideClick, isMobile]);
 
   const handleSubmit = async () => {
     if (newItemName.trim()) {
@@ -177,26 +253,34 @@ const CreateItemInterface = ({ onCreateNew, onClose }) => {
     }
   };
 
-  return (
-    <div className="fixed ml-1 mt-1 mb-1 overflow-visible flex shadow-lg z-[1000]" ref={inputRef}>
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 z-[999]">
-        <div className="flex items-center">
-          <input
-            type="text"
+  if (isMobile) {
+    return (
+      <Modal isOpen={true} onClose={onClose}>
+        <div className="p-4">
+          <h3 className="text-lg font-medium mb-4 dark:text-white">Add New Page</h3>
+          <NewItemInput
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="New item name"
-            className="border rounded px-2 py-1 pr-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-grow"
-            autoFocus
+            onClose={onClose}
+            inputRef={inputRef}
+            isModal={true}
           />
-          <button
-            onClick={onClose}
-            className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
-          >
-            <i className="ri-close-line shadow-sm"></i>
-          </button>
         </div>
+      </Modal>
+    );
+  }
+
+  return (
+    <div className="relative ml-1 mt-1 mb-1 shadow-lg z-[1000]">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+        <NewItemInput
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onClose={onClose}
+          inputRef={inputRef}
+        />
       </div>
     </div>
   );

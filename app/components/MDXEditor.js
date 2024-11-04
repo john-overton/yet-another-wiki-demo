@@ -290,10 +290,10 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
               <button
                 onClick={() => setIsPreview(!isPreview)}
                 className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-                title="Preview"
+                title={isPreview ? "Edit" : "Preview"}
               >
-                <i className="ri-eye-line"></i>
-                <span>Preview</span>
+                <i className={isPreview ? "ri-pencil-line" : "ri-eye-fill"}></i>
+                <span className="hidden sm:inline">{isPreview ? "Edit" : "Preview"}</span>
               </button>
               <button
                 onClick={handleCancel}
@@ -301,7 +301,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 title="Cancel"
               >
                 <i className="ri-close-line"></i>
-                <span>Cancel</span>
+                <span className="hidden sm:inline">Cancel</span>
               </button>
               <button
                 onClick={handleSave}
@@ -309,7 +309,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 title="Save"
               >
                 <i className="ri-save-line"></i>
-                <span>Save</span>
+                <span className="hidden sm:inline">Save</span>
               </button>
             </div>
           </div>

@@ -6,7 +6,7 @@
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-01T16:20:03.263Z",
+      "lastModified": "2024-11-04T00:55:20.637Z",
       "sortOrder": 2,
       "children": [
         {
@@ -16,8 +16,7 @@
           "isPublic": false,
           "version": 1,
           "lastModified": "2024-11-01T16:20:11.158Z",
-          "children": [],
-          "sortOrder": 2
+          "children": []
         },
         {
           "slug": "theming",
@@ -28,6 +27,16 @@
           "lastModified": "2024-11-01T16:20:08.208Z",
           "children": [],
           "sortOrder": 0
+        },
+        {
+          "slug": "test-item",
+          "title": "Test Item",
+          "path": "test-item.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-04T00:55:03.937Z",
+          "children": [],
+          "sortOrder": 2
         }
       ]
     },
@@ -59,7 +68,17 @@
       "version": 1,
       "lastModified": "2024-11-01T15:34:25.426Z",
       "sortOrder": 1,
-      "children": []
+      "children": [
+        {
+          "slug": "testesting-from-mobile",
+          "title": "Testesting from mobile",
+          "path": "testesting-from-mobile.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-04T00:55:55.334Z",
+          "children": []
+        }
+      ]
     }
   ]
 }
