@@ -13,8 +13,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'No path provided' }, { status: 400 });
     }
 
-    // Resolve the path relative to the public/docs directory
-    const fullPath = path.join(process.cwd(), 'public', 'docs', filePath);
+    // Resolve the path relative to the data/docs directory
+    const fullPath = path.join(process.cwd(), 'data', 'docs', filePath);
     console.log('Reading file from:', fullPath);
 
     const content = await fs.readFile(fullPath, 'utf8');
@@ -37,8 +37,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No path provided' }, { status: 400 });
     }
 
-    // Write to the public/docs directory
-    const fullPath = path.join(process.cwd(), 'public', 'docs', filePath);
+    // Write to the data/docs directory
+    const fullPath = path.join(process.cwd(), 'data', 'docs', filePath);
     await fs.writeFile(fullPath, content, 'utf8');
     
     return NextResponse.json({ success: true });

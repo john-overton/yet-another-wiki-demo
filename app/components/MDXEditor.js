@@ -183,7 +183,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         isPublic,
         slug,
         lastModified: new Date().toISOString(),
-        version: 1
+        version: 1,
+        id: file.id // Ensure ID is preserved
       };
 
       await onSave(updatedFile);
@@ -210,7 +211,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
     }
   };
 
-  const handleSortOrderChange = async (path, newSortOrder) => {
+  const handleSortOrderChange = async (id, newSortOrder) => {
     try {
       await refreshFileStructure();
     } catch (error) {

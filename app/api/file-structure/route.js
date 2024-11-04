@@ -1,66 +1,125 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'; // Disable static optimization
-export const revalidate = 0; // Disable cache
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
-    
+    const metaFilePath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
+
     // Ensure the docs directory exists
-    const docsDir = path.join(process.cwd(), 'public', 'docs');
+    const docsDir = path.join(process.cwd(), 'data', 'docs');
     try {
       await fs.access(docsDir);
     } catch {
       await fs.mkdir(docsDir, { recursive: true });
     }
 
-    // Read or create meta.json
     let metaData;
     try {
       const metaContent = await fs.readFile(metaFilePath, 'utf8');
       metaData = JSON.parse(metaContent);
-    } catch {
-      metaData = { pages: [] };
+
+      // Function to recursively filter out deleted items
+      const filterDeletedItems = (items) => {
+        return items
+          .filter(item => !item.deleted)
+          .map(item => ({
+            ...item,
+            children: item.children ? filterDeletedItems(item.children) : []
+          }));
+      };
+
+      // Filter out deleted items before returning
+      metaData = {
+        ...metaData,
+        pages: filterDeletedItems(metaData.pages)
+      };
+    } catch (error) {
+      // If meta.json doesn't exist or is invalid, create a new one
+      metaData = { pages: [], lastId: 0 };
       await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
     }
 
-    const validateAndFilterItems = async (items) => {
-      const validItems = [];
-      for (const item of items) {
-        // Skip deleted items
-        if (item.deleted) continue;
+    return NextResponse.json(metaData);
+  } catch (error) {
+    console.error('Error reading file structure:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
 
-        const fullPath = path.join(process.cwd(), 'public', 'docs', item.path);
-        try {
-          await fs.access(fullPath);
-          if (item.children) {
-            item.children = await validateAndFilterItems(item.children);
-          }
-          validItems.push(item);
-        } catch (error) {
-          console.warn(`File not found: ${fullPath}`);
+export async function POST(request) {
+  try {
+    const { sourceId, targetId, moveToRoot } = await request.json();
+    const metaFilePath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
+    const metaContent = await fs.readFile(metaFilePath, 'utf8');
+    const metaData = JSON.parse(metaContent);
+
+    // Function to find and remove an item by ID
+    const findAndRemoveItem = (pages, id) => {
+      for (let i = 0; i < pages.length; i++) {
+        if (pages[i].id === id) {
+          return pages.splice(i, 1)[0];
+        }
+        if (pages[i].children) {
+          const found = findAndRemoveItem(pages[i].children, id);
+          if (found) return found;
         }
       }
-      return validItems;
+      return null;
     };
 
-    metaData.pages = await validateAndFilterItems(metaData.pages);
+    // Function to find a parent item by ID
+    const findParent = (pages, id) => {
+      for (const item of pages) {
+        if (item.id === id) {
+          return item;
+        }
+        if (item.children) {
+          const found = findParent(item.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
 
-    return new Response(JSON.stringify(metaData), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      },
-    });
+    // Function to get max sort order
+    const getMaxSortOrder = (items) => {
+      return items.reduce((max, item) => {
+        return Math.max(max, item.sortOrder || 0);
+      }, 0);
+    };
+
+    // Remove the item from its current location
+    const item = findAndRemoveItem(metaData.pages, sourceId);
+    if (!item) {
+      throw new Error('Source item not found');
+    }
+
+    // If moving to root, add to pages array
+    if (moveToRoot) {
+      item.sortOrder = getMaxSortOrder(metaData.pages) + 1;
+      metaData.pages.push(item);
+    } else {
+      // Find the target parent and add the item to its children
+      const parent = findParent(metaData.pages, targetId);
+      if (!parent) {
+        throw new Error('Target parent not found');
+      }
+      if (!parent.children) {
+        parent.children = [];
+      }
+      item.sortOrder = getMaxSortOrder(parent.children) + 1;
+      parent.children.push(item);
+    }
+
+    // Save the updated meta.json
+    await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error reading meta.json:', error);
-    return new Response(JSON.stringify({ error: 'Failed to read file structure' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('Error updating file structure:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

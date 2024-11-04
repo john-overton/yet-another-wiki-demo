@@ -64,11 +64,11 @@ const TrashBin = ({ onDelete }) => {
     }
   };
 
-  const handleItemSelect = (itemPath) => {
+  const handleItemSelect = (itemId) => {
     setSelectedItems(prev => 
-      prev.includes(itemPath) 
-        ? prev.filter(path => path !== itemPath)
-        : [...prev, itemPath]
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
     );
   };
 
@@ -79,7 +79,10 @@ const TrashBin = ({ onDelete }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ items: selectedItems, target: restoreTarget }),
+        body: JSON.stringify({ 
+          items: selectedItems,
+          targetId: restoreTarget
+        }),
       });
 
       if (response.ok) {
@@ -111,7 +114,7 @@ const TrashBin = ({ onDelete }) => {
   const handlePermanentDelete = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
-    onDelete(item, 'trashbin');
+    onDelete(item.id, item.title, item.children && item.children.length > 0, 'trashbin');
   };
 
   return (
@@ -168,7 +171,7 @@ const TrashBin = ({ onDelete }) => {
                   onChange={() => setSelectedItems(
                     selectedItems.length === deletedItems.length 
                       ? [] 
-                      : deletedItems.map(item => item.path)
+                      : deletedItems.map(item => item.id)
                   )}
                   className="rounded border-gray-300"
                   title="Select All Items"
@@ -187,12 +190,12 @@ const TrashBin = ({ onDelete }) => {
           </thead>
           <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {deletedItems.map(item => (
-              <tr key={item.path} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+              <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input 
                     type="checkbox"
-                    checked={selectedItems.includes(item.path)}
-                    onChange={() => handleItemSelect(item.path)}
+                    checked={selectedItems.includes(item.id)}
+                    onChange={() => handleItemSelect(item.id)}
                     className="rounded border-gray-300"
                     title={`Select ${item.title}`}
                   />

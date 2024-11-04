@@ -194,70 +194,46 @@ const MainAppLayout = () => {
       console.error('Error creating new item:', error);
     }
   }, [session, fetchFileStructure]);
-
-  const handleDelete = useCallback(async (path, type) => {
+  const handleDelete = useCallback(async (id, source) => {
     if (!session) return;
     try {
       const response = await fetch('/api/delete-item', {
-        method: 'DELETE',
+        method: 'POST',  // Changed from DELETE to POST to match API route
         headers: { 
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
         },
-        body: JSON.stringify({ path, type }),
+        body: JSON.stringify({ 
+          id: id,
+          permanent: source === 'trashbin'
+        }),
       });
       if (response.ok) {
         await fetchFileStructure();
         // Only redirect to home if deleting from sidebar and it's the currently selected file
-        if (selectedFile && selectedFile.path === path && !isTrashBinVisible) {
+        if (selectedFile && selectedFile.id === id && !isTrashBinVisible) {
           router.push('/');
         }
       } else {
-        console.error('Failed to delete item');
+        const errorData = await response.json();
+        console.error('Failed to delete item:', errorData.error);
       }
     } catch (error) {
       console.error('Error deleting item:', error);
     }
   }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible]);
-
-  const handleDeleteClick = useCallback((item, source) => {
-    setItemToDelete(item);
+  const handleDeleteClick = useCallback((id, title, hasChildren, source) => {
+    setItemToDelete({ id, title, hasChildren });
     setDeleteModalSource(source);
     setIsDeleteModalOpen(true);
   }, []);
 
   const handleConfirmDelete = useCallback(async () => {
     if (!itemToDelete) return;
-
-    if (deleteModalSource === 'trashbin') {
-      try {
-        const response = await fetch('/api/delete-item', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            path: itemToDelete.path,
-            permanent: true 
-          }),
-        });
-
-        if (response.ok) {
-          // Refresh trash bin items
-          fetchFileStructure();
-        }
-      } catch (error) {
-        console.error('Error permanently deleting item:', error);
-      }
-    } else {
-      await handleDelete(itemToDelete.path);
-    }
-
+    await handleDelete(itemToDelete.id, deleteModalSource);
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
     setDeleteModalSource(null);
-  }, [itemToDelete, deleteModalSource, handleDelete, fetchFileStructure]);
+  }, [itemToDelete, deleteModalSource, handleDelete]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
     if (!session) return;
@@ -488,18 +464,18 @@ const MainAppLayout = () => {
         onDiscard={handleDiscardAndNavigate}
         onClose={() => setIsPromptOpen(false)}
       />
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => {
-          setIsDeleteModalOpen(false);
-          setItemToDelete(null);
-          setDeleteModalSource(null);
-        }}
-        itemTitle={itemToDelete?.title}
-        hasChildren={itemToDelete?.children?.length > 0}
-        source={deleteModalSource}
-      />
+    <DeleteConfirmModal
+      isOpen={isDeleteModalOpen}
+      onConfirm={handleConfirmDelete}
+      onCancel={() => {
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
+        setDeleteModalSource(null);
+      }}
+      itemTitle={itemToDelete?.title}
+      hasChildren={itemToDelete?.hasChildren}
+      source={deleteModalSource}
+    />
     </div>
   );
 };

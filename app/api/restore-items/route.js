@@ -1,87 +1,101 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { NextResponse } from 'next/server';
 
 export async function POST(request) {
-  const { items: paths, target } = await request.json();
-
-  if (!paths || !Array.isArray(paths)) {
-    return new Response(JSON.stringify({ error: 'Invalid paths provided' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
-    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
+    const { items: itemIds, targetId } = await request.json();
+    
+    // Read meta.json from data/docs
+    const metaFilePath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
     const metaContent = await fs.readFile(metaFilePath, 'utf8');
     const metaData = JSON.parse(metaContent);
 
-    // Function to find and remove an item from its current location
-    const findAndRemoveItem = (items, targetPath) => {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].path === targetPath) {
-          const [removedItem] = items.splice(i, 1);
-          delete removedItem.deleted; // Remove the deleted flag
-          return removedItem;
-        }
-        if (items[i].children) {
-          const found = findAndRemoveItem(items[i].children, targetPath);
-          if (found) return found;
-        }
+    // Function to recursively unmark deleted status
+    const unmarkDeleted = (item) => {
+      delete item.deleted;
+      item.lastModified = new Date().toISOString();
+      if (item.children) {
+        item.children.forEach(child => unmarkDeleted(child));
       }
-      return null;
     };
 
-    // Function to find a target parent
-    const findParent = (items, targetPath) => {
-      for (const item of items) {
-        if (item.path === targetPath) {
-          if (!item.children) {
-            item.children = [];
-          }
+    // Function to find and extract item by ID
+    const extractItem = (pages, id, parentArray = null) => {
+      for (let i = 0; i < pages.length; i++) {
+        if (pages[i].id === id) {
+          const item = pages[i];
+          unmarkDeleted(item);
           return item;
         }
-        if (item.children) {
-          const found = findParent(item.children, targetPath);
+        if (pages[i].children) {
+          const found = extractItem(pages[i].children, id, pages[i].children);
           if (found) return found;
         }
       }
       return null;
     };
 
-    // Process each path
-    for (const itemPath of paths) {
-      const item = findAndRemoveItem(metaData.pages, itemPath);
+    // Function to find target parent by ID
+    const findParent = (pages, id) => {
+      for (const page of pages) {
+        if (page.id === id) {
+          return page;
+        }
+        if (page.children) {
+          const found = findParent(page.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    // Function to get max sort order
+    const getMaxSortOrder = (items) => {
+      return items.reduce((max, item) => {
+        return Math.max(max, item.sortOrder || 0);
+      }, 0);
+    };
+
+    const restoredItems = [];
+    // Process each item
+    for (const itemId of itemIds) {
+      const item = extractItem(metaData.pages, itemId);
       if (item) {
-        if (target === 'root') {
-          // Add to root level
+        if (targetId === 'root') {
+          // Restore to root level
+          item.sortOrder = getMaxSortOrder(metaData.pages) + 1;
           metaData.pages.push(item);
         } else {
-          // Add to target parent
-          const parent = findParent(metaData.pages, target);
+          // Restore to target parent
+          const parent = findParent(metaData.pages, targetId);
           if (parent) {
+            if (!parent.children) {
+              parent.children = [];
+            }
+            item.sortOrder = getMaxSortOrder(parent.children) + 1;
             parent.children.push(item);
           } else {
-            console.error(`Parent not found for target: ${target}`);
-            // Add to root if parent not found
-            metaData.pages.push(item);
+            console.error(`Target parent with ID ${targetId} not found for item ${itemId}`);
+            continue;
           }
         }
+        restoredItems.push(item);
       }
     }
 
-    // Write updated meta data
+    // Save updated meta.json
     await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
 
-    return new Response(JSON.stringify({ message: 'Items restored successfully' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
+    return NextResponse.json({
+      success: true,
+      restoredItems
     });
   } catch (error) {
     console.error('Error restoring items:', error);
-    return new Response(JSON.stringify({ error: 'Failed to restore items' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }

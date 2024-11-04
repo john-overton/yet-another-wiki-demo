@@ -1,15 +1,16 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'; // Disable static optimization
-export const revalidate = 0; // Disable cache
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
-    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
+    const metaFilePath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
     
     // Ensure the docs directory exists
-    const docsDir = path.join(process.cwd(), 'public', 'docs');
+    const docsDir = path.join(process.cwd(), 'data', 'docs');
     try {
       await fs.access(docsDir);
     } catch {
@@ -22,12 +23,12 @@ export async function GET() {
       const metaContent = await fs.readFile(metaFilePath, 'utf8');
       metaData = JSON.parse(metaContent);
     } catch {
-      metaData = { pages: [] };
+      metaData = { pages: [], lastId: 0 };
       await fs.writeFile(metaFilePath, JSON.stringify(metaData, null, 2));
     }
 
     // Function to collect and validate deleted items recursively
-    const collectDeletedItems = async (items, parentPath = '') => {
+    const collectDeletedItems = async (items, parentId = null) => {
       let deletedItems = [];
       
       if (!Array.isArray(items)) {
@@ -37,13 +38,13 @@ export async function GET() {
 
       for (const item of items) {
         if (item.deleted === true) {
-          const fullPath = path.join(process.cwd(), 'public', 'docs', item.path);
+          const fullPath = path.join(process.cwd(), 'data', 'docs', item.path);
           try {
             // Check if the file still exists
             await fs.access(fullPath);
             deletedItems.push({
               ...item,
-              parentPath
+              parentId
             });
           } catch (error) {
             console.warn(`Deleted file not found: ${fullPath}`);
@@ -52,7 +53,7 @@ export async function GET() {
 
         // Check children recursively
         if (item.children && Array.isArray(item.children) && item.children.length > 0) {
-          const childDeletedItems = await collectDeletedItems(item.children, item.path);
+          const childDeletedItems = await collectDeletedItems(item.children, item.id);
           deletedItems = deletedItems.concat(childDeletedItems);
         }
       }
@@ -63,26 +64,12 @@ export async function GET() {
     // Get all deleted items from the pages array
     const deletedItems = await collectDeletedItems(metaData.pages);
 
-    // Log for debugging in production
-    console.log('Found deleted items:', JSON.stringify(deletedItems, null, 2));
-
-    return new Response(JSON.stringify({ deletedItems }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      },
-    });
+    return NextResponse.json({ deletedItems });
   } catch (error) {
     console.error('Error fetching deleted items:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Failed to fetch deleted items',
-      details: error.message,
-      stack: error.stack 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }

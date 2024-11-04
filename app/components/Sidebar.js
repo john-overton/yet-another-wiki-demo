@@ -103,9 +103,9 @@ const FileItem = ({
     }
   };
 
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.stopPropagation();
-    onDelete(item, 'sidebar');
+    onDelete(item.id, item.title, item.children && item.children.length > 0, 'sidebar');
   };
 
   const toggleExpand = (e) => {
