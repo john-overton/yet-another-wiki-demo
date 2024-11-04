@@ -1,8 +1,12 @@
-import { writeFile, mkdir } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { join } from 'path';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 export async function POST(request) {
   try {
@@ -20,24 +24,30 @@ export async function POST(request) {
     // Create user-avatars directory if it doesn't exist
     const uploadDir = join(process.cwd(), 'public', 'user-avatars');
     try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory already exists, continue
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
     }
 
     // Generate unique filename using crypto
     const randomValues = new Uint8Array(16);
     crypto.getRandomValues(randomValues);
     const uniqueId = Array.from(randomValues).map(b => b.toString(16).padStart(2, '0')).join('');
-    const fileName = `${uniqueId}-${file.name}`;
+    const fileName = `${uniqueId}-cropped.jpg`;
     const filePath = join(uploadDir, fileName);
+
+    console.log('Saving file to:', filePath);
 
     // Convert file to buffer and save
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    await writeFile(filePath, buffer);
+    await fs.writeFile(filePath, buffer);
 
-    // Update user avatar in database
+    // Verify file was written
+    const fileExists = await fs.stat(filePath).catch(() => false);
+    console.log('File exists after write:', !!fileExists);
+
+    // Store the relative path in the database
     const avatarUrl = `/user-avatars/${fileName}`;
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(userId) },

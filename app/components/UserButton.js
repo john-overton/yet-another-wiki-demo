@@ -1,22 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserSettingsModal from './UserSettingsModal';
 
-export default function UserButton({ user: initialUser }) {
-  const { data: session, update: updateSession } = useSession();
+export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [timestamp, setTimestamp] = useState(Date.now());
   const router = useRouter();
   const dropdownRef = useRef(null);
-
-  // Use session user data if available, fallback to initial user prop
-  const user = session?.user || initialUser;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -25,23 +20,9 @@ export default function UserButton({ user: initialUser }) {
       }
     };
 
-    const handleAvatarUpdate = async () => {
-      // Update session to get fresh user data
-      await updateSession();
-      // Force refresh the avatar by updating timestamp
-      setTimestamp(Date.now());
-      // Force router refresh
-      router.refresh();
-    };
-
     document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
-    };
-  }, [router, updateSession]);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!user) {
     return null;
@@ -57,14 +38,12 @@ export default function UserButton({ user: initialUser }) {
       return null;
     }
     
-    // If it's a full URL, return it as is
     if (avatar.startsWith('http')) {
       return avatar;
     }
     
-    // For local avatars, ensure we're using the correct path
-    const filename = avatar.split('/').pop();
-    return `/user-avatars/${filename}`;
+    // Return the path as is since it's already relative to public
+    return avatar;
   };
 
   const avatarUrl = getAvatarUrl(user.avatar);
@@ -87,7 +66,6 @@ export default function UserButton({ user: initialUser }) {
               fill
               sizes="40px"
               onError={() => setAvatarError(true)}
-              priority={true}
               unoptimized={true}
             />
           </div>
@@ -125,10 +103,7 @@ export default function UserButton({ user: initialUser }) {
       <UserSettingsModal
         user={user}
         isOpen={showSettingsModal}
-        onClose={() => {
-          setShowSettingsModal(false);
-          setTimestamp(Date.now()); // Force refresh when modal closes
-        }}
+        onClose={() => setShowSettingsModal(false)}
       />
     </div>
   );

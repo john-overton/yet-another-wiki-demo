@@ -63,7 +63,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
           ctx.drawImage(htmlImg, 0, 0, canvas.width, canvas.height);
           
           canvas.toBlob((blob) => {
-            resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+            resolve(new File([blob], 'cropped.jpg', { type: 'image/jpeg', lastModified: Date.now() }));
           }, 'image/jpeg', 0.9);
         };
         htmlImg.src = e.target.result;
@@ -88,14 +88,15 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
     setCropImage(null);
     
     try {
-      const resizedFile = await resizeImage(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
+      const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
       const formData = new FormData();
-      formData.append('avatar', resizedFile);
+      formData.append('avatar', file);
       formData.append('userId', user.id);
 
       const response = await fetch('/api/users/avatar', {
         method: 'POST',
         body: formData,
+        cache: 'no-store'
       });
 
       if (!response.ok) {
@@ -104,7 +105,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
 
       const data = await response.json();
       setAvatarPreview(data.avatar);
-      setTimestamp(Date.now()); // Force refresh preview
+      setTimestamp(Date.now());
       setMessage({ type: 'success', content: 'Avatar updated successfully' });
       
       // Force refresh user data
@@ -199,9 +200,8 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
       return avatarPreview;
     }
     
-    // For local avatars, ensure we're using the correct path
-    const filename = avatarPreview.split('/').pop();
-    return `/user-avatars/${filename}`;
+    // For local avatars, return the path as is since it should be relative to public
+    return avatarPreview;
   };
 
   return (
@@ -310,6 +310,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                       fill
                       sizes="96px"
                       priority
+                      unoptimized={true}
                       key={timestamp} // Use key to force refresh instead of URL params
                     />
                   </div>

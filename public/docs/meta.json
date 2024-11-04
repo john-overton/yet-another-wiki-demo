@@ -16,7 +16,28 @@
           "isPublic": false,
           "version": 1,
           "lastModified": "2024-11-04T01:52:35.231Z",
-          "children": []
+          "children": [
+            {
+              "slug": "test",
+              "title": "test",
+              "path": "test.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-04T18:38:49.543Z",
+              "children": [],
+              "deleted": true
+            },
+            {
+              "slug": "test2",
+              "title": "test2",
+              "path": "test2.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-04T18:40:34.700Z",
+              "children": [],
+              "deleted": true
+            }
+          ]
         },
         {
           "slug": "theming",
