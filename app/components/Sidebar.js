@@ -79,13 +79,13 @@ const FileItem = ({
       >
         {item.children && item.children.length > 0 && (
           <i
-            className={`mr-2 font-normal cursor-pointer ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
+            className={`mr-2 font-normal cursor-pointer flex-shrink-0 ${isExpanded ? 'ri-checkbox-indeterminate-line' : 'ri-add-box-line'}`}
             onClick={toggleExpand}
           ></i>
         )}
-        <span className="ml-1">{displayName}</span>
+        <span className="ml-1 break-words">{displayName}</span>
         {isHovered && isAuthenticated && (
-          <span className="ml-auto flex items-center">
+          <span className="ml-auto flex items-center flex-shrink-0">
             <i
               className="ri-delete-bin-line mr-1 cursor-pointer text-gray-500 hover:text-red-500 font-normal"
               onClick={handleDelete}
@@ -232,8 +232,9 @@ const Sidebar = ({
   const filteredFileStructure = filterItems(fileStructure, isAuthenticated);
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div className="h-full flex flex-col">
+      <div className="flex-1 flex flex-col bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700 h-full">
+        {/* Header Section */}
         <div className="flex-none px-3 py-5">
           <div 
             className="flex items-center justify-between mb-4 p-2 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -244,7 +245,7 @@ const Sidebar = ({
             {isAuthenticated && (
               <button
                 onClick={handleCreateRoot}
-                className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'}`}
+                className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'} flex-shrink-0`}
               >
                 <p><i className="ri-add-line"></i>Add Page</p>
               </button>
@@ -257,7 +258,9 @@ const Sidebar = ({
             />
           )}
         </div>
-        <div className="flex-1 overflow-y-auto px-3">
+
+        {/* File List Section - Scrollable */}
+        <div className="flex-1 overflow-y-auto px-3 min-h-0">
           <ul className="space-y-2">
             {filteredFileStructure.map((item, index) => (
               <FileItem 
@@ -274,8 +277,10 @@ const Sidebar = ({
             ))}
           </ul>
         </div>
+
+        {/* Footer Section - Always at bottom */}
         {isAuthenticated && (
-          <div className="flex-none px-3 py-4 dark:border-gray-700">
+          <div className="flex-none px-3 py-4 border-gray-200 dark:border-gray-700 mt-auto">
             <Link 
               href="/settings"
               className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"

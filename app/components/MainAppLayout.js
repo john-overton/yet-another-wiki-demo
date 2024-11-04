@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import Sidebar from './Sidebar';
@@ -412,22 +410,23 @@ const MainAppLayout = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
       <div className="flex flex-1 overflow-hidden relative">
-        <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? 'w-64' : 'w-0'} flex-shrink-0 z-[999] overflow-hidden`}>
-          {memoizedSidebar}
+        <div className="relative h-full">
+          <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? 'w-fit max-w-[16rem]' : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
+            {memoizedSidebar}
+          </div>
+          <button
+            onClick={toggleSidebar}
+            className="absolute z-[998] top-20 -right-5"
+            style={{
+              transform: 'translateY(-55%)',
+            }}
+          >
+            <i 
+              className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-[#F3F4F6] pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
+              style={{ fontSize: '1rem', display: 'block' }}
+            ></i>
+          </button>
         </div>
-        <button
-          onClick={toggleSidebar}
-          className="fixed z-[998] top-20 transition-all duration-300"
-          style={{
-            transform: 'translateY(-55%)',
-            left: isSidebarVisible ? '15.8rem' : '0'
-          }}
-        >
-          <i 
-            className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-white pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
-            style={{ fontSize: '1rem', display: 'block' }}
-          ></i>
-        </button>
         <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
           <div className="mx-auto px-6 py-8">
             {isTrashBinVisible ? (
