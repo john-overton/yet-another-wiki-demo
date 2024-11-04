@@ -128,7 +128,7 @@ export default function SecretQuestionsFormContent({ onComplete }) {
                 ...prev,
                 [`question${num}`]: e.target.value
               }))}
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 mb-2"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 mb-2"
               required
             >
               <option value="">Select a question</option>
@@ -144,7 +144,7 @@ export default function SecretQuestionsFormContent({ onComplete }) {
                 [`answer${num}`]: e.target.value
               }))}
               placeholder="Your answer"
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>

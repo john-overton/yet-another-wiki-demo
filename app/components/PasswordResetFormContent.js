@@ -117,7 +117,7 @@ export default function PasswordResetFormContent({ onBackToLogin, onResetSuccess
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -135,7 +135,7 @@ export default function PasswordResetFormContent({ onBackToLogin, onResetSuccess
               name="secretAnswer"
               value={formData.secretAnswer}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
               required
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Answer is case sensitive</p>
@@ -153,7 +153,7 @@ export default function PasswordResetFormContent({ onBackToLogin, onResetSuccess
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleChange}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -166,7 +166,7 @@ export default function PasswordResetFormContent({ onBackToLogin, onResetSuccess
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>

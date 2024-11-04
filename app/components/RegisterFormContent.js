@@ -172,7 +172,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -192,7 +192,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
               name="email"
               value={formData.email}
               onChange={handleEmailChange}
-              className={`w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 ${
                 emailError ? 'border-red-500' : ''
               }`}
               required
@@ -214,7 +214,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -228,7 +228,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
