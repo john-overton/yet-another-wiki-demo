@@ -59,18 +59,18 @@ export default function UserButton({ user }) {
         title={`Logged in as ${user.name}, ${user.email}`}
       >
         {avatarUrl && !avatarError ? (
-          <div className="relative h-[40px] w-[40px] mt-1">
+          <div className="relative h-10 w-10 rounded-full overflow-hidden">
             <Image
               src={avatarUrl}
               alt={user.name}
+              className="object-cover"
               fill
-              className="rounded-full object-cover"
-              onError={() => setAvatarError(true)}
               sizes="40px"
+              onError={() => setAvatarError(true)}
             />
           </div>
         ) : (
-          <div className="h-[30px] w-[30px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <i className="ri-user-line text-gray-500 dark:text-gray-400"></i>
           </div>
         )}

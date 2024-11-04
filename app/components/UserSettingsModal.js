@@ -9,12 +9,64 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showSecretQuestions, setShowSecretQuestions] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    setAvatarPreview(user?.avatar || null);
+    if (user) {
+      setAvatarPreview(user.avatar || null);
+      setName(user.name || '');
+      setEmail(user.email || '');
+    }
   }, [user]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset states when modal closes
+      setShowPasswordReset(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setMessage({ type: '', content: '' });
+      // Reset name and email to user values
+      if (user) {
+        setName(user.name || '');
+        setEmail(user.email || '');
+      }
+    }
+  }, [isOpen, user]);
+
   if (!isOpen) return null;
+
+  const resizeImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Create a new HTMLImageElement
+        const htmlImg = document.createElement('img');
+        htmlImg.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 500;
+          const scaleSize = MAX_WIDTH / htmlImg.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = htmlImg.height * scaleSize;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(htmlImg, 0, 0, canvas.width, canvas.height);
+          
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+          }, 'image/jpeg', 0.8);
+        };
+        htmlImg.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   const handleAvatarChange = async (event) => {
     const file = event.target.files?.[0];
@@ -28,8 +80,9 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
 
     setIsUploading(true);
     try {
+      const resizedFile = await resizeImage(file);
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append('avatar', resizedFile);
       formData.append('userId', user.id);
 
       const response = await fetch('/api/users/avatar', {
@@ -44,6 +97,10 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
       const data = await response.json();
       setAvatarPreview(data.avatar);
       setMessage({ type: 'success', content: 'Avatar updated successfully' });
+      
+      // Force refresh user data
+      const event = new Event('user-avatar-updated');
+      window.dispatchEvent(event);
     } catch (error) {
       console.error('Error uploading avatar:', error);
       setAvatarPreview(user?.avatar || null);
@@ -53,9 +110,45 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
     }
   };
 
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', content: 'New passwords do not match' });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/users/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: user.id,
+          currentPassword,
+          newPassword
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update password');
+      }
+
+      setMessage({ type: 'success', content: 'Password updated successfully' });
+      setShowPasswordReset(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error('Error updating password:', error);
+      setMessage({ type: 'error', content: error.message || 'Failed to update password' });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
     
     try {
       const response = await fetch('/api/users/update', {
@@ -65,10 +158,9 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
         },
         body: JSON.stringify({
           id: user.id,
-          name: formData.get('name'),
-          email: formData.get('email'),
-          password: formData.get('password') || undefined,
-          avatar: avatarPreview,
+          name,
+          email,
+          avatar: avatarPreview
         }),
       });
 
@@ -120,6 +212,61 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
               setMessage({ type: 'success', content: 'Security questions updated successfully' });
             }}
           />
+        ) : showPasswordReset ? (
+          <form onSubmit={handlePasswordReset} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Current Password
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowPasswordReset(false)}
+                className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+              >
+                <i className="ri-lock-password-line"></i>
+                Update Password
+              </button>
+            </div>
+          </form>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex justify-center mb-4">
@@ -129,9 +276,9 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                     <Image 
                       src={getAvatarSrc()}
                       alt={user?.name || 'User avatar'}
-                      width={96}
-                      height={96}
                       className="object-cover"
+                      fill
+                      sizes="96px"
                       priority
                     />
                   </div>
@@ -171,7 +318,8 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
               <input
                 type="text"
                 name="name"
-                defaultValue={user?.name || ''}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                 required
               />
@@ -184,23 +332,21 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
               <input
                 type="email"
                 name="email"
-                defaultValue={user?.email || ''}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                New Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-                placeholder="Leave blank to keep current password"
-              />
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowPasswordReset(true)}
+              className="w-full px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center justify-center gap-2 mb-4"
+            >
+              <i className="ri-lock-password-line"></i>
+              Change Password
+            </button>
 
             <button
               type="button"
