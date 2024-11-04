@@ -67,10 +67,6 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
     const cropSize = Math.min(imageRef.naturalWidth, imageRef.naturalHeight) / zoom;
     const sourceX = (imageRef.naturalWidth - cropSize) / 2 - (position.x * displayToNaturalRatio);
     const sourceY = (imageRef.naturalHeight - cropSize) / 2 - (position.y * displayToNaturalRatio);
-
-    // Apply sharpening
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
     
     // Draw the image
     ctx.drawImage(
@@ -87,32 +83,13 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
 
     // Apply additional sharpening
     const imageData = ctx.getImageData(0, 0, finalSize, finalSize);
-    const sharpenKernel = [
-      0, -1, 0,
-      -1, 5, -1,
-      0, -1, 0
-    ];
+
     const newImageData = new ImageData(
       new Uint8ClampedArray(imageData.data),
       imageData.width,
       imageData.height
     );
     
-    for (let y = 1; y < imageData.height - 1; y++) {
-      for (let x = 1; x < imageData.width - 1; x++) {
-        for (let c = 0; c < 3; c++) {
-          let sum = 0;
-          for (let ky = -1; ky <= 1; ky++) {
-            for (let kx = -1; kx <= 1; kx++) {
-              const idx = ((y + ky) * imageData.width + (x + kx)) * 4 + c;
-              sum += imageData.data[idx] * sharpenKernel[(ky + 1) * 3 + (kx + 1)];
-            }
-          }
-          const idx = (y * imageData.width + x) * 4 + c;
-          newImageData.data[idx] = Math.max(0, Math.min(255, sum));
-        }
-      }
-    }
     ctx.putImageData(newImageData, 0, 0);
 
     canvas.toBlob((blob) => {
