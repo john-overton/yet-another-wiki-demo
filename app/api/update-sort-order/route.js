@@ -4,69 +4,73 @@ import path from 'path';
 
 export async function POST(request) {
   try {
-    const { id, newSortOrder, swapId, swapSortOrder, parentId } = await request.json();
+    const { path: itemPath, newSortOrder, swapPath, swapSortOrder, parentPath } = await request.json();
 
     // Read the current meta.json from data/docs
     const metaPath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
     const metaContent = await fs.readFile(metaPath, 'utf8');
     const meta = JSON.parse(metaContent);
 
-    // Function to update sort orders in a list of items
-    const updateSortOrders = (items, targetId, newOrder, swapTargetId, swapOrder, parentTargetId = null) => {
-      // If we have a parent ID, we need to find that parent first
-      if (parentTargetId) {
-        const findAndUpdateInParent = (parentItems) => {
-          for (const item of parentItems) {
-            if (item.id === parentTargetId && item.children) {
-              // Found the parent, update its children
-              const targetIndex = item.children.findIndex(child => child.id === targetId);
-              const swapIndex = item.children.findIndex(child => child.id === swapTargetId);
-              
-              if (targetIndex !== -1 && swapIndex !== -1) {
-                item.children[targetIndex].sortOrder = newOrder;
-                item.children[swapIndex].sortOrder = swapOrder;
-                return true;
-              }
-            }
-            
-            // Recursively search in children
-            if (item.children) {
-              const found = findAndUpdateInParent(item.children);
-              if (found) return true;
-            }
-          }
-          return false;
-        };
-
-        return findAndUpdateInParent(items);
+    const updateSortOrders = (items) => {
+      // For root level items
+      if (!parentPath) {
+        const targetItem = items.find(item => item.path === itemPath);
+        const swapItem = items.find(item => item.path === swapPath);
+        
+        if (targetItem && swapItem) {
+          targetItem.sortOrder = newSortOrder;
+          swapItem.sortOrder = swapSortOrder;
+          return true;
+        }
+        return false;
       }
 
-      // If no parent ID, update at root level
-      let foundTarget = false;
-      let foundSwap = false;
-
-      const searchAndUpdate = (itemList) => {
-        for (const item of itemList) {
-          if (item.id === targetId) {
-            item.sortOrder = newOrder;
-            foundTarget = true;
-          } else if (item.id === swapTargetId) {
-            item.sortOrder = swapOrder;
-            foundSwap = true;
+      // For nested items
+      const findAndUpdate = (items) => {
+        for (const item of items) {
+          // If this is the parent, update its children
+          if (item.path === parentPath) {
+            if (!item.children) return false;
+            
+            const targetChild = item.children.find(child => child.path === itemPath);
+            const swapChild = item.children.find(child => child.path === swapPath);
+            
+            if (targetChild && swapChild) {
+              targetChild.sortOrder = newSortOrder;
+              swapChild.sortOrder = swapSortOrder;
+              return true;
+            }
+            return false;
           }
-
-          if (item.children) {
-            searchAndUpdate(item.children);
+          
+          // If not found, check children
+          if (item.children && item.children.length > 0) {
+            const found = findAndUpdate(item.children);
+            if (found) return true;
           }
         }
+        return false;
       };
 
-      searchAndUpdate(items);
-      return foundTarget && foundSwap;
+      return findAndUpdate(items);
     };
 
     // Update the sort orders
-    updateSortOrders(meta.pages, id, newSortOrder, swapId, swapSortOrder, parentId);
+    const updated = updateSortOrders(meta.pages);
+
+    if (!updated) {
+      console.error('Failed to find items to update:', {
+        itemPath,
+        swapPath,
+        parentPath,
+        newSortOrder,
+        swapSortOrder
+      });
+      return NextResponse.json(
+        { error: 'Failed to find items to update' },
+        { status: 400 }
+      );
+    }
 
     // Write back to meta.json
     await fs.writeFile(metaPath, JSON.stringify(meta, null, 2), 'utf8');
