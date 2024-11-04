@@ -1,4 +1,4 @@
-# Welcome to Yet Another Wiki!&#x20;
+# Welcome to Yet Another Wiki!
 
 Your centralized knowledge hub for creating, organizing, and sharing documentation with the simplicity and power of Markdown. Transform your ideas into beautifully formatted content while keeping everything organized and accessible.
 
