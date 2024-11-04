@@ -34,9 +34,9 @@ const SearchComponent = () => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`/api/search?term=${encodeURIComponent(searchTerm)}&authenticated=${!!session}`);
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}&authenticated=${!!session}`);
       const data = await response.json();
-      setSearchResults(data);
+      setSearchResults(data.results || []);
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
@@ -53,7 +53,7 @@ const SearchComponent = () => {
   }, [fetchSearchResults]);
 
   const handleResultClick = (result) => {
-    router.push(result.slug === 'home' ? '/' : `/${result.slug}`);
+    router.push(result.path === 'home.md' ? '/' : `/${result.path.replace('.md', '')}`);
     setSearchTerm('');
     setSearchResults([]);
   };
@@ -87,9 +87,9 @@ const SearchComponent = () => {
                 <div className="text-base font-semibold leading-5">
                   <HighlightMatches value={result.title} match={searchTerm} />
                 </div>
-                {result.snippet && (
+                {result.excerpt && (
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    <HighlightMatches value={result.snippet} match={searchTerm} />
+                    <HighlightMatches value={result.excerpt} match={searchTerm} />
                   </div>
                 )}
               </li>

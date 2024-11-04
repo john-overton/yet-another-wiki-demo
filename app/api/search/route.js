@@ -14,49 +14,69 @@ async function loadMetaData() {
   }
 }
 
-async function searchFiles(query) {
+function findPageInMeta(filePath, pages) {
+  for (const page of pages) {
+    if (page.path === filePath) {
+      return page;
+    }
+    if (page.children && page.children.length > 0) {
+      const found = findPageInMeta(filePath, page.children);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+async function searchFiles(query, authenticated) {
   const docsDir = path.join(process.cwd(), 'public', 'docs');
   const results = [];
 
-  const searchInFile = async (filePath, title) => {
-    try {
-      const content = await fs.readFile(path.join(docsDir, filePath), 'utf-8');
-      const lowerContent = content.toLowerCase();
-      const lowerQuery = query.toLowerCase();
+  try {
+    await loadMetaData();
+    const files = await fs.readdir(docsDir);
+    const mdFiles = files.filter(file => file.endsWith('.md'));
 
-      if (lowerContent.includes(lowerQuery)) {
-        const index = lowerContent.indexOf(lowerQuery);
-        const start = Math.max(0, index - 50);
-        const end = Math.min(content.length, index + query.length + 50);
-        let excerpt = content.substring(start, end);
-
-        if (start > 0) excerpt = '...' + excerpt;
-        if (end < content.length) excerpt = excerpt + '...';
-
-        results.push({
-          title,
-          path: filePath,
-          excerpt
-        });
+    for (const file of mdFiles) {
+      // Check if file is public when user is not authenticated
+      const pageInfo = findPageInMeta(file, metaData.pages);
+      if (!authenticated && (!pageInfo || !pageInfo.isPublic)) {
+        continue;
       }
-    } catch (error) {
-      console.error(`Error searching in file ${filePath}:`, error);
-    }
-  };
 
-  const searchInItems = async (items) => {
-    for (const item of items) {
-      if (!item.deleted) {
-        await searchInFile(item.path, item.title);
-        if (item.children) {
-          await searchInItems(item.children);
+      try {
+        const content = await fs.readFile(path.join(docsDir, file), 'utf-8');
+        const lowerContent = content.toLowerCase();
+        const lowerQuery = query.toLowerCase();
+
+        if (lowerContent.includes(lowerQuery)) {
+          const index = lowerContent.indexOf(lowerQuery);
+          const start = Math.max(0, index - 50);
+          const end = Math.min(content.length, index + query.length + 50);
+          let excerpt = content.substring(start, end);
+
+          if (start > 0) excerpt = '...' + excerpt;
+          if (end < content.length) excerpt = excerpt + '...';
+
+          // Use title from meta.json if available, otherwise generate from filename
+          const title = pageInfo ? pageInfo.title : file
+            .replace('.md', '')
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          results.push({
+            title,
+            path: file,
+            excerpt
+          });
         }
+      } catch (error) {
+        console.error(`Error searching in file ${file}:`, error);
       }
     }
-  };
-
-  await loadMetaData();
-  await searchInItems(metaData.pages);
+  } catch (error) {
+    console.error('Error reading docs directory:', error);
+  }
 
   return results;
 }
@@ -64,6 +84,7 @@ async function searchFiles(query) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
+  const authenticated = searchParams.get('authenticated') === 'true';
 
   if (!query) {
     return new Response(JSON.stringify({ error: 'No search query provided' }), {
@@ -73,7 +94,7 @@ export async function GET(request) {
   }
 
   try {
-    const results = await searchFiles(query);
+    const results = await searchFiles(query, authenticated);
     return new Response(JSON.stringify({ results }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
