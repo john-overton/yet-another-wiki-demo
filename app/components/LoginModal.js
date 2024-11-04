@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SecretQuestionsForm from './SecretQuestionsForm';
 
 export default function LoginModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('');
