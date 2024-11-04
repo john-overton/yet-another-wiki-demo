@@ -45,7 +45,7 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
   };
 
   const handleComplete = () => {
-    if (!imageRef) return;
+    if (!imageRef || !containerRef.current) return;
 
     const canvas = document.createElement('canvas');
     const finalSize = 500; // Final output size
@@ -53,21 +53,30 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
     canvas.height = finalSize;
     
     const ctx = canvas.getContext('2d');
-    
-    // Create circular clip
-    ctx.beginPath();
-    ctx.arc(finalSize / 2, finalSize / 2, finalSize / 2, 0, Math.PI * 2, true);
-    ctx.closePath();
-    ctx.clip();
 
-    // Calculate the scale factor between the displayed image and its natural size
+    // Get container dimensions
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const containerSize = containerRect.width;
+
+    // Calculate the scale between displayed and natural image sizes
     const displayToNaturalRatio = imageRef.naturalWidth / imageRef.width;
     
-    // Calculate the center and size of the crop in the natural image coordinates
-    const cropSize = Math.min(imageRef.naturalWidth, imageRef.naturalHeight) / zoom;
-    const sourceX = (imageRef.naturalWidth - cropSize) / 2 - (position.x * displayToNaturalRatio);
-    const sourceY = (imageRef.naturalHeight - cropSize) / 2 - (position.y * displayToNaturalRatio);
+    // Calculate the size of the area to crop in natural image coordinates
+    // Multiply by zoom to make the crop area smaller when zoomed in
+    const cropSize = containerSize * displayToNaturalRatio * (1 / zoom);
     
+    // Scale the position by the display-to-natural ratio
+    const scaledPositionX = position.x * displayToNaturalRatio;
+    const scaledPositionY = position.y * displayToNaturalRatio;
+    
+    // Calculate the center of the crop area in natural image coordinates
+    const centerX = (imageRef.naturalWidth / 2) - scaledPositionX;
+    const centerY = (imageRef.naturalHeight / 2) - scaledPositionY;
+    
+    // Calculate the source coordinates for cropping
+    const sourceX = centerX - (cropSize / 2);
+    const sourceY = centerY - (cropSize / 2);
+
     // Draw the image
     ctx.drawImage(
       imageRef,
@@ -80,17 +89,6 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
       finalSize,
       finalSize
     );
-
-    // Apply additional sharpening
-    const imageData = ctx.getImageData(0, 0, finalSize, finalSize);
-
-    const newImageData = new ImageData(
-      new Uint8ClampedArray(imageData.data),
-      imageData.width,
-      imageData.height
-    );
-    
-    ctx.putImageData(newImageData, 0, 0);
 
     canvas.toBlob((blob) => {
       onComplete(blob);
@@ -245,39 +243,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
           canvas.height = htmlImg.height * scaleSize;
 
           const ctx = canvas.getContext('2d');
-          // Apply sharpening
-          ctx.filter = 'contrast(1.2) saturate(1.1)';
           ctx.drawImage(htmlImg, 0, 0, canvas.width, canvas.height);
-          
-          // Apply additional sharpening using convolution
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const sharpenKernel = [
-            0, -1, 0,
-            -1, 5, -1,
-            0, -1, 0
-          ];
-          const newImageData = new ImageData(
-            new Uint8ClampedArray(imageData.data),
-            imageData.width,
-            imageData.height
-          );
-          
-          for (let y = 1; y < imageData.height - 1; y++) {
-            for (let x = 1; x < imageData.width - 1; x++) {
-              for (let c = 0; c < 3; c++) {
-                let sum = 0;
-                for (let ky = -1; ky <= 1; ky++) {
-                  for (let kx = -1; kx <= 1; kx++) {
-                    const idx = ((y + ky) * imageData.width + (x + kx)) * 4 + c;
-                    sum += imageData.data[idx] * sharpenKernel[(ky + 1) * 3 + (kx + 1)];
-                  }
-                }
-                const idx = (y * imageData.width + x) * 4 + c;
-                newImageData.data[idx] = Math.max(0, Math.min(255, sum));
-              }
-            }
-          }
-          ctx.putImageData(newImageData, 0, 0);
           
           canvas.toBlob((blob) => {
             resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
