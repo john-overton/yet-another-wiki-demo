@@ -9,7 +9,14 @@ import Link from 'next/link';
 import '../markdown.css';
 
 const imageLoader = ({ src, width, quality }) => {
-  return `${src}?w=${width}&q=${quality || 75}`
+  // If it's already an API route, use it directly
+  if (src.startsWith('/api/')) {
+    return src;
+  }
+  
+  // If it's a relative path, convert it to the API route
+  const cleanPath = src.startsWith('/') ? src.slice(1) : src;
+  return `/api/uploads/post-images/${cleanPath}?w=${width}&q=${quality || 75}`;
 }
 
 const LinkButton = ({ id }) => (
@@ -166,17 +173,18 @@ const CodeBlock = ({ children, language }) => {
 };
 
 const MarkdownRenderer = ({ content }) => {
-  // If content is a string that looks like JSON, try to parse it
   let markdownContent = content;
   if (typeof content === 'string' && content.trim().startsWith('{')) {
     try {
       const parsed = JSON.parse(content);
       markdownContent = parsed.content || content;
     } catch (e) {
-      // If parsing fails, use the original content
       console.warn('Failed to parse content as JSON:', e);
     }
   }
+
+  // Track if we've rendered the first image
+  let isFirstImage = true;
 
   return (
     <div className="mdx-content prose dark:prose-invert max-w-none">
@@ -184,17 +192,25 @@ const MarkdownRenderer = ({ content }) => {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypePrismPlus]}
         components={{
-          img: (props) => (
-            <Image
-              {...props}
-              loader={imageLoader}
-              width={800}
-              height={400}
-              alt={props.alt || ''}
-            />
-          ),
+          img: ({ node, ...props }) => {
+            // Determine if this is the first image
+            const isPriority = isFirstImage;
+            // Set to false after first image
+            isFirstImage = false;
+
+            return (
+              <Image
+                {...props}
+                width={800}
+                height={400}
+                style={{ maxWidth: '100%', height: 'auto', margin: '1rem 0' }}
+                alt={props.alt || ''}
+                unoptimized={true}
+                priority={isPriority}
+              />
+            );
+          },
           a: (props) => <Link className="text-blue-500 hover:underline" {...props} />,
-          p: (props) => <p className="mb-4" {...props} />,
           h1: createHeadingComponent('h1'),
           h2: createHeadingComponent('h2'),
           h3: createHeadingComponent('h3'),

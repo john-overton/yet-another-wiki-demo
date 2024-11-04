@@ -26,8 +26,8 @@ export async function POST(request) {
       throw new Error('No file path provided');
     }
 
-    // Read meta.json
-    const metaFilePath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
+    // Read meta.json from data/docs instead of public/docs
+    const metaFilePath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
     let metaData;
     try {
       const metaContent = await fs.readFile(metaFilePath, 'utf8');
@@ -71,7 +71,7 @@ export async function POST(request) {
     // Update metadata in meta.json
     const pageFound = findAndUpdatePage(metaData.pages, targetPath);
     if (!pageFound) {
-      console.warn('Page not found in meta.json:', targetPath);
+      console.log('Page not found in meta.json:', targetPath);
       // If page not found, add it as a new page
       metaData.pages.push({
         slug: slug || targetPath.replace('.md', ''),
@@ -99,7 +99,8 @@ export async function POST(request) {
     // Only write content if it's provided
     if (content) {
       try {
-        const targetFullPath = path.join(process.cwd(), 'public', 'docs', targetPath);
+        // Write content to data/docs instead of public/docs
+        const targetFullPath = path.join(process.cwd(), 'data', 'docs', targetPath);
         console.log('Writing content to:', targetFullPath);
         await fs.writeFile(targetFullPath, content, 'utf8');
         console.log('Successfully wrote content file');

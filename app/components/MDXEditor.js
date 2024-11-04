@@ -176,6 +176,26 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         return;
       }
 
+      // First, update the file content
+      const contentResponse = await fetch('/api/update-file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          path: file.path,
+          content: content,
+          title: title,
+          isPublic: isPublic,
+          slug: slug,
+          version: 1
+        }),
+      });
+
+      if (!contentResponse.ok) {
+        throw new Error('Failed to save content');
+      }
+
       const updatedFile = {
         ...file,
         content,
@@ -184,7 +204,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         slug,
         lastModified: new Date().toISOString(),
         version: 1,
-        id: file.id // Ensure ID is preserved
+        id: file.id
       };
 
       await onSave(updatedFile);

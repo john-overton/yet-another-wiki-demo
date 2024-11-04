@@ -11,8 +11,8 @@ export async function GET(request, { params }) {
     // Get the file path from the URL
     const filePath = params.path.join('/');
     
-    // Ensure the path is within the uploads directory
-    if (!filePath.startsWith('user-avatars/')) {
+    // Ensure the path is within the allowed directories
+    if (!filePath.startsWith('user-avatars/') && !filePath.startsWith('post-images/')) {
       return new NextResponse('Invalid path', { status: 400 });
     }
 
@@ -28,6 +28,10 @@ export async function GET(request, { params }) {
         ? 'image/jpeg'
         : filePath.endsWith('.png')
         ? 'image/png'
+        : filePath.endsWith('.gif')
+        ? 'image/gif'
+        : filePath.endsWith('.webp')
+        ? 'image/webp'
         : 'application/octet-stream';
 
       // Return the file with appropriate headers
@@ -35,7 +39,7 @@ export async function GET(request, { params }) {
         headers: {
           'Content-Type': contentType,
           'Content-Length': fileBuffer.length.toString(),
-          'Cache-Control': 'no-cache',
+          'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
         },
       });
     } catch (error) {
