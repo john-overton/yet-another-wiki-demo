@@ -1,22 +1,55 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 export default function UserCard({ user }) {
+  const [avatarError, setAvatarError] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
+
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      setTimestamp(Date.now());
+      setAvatarError(false);
+    };
+
+    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
+    return () => window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+  }, []);
+
   if (!user) return null;
 
-  const avatarSrc = user.avatar || '/images/default-avatar.png'; // Assuming we have a default avatar image
+  const getAvatarSrc = () => {
+    if (!user.avatar) return null;
+    if (user.avatar.startsWith('data:')) return user.avatar;
+    if (user.avatar.startsWith('http')) return user.avatar;
+    return `${user.avatar}?t=${timestamp}`;
+  };
+
+  const avatarSrc = getAvatarSrc();
 
   return (
     <div className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md flex items-center space-x-4 mb-4">
       <div className="flex-shrink-0">
-        <Image
-          src={avatarSrc}
-          alt={user.name}
-          width={50}
-          height={50}
-          className="rounded-full"
-        />
+        {avatarSrc && !avatarError ? (
+          <div className="relative h-[50px] w-[50px] rounded-full overflow-hidden">
+            <Image
+              src={avatarSrc}
+              alt={user.name}
+              className="object-cover"
+              fill
+              sizes="50px"
+              onError={() => setAvatarError(true)}
+              unoptimized={true}
+              priority
+              key={timestamp}
+            />
+          </div>
+        ) : (
+          <div className="h-[50px] w-[50px] rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+            <i className="ri-user-line text-xl text-gray-500 dark:text-gray-400"></i>
+          </div>
+        )}
       </div>
       <div>
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{user.name}</h2>

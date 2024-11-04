@@ -10,6 +10,7 @@ export default function UserButton({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
   const router = useRouter();
   const dropdownRef = useRef(null);
 
@@ -20,8 +21,19 @@ export default function UserButton({ user }) {
       }
     };
 
+    // Listen for avatar updates
+    const handleAvatarUpdate = () => {
+      setTimestamp(Date.now());
+      setAvatarError(false);
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+    };
   }, []);
 
   if (!user) {
@@ -38,12 +50,16 @@ export default function UserButton({ user }) {
       return null;
     }
     
+    if (avatar.startsWith('data:')) {
+      return avatar;
+    }
+    
     if (avatar.startsWith('http')) {
       return avatar;
     }
     
-    // Return the path as is since it's already relative to public
-    return avatar;
+    // Add timestamp to force refresh when avatar changes
+    return `${avatar}?t=${timestamp}`;
   };
 
   const avatarUrl = getAvatarUrl(user.avatar);
@@ -67,6 +83,8 @@ export default function UserButton({ user }) {
               sizes="40px"
               onError={() => setAvatarError(true)}
               unoptimized={true}
+              priority
+              key={timestamp} // Force remount when timestamp changes
             />
           </div>
         ) : (

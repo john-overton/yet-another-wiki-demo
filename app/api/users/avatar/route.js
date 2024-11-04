@@ -21,7 +21,7 @@ export async function POST(request) {
       );
     }
 
-    // Save to data/uploads/user-avatars instead of public
+    // Save to data/uploads/user-avatars
     const uploadDir = join(process.cwd(), 'data', 'uploads', 'user-avatars');
     try {
       await fs.access(uploadDir);
@@ -64,7 +64,6 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
-    // Get the filename from the URL
     const url = new URL(request.url);
     const segments = url.pathname.split('/');
     const filename = segments[segments.length - 1];
@@ -73,18 +72,26 @@ export async function GET(request) {
       return new Response('File not found', { status: 404 });
     }
 
-    // Read from data/uploads/user-avatars
+    // Ensure we only serve jpg files
+    if (!filename.toLowerCase().endsWith('.jpg')) {
+      return new Response('Invalid file type', { status: 400 });
+    }
+
     const filePath = join(process.cwd(), 'data', 'uploads', 'user-avatars', filename);
     
     try {
-      const fileBuffer = await fs.readFile(filePath);
-      
-      return new Response(fileBuffer, {
+      // Read the file in chunks for better memory handling
+      const fileHandle = await fs.open(filePath, 'r');
+      const { size } = await fileHandle.stat();
+      const stream = fileHandle.createReadStream();
+
+      // Return a streaming response
+      return new Response(stream, {
         headers: {
           'Content-Type': 'image/jpeg',
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          'Content-Length': size.toString(),
+          'Cache-Control': 'no-cache',
+          'Content-Disposition': 'inline',
         },
       });
     } catch (error) {

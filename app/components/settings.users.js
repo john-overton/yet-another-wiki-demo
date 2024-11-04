@@ -20,6 +20,16 @@ const UserManagementSettings = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
+
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      setTimestamp(Date.now());
+    };
+
+    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
+    return () => window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+  }, []);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -144,6 +154,13 @@ const UserManagementSettings = () => {
       console.error('Error creating user:', error);
       setMessage('Failed to create user');
     }
+  };
+
+  const getAvatarSrc = (avatar) => {
+    if (!avatar) return null;
+    if (avatar.startsWith('data:')) return avatar;
+    if (avatar.startsWith('http')) return avatar;
+    return `${avatar}?t=${timestamp}`;
   };
 
   const Pagination = () => (
@@ -273,12 +290,14 @@ const UserManagementSettings = () => {
                     {user.avatar ? (
                       <div className="h-8 w-8 rounded-full overflow-hidden relative mr-2">
                         <Image 
-                          src={user.avatar} 
+                          src={getAvatarSrc(user.avatar)}
                           alt={user.name}
-                          width={32}
-                          height={32}
                           className="object-cover"
+                          fill
+                          sizes="32px"
                           priority
+                          unoptimized={true}
+                          key={timestamp}
                         />
                       </div>
                     ) : (

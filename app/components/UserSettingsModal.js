@@ -194,14 +194,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const getAvatarSrc = () => {
     if (!avatarPreview) return null;
     if (avatarPreview.startsWith('data:')) return avatarPreview;
-    
-    // If it's a full URL, return it as is
-    if (avatarPreview.startsWith('http')) {
-      return avatarPreview;
-    }
-    
-    // For local avatars, return the path as is since it should be relative to public
-    return avatarPreview;
+    return `${avatarPreview}?t=${timestamp}`;
   };
 
   return (
@@ -311,7 +304,6 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                       sizes="96px"
                       priority
                       unoptimized={true}
-                      key={timestamp} // Use key to force refresh instead of URL params
                     />
                   </div>
                 ) : (
