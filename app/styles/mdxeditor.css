@@ -436,13 +436,15 @@
   background-color: var(--editor-combobox-bg);
   border-width: 1px !important;
   border-color: var(--editor-border);
+  max-height: 20rem;
+  overflow-y: auto;
 }
 
 .dark .mdxeditor [role="option"]:hover {
   background-color: var(--editor-bg-hover);
   }
 
-  .dark .mdxeditor [role="combobox"] {
-    background-color: var(--editor-combobox-bg);
-    border: 1px solid var(--editor-border) !important;
-    }
+.dark .mdxeditor [role="combobox"] {
+  background-color: var(--editor-combobox-bg);
+  border: 1px solid var(--editor-border) !important;
+}

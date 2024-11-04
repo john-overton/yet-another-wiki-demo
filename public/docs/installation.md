@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your system:
 
 Open your terminal and run the following command:
 
-```bash
+```shell
 npx create-next-app@latest my-next-project
 ```
 
@@ -36,7 +36,7 @@ Feel free to adjust these based on your preferences and project requirements.
 
 Once the installation is complete, move into your project folder:
 
-```bash
+```shell
 cd my-next-project
 ```
 
@@ -44,7 +44,7 @@ cd my-next-project
 
 Launch your Next.js application by running:
 
-```bash
+```shell
 npm run dev
 ```
 
