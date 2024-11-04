@@ -34,6 +34,18 @@ const MainAppLayout = () => {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
 
+  // Check screen width on initial load
+  useEffect(() => {
+    const checkScreenWidth = () => {
+      if (window.innerWidth <= 600) {
+        setIsSidebarVisible(false);
+      }
+    };
+    
+    // Run on mount
+    checkScreenWidth();
+  }, []);
+
   // Update document title when selected file changes
   useEffect(() => {
     if (selectedFile?.title) {

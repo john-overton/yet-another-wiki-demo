@@ -2,11 +2,11 @@
   "pages": [
     {
       "slug": "getting-started",
-      "title": "Getting Started",
+      "title": "Getting Started Here",
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-04T01:20:21.295Z",
+      "lastModified": "2024-11-04T02:46:12.758Z",
       "sortOrder": 2,
       "children": [
         {
@@ -25,19 +25,19 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-11-04T01:21:36.017Z",
-          "children": [],
+          "children": [
+            {
+              "slug": "new-file",
+              "title": "New File",
+              "path": "new-file.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-04T02:55:31.237Z",
+              "children": [],
+              "deleted": true
+            }
+          ],
           "sortOrder": 0
-        },
-        {
-          "slug": "test-item",
-          "title": "Test Item",
-          "path": "test-item.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-11-04T00:55:03.937Z",
-          "children": [],
-          "sortOrder": 2,
-          "deleted": true
         }
       ]
     },
@@ -69,18 +69,17 @@
       "version": 1,
       "lastModified": "2024-11-04T01:19:56.691Z",
       "sortOrder": 1,
-      "children": [
-        {
-          "slug": "testesting-from-mobile",
-          "title": "Testesting from mobile",
-          "path": "testesting-from-mobile.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-11-04T00:55:55.334Z",
-          "children": [],
-          "deleted": true
-        }
-      ]
+      "children": []
+    },
+    {
+      "slug": "testesting-from-mobile",
+      "title": "Testesting from mobile",
+      "path": "testesting-from-mobile.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-11-04T00:55:55.334Z",
+      "children": [],
+      "deleted": true
     }
   ]
 }
