@@ -12,32 +12,17 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
+  useEffect(() => {
+    // Reset position when zoom changes
+    setPosition({ x: 0, y: 0 });
+  }, [zoom]);
+
   const handleMouseDown = (e) => {
     e.preventDefault();
     setDragStart({
       x: e.clientX - position.x,
       y: e.clientY - position.y
     });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!dragStart || !containerRef.current || !imageRef) return;
-
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const imageRect = imageRef.getBoundingClientRect();
-    
-    let newX = e.clientX - dragStart.x;
-    let newY = e.clientY - dragStart.y;
-
-    // Calculate boundaries
-    const maxX = (imageRect.width * zoom - containerRect.width) / 2;
-    const maxY = (imageRect.height * zoom - containerRect.height) / 2;
-
-    // Constrain movement
-    newX = Math.max(-maxX, Math.min(maxX, newX));
-    newY = Math.max(-maxY, Math.min(maxY, newY));
-
-    setPosition({ x: newX, y: newY });
   };
 
   const handleMouseUp = () => {
@@ -48,32 +33,33 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
     if (!imageRef || !containerRef.current) return;
 
     const canvas = document.createElement('canvas');
-    const finalSize = 500; // Final output size
+    const finalSize = 500;
     canvas.width = finalSize;
     canvas.height = finalSize;
     
     const ctx = canvas.getContext('2d');
 
-    // Get container dimensions
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const containerSize = containerRect.width;
+    // Get the natural dimensions of the image
+    const naturalWidth = imageRef.naturalWidth;
+    const naturalHeight = imageRef.naturalHeight;
 
-    // Calculate the scale between displayed and natural image sizes
-    const displayToNaturalRatio = imageRef.naturalWidth / imageRef.width;
-    
-    // Calculate the size of the area to crop in natural image coordinates
-    // Multiply by zoom to make the crop area smaller when zoomed in
-    const cropSize = containerSize * displayToNaturalRatio * (1 / zoom);
-    
-    // Scale the position by the display-to-natural ratio
-    const scaledPositionX = position.x * displayToNaturalRatio;
-    const scaledPositionY = position.y * displayToNaturalRatio;
-    
-    // Calculate the center of the crop area in natural image coordinates
-    const centerX = (imageRef.naturalWidth / 2) - scaledPositionX;
-    const centerY = (imageRef.naturalHeight / 2) - scaledPositionY;
-    
-    // Calculate the source coordinates for cropping
+    // Calculate the displayed dimensions of the image
+    const displayWidth = imageRef.width;
+    const displayHeight = imageRef.height;
+
+    // Calculate the scale between natural and displayed sizes
+    const scaleX = naturalWidth / displayWidth;
+    const scaleY = naturalHeight / displayHeight;
+
+    // Calculate the crop size in natural coordinates
+    // Use the smaller dimension to ensure we get a square crop
+    const cropSize = Math.min(naturalWidth, naturalHeight) / zoom;
+
+    // Calculate the center point in natural coordinates
+    const centerX = (naturalWidth / 2) + (position.x * scaleX);
+    const centerY = (naturalHeight / 2) + (position.y * scaleY);
+
+    // Calculate the crop coordinates
     const sourceX = centerX - (cropSize / 2);
     const sourceY = centerY - (cropSize / 2);
 
@@ -96,6 +82,26 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
   };
 
   useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!dragStart || !containerRef.current || !imageRef) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const imageRect = imageRef.getBoundingClientRect();
+      
+      let newX = e.clientX - dragStart.x;
+      let newY = e.clientY - dragStart.y;
+
+      // Calculate boundaries based on zoomed image size
+      const maxX = Math.max(0, (imageRect.width * zoom - containerRect.width) / 2);
+      const maxY = Math.max(0, (imageRect.height * zoom - containerRect.height) / 2);
+
+      // Constrain movement
+      newX = Math.max(-maxX, Math.min(maxX, newX));
+      newY = Math.max(-maxY, Math.min(maxY, newY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
     const handleGlobalMouseMove = (e) => {
       if (dragStart) {
         handleMouseMove(e);
@@ -113,7 +119,7 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [dragStart]);
+  }, [dragStart, zoom, imageRef]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -135,19 +141,25 @@ const ImageCropModal = ({ image, onComplete, onCancel }) => {
               }}
               onMouseDown={handleMouseDown}
             >
-              <img
+              <Image
                 src={image}
+                alt="Profile picture being cropped"
                 ref={setImageRef}
                 style={{
-                  transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-                  transformOrigin: 'center',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  transition: 'transform 0.1s ease',
+                  transform: `translate(-50%, -50%) scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+                  transformOrigin: 'center',
                   cursor: dragStart ? 'grabbing' : 'grab'
                 }}
+                width={400}
+                height={400}
                 draggable="false"
+                unoptimized
               />
             </div>
           </div>
@@ -377,10 +389,12 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
     if (!avatarPreview) return null;
     if (avatarPreview.startsWith('data:')) return avatarPreview;
     
-    // Add timestamp to force refresh
-    return avatarPreview.startsWith('http')
-      ? `${avatarPreview}?t=${timestamp}`
-      : `/user-avatars/${avatarPreview.split('/').pop()}?t=${timestamp}`;
+    // For URLs from the public directory, don't add the timestamp to the path
+    const imagePath = avatarPreview.startsWith('http')
+      ? avatarPreview
+      : `/user-avatars/${avatarPreview.split('/').pop()}`;
+
+    return imagePath;
   };
 
   return (
@@ -489,6 +503,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                       fill
                       sizes="96px"
                       priority
+                      key={timestamp} // Use key to force refresh instead of URL params
                     />
                   </div>
                 ) : (
