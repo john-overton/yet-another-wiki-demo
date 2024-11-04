@@ -8,7 +8,6 @@ export async function GET() {
     const secretQuestions = await prisma.secretQuestion.findMany();
     return NextResponse.json(secretQuestions);
   } catch (error) {
-    console.error('Error fetching secret questions:', error);
     return NextResponse.json({ error: 'Failed to fetch secret questions' }, { status: 500 });
   } finally {
     await prisma.$disconnect();

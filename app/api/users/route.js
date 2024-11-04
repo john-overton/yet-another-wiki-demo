@@ -58,7 +58,6 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
     return Response.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 }
