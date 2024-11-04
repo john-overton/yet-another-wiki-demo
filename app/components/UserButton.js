@@ -21,9 +21,11 @@ export default function UserButton({ user }) {
       }
     };
 
-    // Listen for avatar updates
-    const handleAvatarUpdate = () => {
-      setTimestamp(Date.now());
+    // Listen for avatar updates with timestamp
+    const handleAvatarUpdate = (event) => {
+      // Use the timestamp from the event if available, otherwise generate new one
+      const newTimestamp = event.detail?.timestamp || Date.now();
+      setTimestamp(newTimestamp);
       setAvatarError(false);
     };
 
@@ -59,6 +61,7 @@ export default function UserButton({ user }) {
       ? avatar.split('/').pop() 
       : avatar;
     
+    // Use the shared timestamp for cache busting
     return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 

@@ -105,11 +105,17 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
 
       const data = await response.json();
       setAvatarPreview(data.avatar);
-      setTimestamp(Date.now());
+      
+      // Update timestamp to force cache refresh
+      const newTimestamp = Date.now();
+      setTimestamp(newTimestamp);
+      
       setMessage({ type: 'success', content: 'Avatar updated successfully' });
       
-      // Force refresh user data
-      const event = new Event('user-avatar-updated');
+      // Force refresh user data with timestamp
+      const event = new CustomEvent('user-avatar-updated', { 
+        detail: { timestamp: newTimestamp }
+      });
       window.dispatchEvent(event);
     } catch (error) {
       console.error('Error uploading avatar:', error);

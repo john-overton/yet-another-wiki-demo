@@ -7,12 +7,22 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [resetSecurityQuestions, setResetSecurityQuestions] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
     // Reset avatar preview when user changes
     setAvatarPreview(user?.avatar || null);
     setResetSecurityQuestions(false); // Reset the checkbox when user changes
   }, [user]);
+
+  useEffect(() => {
+    const handleAvatarUpdate = () => {
+      setTimestamp(Date.now());
+    };
+
+    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
+    return () => window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -39,6 +49,7 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
       const response = await fetch('/api/users/avatar', {
         method: 'POST',
         body: formData,
+        cache: 'no-store'
       });
 
       if (!response.ok) {
@@ -47,6 +58,11 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
 
       const data = await response.json();
       setAvatarPreview(data.avatar);
+      setTimestamp(Date.now());
+      
+      // Dispatch event to update avatar in other components
+      const event = new Event('user-avatar-updated');
+      window.dispatchEvent(event);
     } catch (error) {
       console.error('Error uploading avatar:', error);
       // Revert preview on error
@@ -78,16 +94,15 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
   };
 
   const getAvatarSrc = () => {
-    if (!avatarPreview) {
-      return null;
-    }
-    if (avatarPreview.startsWith('data:')) {
-      return avatarPreview;
-    }
-    if (avatarPreview.startsWith('http')) {
-      return avatarPreview;
-    }
-    return `${process.env.NEXT_PUBLIC_BASE_URL || ''}${avatarPreview}`;
+    if (!avatarPreview) return null;
+    if (avatarPreview.startsWith('data:')) return avatarPreview;
+    
+    // Convert filename to dynamic API path
+    const filename = avatarPreview.includes('/') 
+      ? avatarPreview.split('/').pop() 
+      : avatarPreview;
+    
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   return (
@@ -111,10 +126,12 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
                   <Image 
                     src={getAvatarSrc()}
                     alt={user?.name || 'User avatar'}
-                    width={96}
-                    height={96}
                     className="object-cover"
+                    fill
+                    sizes="96px"
                     priority
+                    unoptimized={true}
+                    key={timestamp}
                   />
                 </div>
               ) : (
