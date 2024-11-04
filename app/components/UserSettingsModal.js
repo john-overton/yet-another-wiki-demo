@@ -289,7 +289,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
                 )}
                 <label 
                   htmlFor="avatar" 
-                  className={`absolute bottom-0 right-0 bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg cursor-pointer ${
+                  className={`absolute bottom-0 right-0 bg-white dark:bg-gray-400 rounded-full p-2 shadow-lg cursor-pointer ${
                     isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -379,5 +379,4 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
     </div>
   );
 };
-
 export default UserSettingsModal;
