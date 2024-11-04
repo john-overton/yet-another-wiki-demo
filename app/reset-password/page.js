@@ -1,9 +1,15 @@
-import PasswordResetForm from '../components/PasswordResetForm';
+'use client';
+
+import { useState } from 'react';
+import PasswordResetModal from '../components/PasswordResetModal';
 
 export default function ResetPasswordPage() {
+  const [showModal, setShowModal] = useState(true);
+
   return (
-    <main>
-      <PasswordResetForm />
-    </main>
+    <PasswordResetModal
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+    />
   );
 }
