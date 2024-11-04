@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath = null }) => {
+const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath }) => {
   const [sortedItems, setSortedItems] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -29,17 +29,15 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath = 
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
       try {
-        // Pass both items that need updating along with parent path context
         await onSortOrderChange(
           item.path, 
           newSortOrder, 
           sortedItems[index - 1].path, 
           oldSortOrder,
-          parentPath
+          parentPath // Pass the parent path directly
         );
       } catch (error) {
         console.error('Failed to update sort order:', error);
-        // Revert on error
         setSortedItems(sortedItems);
       } finally {
         setIsUpdating(false);
@@ -60,17 +58,15 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath = 
       setSortedItems(newItems.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)));
 
       try {
-        // Pass both items that need updating along with parent path context
         await onSortOrderChange(
           item.path, 
           newSortOrder, 
           sortedItems[index + 1].path, 
           oldSortOrder,
-          parentPath
+          parentPath // Pass the parent path directly
         );
       } catch (error) {
         console.error('Failed to update sort order:', error);
-        // Revert on error
         setSortedItems(sortedItems);
       } finally {
         setIsUpdating(false);
@@ -133,7 +129,6 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
   const [rootSiblings, setRootSiblings] = useState([]);
   const [childItems, setChildItems] = useState([]);
   const [parentPath, setParentPath] = useState(null);
-  const [debugInfo, setDebugInfo] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -159,15 +154,15 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
       }
 
       // Function to find item's context
-      const findItemContext = (items, targetPath, isRoot = true, parent = null) => {
+      const findItemContext = (items, targetPath, parent = null) => {
         // Check if this is a root level item
         const rootItem = items.find(item => item.path === targetPath);
         if (rootItem) {
           return {
             found: true,
-            rootSiblings: isRoot ? items : [],
+            rootSiblings: items,
             childItems: rootItem.children || [],
-            parent
+            parent: null
           };
         }
 
@@ -181,12 +176,12 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
                 found: true,
                 rootSiblings: [],
                 childItems: childItem.children || [],
-                parent: item
+                parent: item,
+                siblings: item.children // Add siblings for child items
               };
             }
 
-            // Recursively search deeper
-            const result = findItemContext(item.children, targetPath, false, item);
+            const result = findItemContext(item.children, targetPath, item);
             if (result.found) {
               return result;
             }
@@ -198,12 +193,10 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
       const result = findItemContext(data.pages, file.path);
 
       if (result.found) {
-        setRootSiblings(result.rootSiblings);
+        // If we found siblings for a child item, use those instead of root siblings
+        setRootSiblings(result.siblings || result.rootSiblings);
         setChildItems(result.childItems);
         setParentPath(result.parent ? result.parent.path : null);
-        setDebugInfo(
-          `Found ${result.rootSiblings.length} root siblings and ${result.childItems.length} child items`
-        );
         setError(null);
       } else {
         setError('Item not found in file structure');
@@ -224,6 +217,14 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
 
   const handleSortOrderChange = async (path, newSortOrder, swapPath, swapSortOrder, itemParentPath) => {
     try {
+      console.log('Updating sort order with:', {
+        path,
+        newSortOrder,
+        swapPath,
+        swapSortOrder,
+        parentPath: itemParentPath || parentPath
+      });
+
       const response = await fetch('/api/update-sort-order', {
         method: 'POST',
         headers: {
@@ -236,12 +237,13 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
           newSortOrder,
           swapPath,
           swapSortOrder,
-          parentPath: itemParentPath
+          parentPath: itemParentPath || parentPath
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -249,12 +251,10 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
         throw new Error(data.error || 'Failed to update sort order');
       }
 
-      // Immediately call the parent's onSortOrderChange to trigger a refresh
       if (parentOnSortOrderChange) {
         await parentOnSortOrderChange(path, newSortOrder);
       }
 
-      // Fetch updated file structure
       await fetchFileStructure();
     } catch (error) {
       console.error('Error updating sort order:', error);
@@ -292,11 +292,14 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
         }`}>
           {rootSiblings.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Root Level Order</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {parentPath ? 'Sibling Items Order' : 'Root Level Order'}
+              </h3>
               <SortTable
                 items={rootSiblings}
                 currentPath={file.path}
                 onSortOrderChange={handleSortOrderChange}
+                parentPath={parentPath}
               />
             </div>
           )}
@@ -307,7 +310,7 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
                 items={childItems}
                 currentPath={file.path}
                 onSortOrderChange={handleSortOrderChange}
-                parentPath={parentPath}
+                parentPath={file.path}
               />
             </div>
           )}
