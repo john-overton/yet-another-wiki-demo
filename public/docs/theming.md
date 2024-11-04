@@ -8,7 +8,7 @@ Theming in Next.js involves creating a consistent look and feel across your appl
 
 CSS Modules provide scoped styling and are built into Next.js.
 
-```jsx
+```java
 // styles/Button.module.css
 .button {
   background-color: var(--primary-color);
@@ -27,7 +27,7 @@ const Button = ({ children }) => (
 
 Use a global CSS file for app-wide styles.
 
-```jsx
+```java
 // pages/_app.js
 import '../styles/globals.css'
 
@@ -42,7 +42,7 @@ export default MyApp
 
 Install `styled-components` and its babel plugin for server-side rendering.
 
-```jsx
+```java
 // components/Button.js
 import styled from 'styled-components'
 
@@ -56,7 +56,7 @@ export default Button
 
 Set up a theme provider:
 
-```jsx
+```java
 // pages/_app.js
 import { ThemeProvider } from 'styled-components'
 
@@ -78,7 +78,7 @@ function MyApp({ Component, pageProps }) {
 
 Install Tailwind CSS and configure it for Next.js.
 
-```jsx
+```java
 // components/Button.js
 const Button = ({ children }) => (
   <button className="bg-blue-500 text-white px-4 py-2 rounded">
@@ -89,7 +89,7 @@ const Button = ({ children }) => (
 
 Customize Tailwind theme in `tailwind.config.js`:
 
-```javascript
+```java
 module.exports = {
   theme: {
     extend: {
@@ -123,7 +123,7 @@ Use CSS variables for easy theme switching.
 
 Switch themes with JavaScript:
 
-```javascript
+```java
 document.documentElement.setAttribute('data-theme', 'dark')
 ```
 
@@ -131,7 +131,7 @@ document.documentElement.setAttribute('data-theme', 'dark')
 
 Create a theme context for dynamic theme switching:
 
-```jsx
+```java
 // contexts/ThemeContext.js
 import React, { createContext, useState, useContext } from 'react'
 
@@ -152,7 +152,7 @@ export const useTheme = () => useContext(ThemeContext)
 
 Use the theme in components:
 
-```jsx
+```java
 // components/ThemedButton.js
 import { useTheme } from '../contexts/ThemeContext'
 
@@ -170,7 +170,7 @@ const ThemedButton = () => {
 
 For Material Design, use Material-UI with its theming solution:
 
-```jsx
+```java
 // pages/_app.js
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 

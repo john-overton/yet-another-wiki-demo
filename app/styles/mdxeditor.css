@@ -46,6 +46,7 @@
   --editor-popup-bg: #FFFFFF;
   --editor-popup-border: #E5E7EB;
   --editor-popup-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --editor-combobox-bg: #FFFFFF;
 }
 
 /* Dark theme variables */
@@ -90,6 +91,7 @@
   --editor-popup-bg: #2B2A33;
   --editor-popup-border: #374151;
   --editor-popup-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --editor-combobox-bg: #2B2A33;
 }
 
 /* Editor root styles */
@@ -429,3 +431,11 @@
     width:100%;
     z-index:100;
 }
+
+.dark .mdxeditor [role="listbox"] {
+  background-color: var(--editor-combobox-bg);
+}
+
+.dark .mdxeditor [role="combobox"] {
+  background-color: var(--editor-combobox-bg);
+  }

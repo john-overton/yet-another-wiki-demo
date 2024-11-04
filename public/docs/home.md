@@ -45,7 +45,7 @@ Markdown makes documentation a breeze! Here's what you can do:
 
 ### Code Blocks
 
-```javascript
+```java
 // Syntax highlighted code blocks
 function greet() {
     return "Hello, Wiki!";
@@ -79,7 +79,7 @@ Your wiki content is organized in the `app/docs/` directory. Here's how to manag
 
 ### Directory Structure
 
-```plaintext
+```text
 app/docs/
 ├── home.md
 ├── getting-started.md

@@ -79,7 +79,7 @@ const SortTable = ({ items, currentPath, onSortOrderChange, title, parentPath = 
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm">
+    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-50 dark:bg-gray-900">
           <tr>

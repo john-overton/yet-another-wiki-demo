@@ -222,31 +222,20 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   const codeBlockLanguages = {
     'text': 'Plain Text',
     'c': 'C',
-    'c++': 'C++',
-    'javascript': 'JavaScript',
+    'java': 'Javascript',
     'typescript': 'TypeScript',
-    'jsx': 'React JSX',
-    'tsx': 'React TSX',
     'html': 'HTML',
     'css': 'CSS',
-    'scss': 'SCSS',
     'json': 'JSON',
-    'yaml': 'YAML',
-    'markdown': 'Markdown',
-    'sql': 'SQL',
     'python': 'Python',
-    'java': 'Java',
+    'sql': 'SQL',
     'ruby': 'Ruby',
     'php': 'PHP',
-    'bash': 'Bash',
     'shell': 'Shell',
-    'plaintext': 'Plain Text',
-    'diff': 'Diff',
-    'git': 'Git',
-    'graphql': 'GraphQL',
+    'xml': 'XML',
     'docker': 'Docker',
-    'nginx': 'Nginx',
-    'xml': 'XML'
+    'yaml': 'YAML',
+    'markdown': 'Markdown'
   };
 
   if (isLoading) {

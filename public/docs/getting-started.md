@@ -15,7 +15,7 @@ Before you begin, ensure you have:
 
 1. Create a new Next.js project:
 
-```bash
+```shell
 npx create-next-app@latest my-wiki-project
 ```
 
@@ -27,13 +27,13 @@ npx create-next-app@latest my-wiki-project
    * Custom import alias (Optional)
 2. Navigate to your project directory:
 
-```bash
+```shell
 cd my-wiki-project
 ```
 
 1. Start the development server:
 
-```bash
+```shell
 npm run dev
 ```
 
@@ -54,7 +54,7 @@ Key directories in your wiki:
 
 1. **CSS Modules**
 
-```jsx
+```java
 // styles/WikiPage.module.css
 .container {
   background-color: var(--primary-color);
@@ -86,7 +86,7 @@ const WikiPage = ({ children }) => (
 
 1. **Theme Context**
 
-```jsx
+```java
 // contexts/ThemeContext.js
 import React, { createContext, useState } from 'react'
 

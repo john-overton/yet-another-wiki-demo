@@ -4,7 +4,7 @@
 
 The `next.config.js` file in your project root is the primary way to configure Next.js.
 
-```javascript
+```java
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Your configuration options here
@@ -19,13 +19,13 @@ module.exports = nextConfig
 
 Use `.env.local` for local environment variables:
 
-```bash
+```shell
 API_KEY=your_api_key_here
 ```
 
 Access in your code:
 
-```javascript
+```java
 const apiKey = process.env.API_KEY
 ```
 
@@ -33,7 +33,7 @@ const apiKey = process.env.API_KEY
 
 Set up redirects in `next.config.js`:
 
-```javascript
+```java
 module.exports = {
   async redirects() {
     return [
@@ -51,7 +51,7 @@ module.exports = {
 
 Extend Webpack config in `next.config.js`:
 
-```javascript
+```java
 module.exports = {
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Modify the config here
@@ -64,7 +64,7 @@ module.exports = {
 
 Configure the Image component:
 
-```javascript
+```java
 module.exports = {
   images: {
     domains: ['example.com'],
@@ -78,7 +78,7 @@ module.exports = {
 
 Set up language routing:
 
-```javascript
+```java
 module.exports = {
   i18n: {
     locales: ['en', 'fr', 'de'],
@@ -91,7 +91,7 @@ module.exports = {
 
 Create `pages/_app.js` for global styles or layouts:
 
-```javascript
+```java
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
@@ -105,7 +105,7 @@ export default MyApp
 
 Create API endpoints in `pages/api`:
 
-```javascript
+```java
 // pages/api/hello.js
 export default function handler(req, res) {
   res.status(200).json({ name: 'John Doe' })
@@ -116,7 +116,7 @@ export default function handler(req, res) {
 
 Use `getStaticProps` for SSG:
 
-```javascript
+```java
 export async function getStaticProps(context) {
   return {
     props: {}, // will be passed to the page component as props
@@ -128,7 +128,7 @@ export async function getStaticProps(context) {
 
 Use `getServerSideProps` for SSR:
 
-```javascript
+```java
 export async function getServerSideProps(context) {
   return {
     props: {}, // will be passed to the page component as props

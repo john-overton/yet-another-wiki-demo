@@ -6,7 +6,7 @@
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-04T00:55:20.637Z",
+      "lastModified": "2024-11-04T01:20:21.295Z",
       "sortOrder": 2,
       "children": [
         {
@@ -24,7 +24,7 @@
           "path": "theming.md",
           "isPublic": true,
           "version": 1,
-          "lastModified": "2024-11-01T16:20:08.208Z",
+          "lastModified": "2024-11-04T01:21:36.017Z",
           "children": [],
           "sortOrder": 0
         },
@@ -36,7 +36,8 @@
           "version": 1,
           "lastModified": "2024-11-04T00:55:03.937Z",
           "children": [],
-          "sortOrder": 2
+          "sortOrder": 2,
+          "deleted": true
         }
       ]
     },
@@ -46,7 +47,7 @@
       "path": "code-examples.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-10-30T12:58:51.650Z",
+      "lastModified": "2024-11-04T01:22:47.842Z",
       "sortOrder": 4,
       "children": []
     },
@@ -56,7 +57,7 @@
       "path": "configuration.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-01T13:01:50.450Z",
+      "lastModified": "2024-11-04T01:22:31.234Z",
       "sortOrder": 3,
       "children": []
     },
@@ -66,7 +67,7 @@
       "path": "home.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-01T15:34:25.426Z",
+      "lastModified": "2024-11-04T01:19:56.691Z",
       "sortOrder": 1,
       "children": [
         {
@@ -76,7 +77,8 @@
           "isPublic": true,
           "version": 1,
           "lastModified": "2024-11-04T00:55:55.334Z",
-          "children": []
+          "children": [],
+          "deleted": true
         }
       ]
     }

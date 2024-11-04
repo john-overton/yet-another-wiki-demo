@@ -4,7 +4,7 @@ Here are some code examples in different programming languages\:
 
 ## JavaScript Example
 
-```javascript
+```java
 function calculateFactorial(n) {
     if (n === 0 || n === 1) {
         return 1;
