@@ -41,65 +41,26 @@ export async function POST(request) {
     const buffer = Buffer.from(arrayBuffer);
     await fs.writeFile(filePath, buffer);
 
-    // Store the API route path in database
-    const avatarUrl = `/api/users/avatar/${fileName}`;
+    // Store just the filename in database
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(userId) },
-      data: { avatar: avatarUrl },
+      data: { avatar: fileName }, // Store only the filename
       select: {
         id: true,
         avatar: true,
       },
     });
 
-    return Response.json(updatedUser);
+    // Return the full path for immediate use
+    return Response.json({
+      ...updatedUser,
+      avatar: `/api/uploads/user-avatars/${fileName}` // Return the dynamic API path
+    });
   } catch (error) {
     console.error('Error uploading avatar:', error);
     return Response.json(
       { error: 'Failed to upload avatar' },
       { status: 500 }
     );
-  }
-}
-
-export async function GET(request) {
-  try {
-    const url = new URL(request.url);
-    const segments = url.pathname.split('/');
-    const filename = segments[segments.length - 1];
-    
-    if (!filename) {
-      return new Response('File not found', { status: 404 });
-    }
-
-    // Ensure we only serve jpg files
-    if (!filename.toLowerCase().endsWith('.jpg')) {
-      return new Response('Invalid file type', { status: 400 });
-    }
-
-    const filePath = join(process.cwd(), 'data', 'uploads', 'user-avatars', filename);
-    
-    try {
-      // Read the file in chunks for better memory handling
-      const fileHandle = await fs.open(filePath, 'r');
-      const { size } = await fileHandle.stat();
-      const stream = fileHandle.createReadStream();
-
-      // Return a streaming response
-      return new Response(stream, {
-        headers: {
-          'Content-Type': 'image/jpeg',
-          'Content-Length': size.toString(),
-          'Cache-Control': 'no-cache',
-          'Content-Disposition': 'inline',
-        },
-      });
-    } catch (error) {
-      console.error('Error reading file:', error);
-      return new Response('File not found', { status: 404 });
-    }
-  } catch (error) {
-    console.error('Error serving avatar:', error);
-    return new Response('Internal server error', { status: 500 });
   }
 }

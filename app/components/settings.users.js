@@ -159,8 +159,13 @@ const UserManagementSettings = () => {
   const getAvatarSrc = (avatar) => {
     if (!avatar) return null;
     if (avatar.startsWith('data:')) return avatar;
-    if (avatar.startsWith('http')) return avatar;
-    return `${avatar}?t=${timestamp}`;
+    
+    // Convert filename to dynamic API path
+    const filename = avatar.includes('/') 
+      ? avatar.split('/').pop() 
+      : avatar;
+    
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   const Pagination = () => (

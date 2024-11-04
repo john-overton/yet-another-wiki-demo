@@ -194,7 +194,13 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const getAvatarSrc = () => {
     if (!avatarPreview) return null;
     if (avatarPreview.startsWith('data:')) return avatarPreview;
-    return `${avatarPreview}?t=${timestamp}`;
+    
+    // Convert filename to dynamic API path
+    const filename = avatarPreview.includes('/') 
+      ? avatarPreview.split('/').pop() 
+      : avatarPreview;
+    
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   return (

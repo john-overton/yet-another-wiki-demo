@@ -22,8 +22,13 @@ export default function UserCard({ user }) {
   const getAvatarSrc = () => {
     if (!user.avatar) return null;
     if (user.avatar.startsWith('data:')) return user.avatar;
-    if (user.avatar.startsWith('http')) return user.avatar;
-    return `${user.avatar}?t=${timestamp}`;
+    
+    // Convert filename to dynamic API path
+    const filename = user.avatar.includes('/') 
+      ? user.avatar.split('/').pop() 
+      : user.avatar;
+    
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   const avatarSrc = getAvatarSrc();
@@ -46,7 +51,7 @@ export default function UserCard({ user }) {
             />
           </div>
         ) : (
-          <div className="h-[50px] w-[50px] rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+          <div className="h-[50px] w-[50px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <i className="ri-user-line text-xl text-gray-500 dark:text-gray-400"></i>
           </div>
         )}

@@ -54,12 +54,12 @@ export default function UserButton({ user }) {
       return avatar;
     }
     
-    if (avatar.startsWith('http')) {
-      return avatar;
-    }
+    // Convert filename to dynamic API path
+    const filename = avatar.includes('/') 
+      ? avatar.split('/').pop() 
+      : avatar;
     
-    // Add timestamp to force refresh when avatar changes
-    return `${avatar}?t=${timestamp}`;
+    return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
   const avatarUrl = getAvatarUrl(user.avatar);
