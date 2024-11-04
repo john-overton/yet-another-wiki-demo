@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
@@ -26,6 +26,7 @@ const SearchComponent = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
+  const searchRef = useRef(null);
 
   const fetchSearchResults = useCallback(async () => {
     if (!searchTerm) {
@@ -52,6 +53,20 @@ const SearchComponent = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [fetchSearchResults]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchResults([]);
+        setSearchTerm('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleResultClick = (result) => {
     router.push(result.path === 'home.md' ? '/' : `/${result.path.replace('.md', '')}`);
     setSearchTerm('');
@@ -59,7 +74,7 @@ const SearchComponent = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={searchRef}>
       <input
         type="text"
         value={searchTerm}

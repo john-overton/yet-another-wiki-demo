@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const generateId = (text) => {
   return text.toLowerCase().replace(/[^\w]+/g, '-');
@@ -9,6 +9,8 @@ const generateId = (text) => {
 const TableOfContents = ({ source, isVisible }) => {
   const [toc, setToc] = useState([]);
   const [activeSection, setActiveSection] = useState('');
+  const [maxHeight, setMaxHeight] = useState('calc(100vh - 8rem)');
+  const tocRef = useRef(null);
 
   useEffect(() => {
     const headings = source.match(/^#{1,4} .+$/gm) || [];
@@ -33,8 +35,36 @@ const TableOfContents = ({ source, isVisible }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const updateMaxHeight = () => {
+      if (tocRef.current) {
+        const mainContainer = document.querySelector('main');
+        if (mainContainer) {
+          const mainRect = mainContainer.getBoundingClientRect();
+          const tocRect = tocRef.current.getBoundingClientRect();
+          const topOffset = tocRect.top;
+          const availableHeight = (mainRect.bottom - topOffset) - 5;
+          setMaxHeight(`${availableHeight}px`);
+        }
+      }
+    };
+
+    updateMaxHeight();
+    window.addEventListener('resize', updateMaxHeight);
+    return () => window.removeEventListener('resize', updateMaxHeight);
+  }, [isVisible]);
+
   return (
-    <div className={`p-4 mt-1 mr-1 border table-of-contents text-white rounded-lg ${isVisible ? 'block' : 'hidden'}`}>
+    <div 
+      ref={tocRef}
+      className={`p-4 mt-1 mr-1 border table-of-contents text-white rounded-lg ${isVisible ? 'block' : 'hidden'}`}
+      style={{
+        maxHeight,
+        overflowY: 'auto',
+        position: 'sticky',
+        top: '7rem'
+      }}
+    >
       <h3 className="text-lg font-bold mb-4 text-foreground">On This Page</h3>
       <ul className="space-y-2">
         {toc.map((item, index) => (
