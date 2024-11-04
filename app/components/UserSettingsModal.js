@@ -1,9 +1,218 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import SecretQuestionsFormContent from './SecretQuestionsFormContent';
+import 'react-image-crop/dist/ReactCrop.css';
 
+const ImageCropModal = ({ image, onComplete, onCancel }) => {
+  const [zoom, setZoom] = useState(1);
+  const [imageRef, setImageRef] = useState(null);
+  const [dragStart, setDragStart] = useState(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragStart || !containerRef.current || !imageRef) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const imageRect = imageRef.getBoundingClientRect();
+    
+    let newX = e.clientX - dragStart.x;
+    let newY = e.clientY - dragStart.y;
+
+    // Calculate boundaries
+    const maxX = (imageRect.width * zoom - containerRect.width) / 2;
+    const maxY = (imageRect.height * zoom - containerRect.height) / 2;
+
+    // Constrain movement
+    newX = Math.max(-maxX, Math.min(maxX, newX));
+    newY = Math.max(-maxY, Math.min(maxY, newY));
+
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleMouseUp = () => {
+    setDragStart(null);
+  };
+
+  const handleComplete = () => {
+    if (!imageRef) return;
+
+    const canvas = document.createElement('canvas');
+    const finalSize = 500; // Final output size
+    canvas.width = finalSize;
+    canvas.height = finalSize;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Create circular clip
+    ctx.beginPath();
+    ctx.arc(finalSize / 2, finalSize / 2, finalSize / 2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+
+    // Calculate the scale factor between the displayed image and its natural size
+    const displayToNaturalRatio = imageRef.naturalWidth / imageRef.width;
+    
+    // Calculate the center and size of the crop in the natural image coordinates
+    const cropSize = Math.min(imageRef.naturalWidth, imageRef.naturalHeight) / zoom;
+    const sourceX = (imageRef.naturalWidth - cropSize) / 2 - (position.x * displayToNaturalRatio);
+    const sourceY = (imageRef.naturalHeight - cropSize) / 2 - (position.y * displayToNaturalRatio);
+
+    // Apply sharpening
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    
+    // Draw the image
+    ctx.drawImage(
+      imageRef,
+      sourceX,
+      sourceY,
+      cropSize,
+      cropSize,
+      0,
+      0,
+      finalSize,
+      finalSize
+    );
+
+    // Apply additional sharpening
+    const imageData = ctx.getImageData(0, 0, finalSize, finalSize);
+    const sharpenKernel = [
+      0, -1, 0,
+      -1, 5, -1,
+      0, -1, 0
+    ];
+    const newImageData = new ImageData(
+      new Uint8ClampedArray(imageData.data),
+      imageData.width,
+      imageData.height
+    );
+    
+    for (let y = 1; y < imageData.height - 1; y++) {
+      for (let x = 1; x < imageData.width - 1; x++) {
+        for (let c = 0; c < 3; c++) {
+          let sum = 0;
+          for (let ky = -1; ky <= 1; ky++) {
+            for (let kx = -1; kx <= 1; kx++) {
+              const idx = ((y + ky) * imageData.width + (x + kx)) * 4 + c;
+              sum += imageData.data[idx] * sharpenKernel[(ky + 1) * 3 + (kx + 1)];
+            }
+          }
+          const idx = (y * imageData.width + x) * 4 + c;
+          newImageData.data[idx] = Math.max(0, Math.min(255, sum));
+        }
+      }
+    }
+    ctx.putImageData(newImageData, 0, 0);
+
+    canvas.toBlob((blob) => {
+      onComplete(blob);
+    }, 'image/jpeg', 0.9);
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e) => {
+      if (dragStart) {
+        handleMouseMove(e);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setDragStart(null);
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [dragStart]);
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <h3 className="text-lg font-semibold mb-4">Adjust Profile Picture</h3>
+        <div className="relative flex flex-col items-center">
+          <div className="w-full max-h-[50vh] overflow-hidden relative">
+            <div 
+              ref={containerRef}
+              className="relative cursor-move" 
+              style={{ 
+                width: '400px',
+                height: '400px',
+                margin: '0 auto',
+                userSelect: 'none',
+                position: 'relative',
+                borderRadius: '50%',
+                overflow: 'hidden'
+              }}
+              onMouseDown={handleMouseDown}
+            >
+              <img
+                src={image}
+                ref={setImageRef}
+                style={{
+                  transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+                  transformOrigin: 'center',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transition: 'transform 0.1s ease',
+                  cursor: dragStart ? 'grabbing' : 'grab'
+                }}
+                draggable="false"
+              />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-center w-full">
+            <label className="mr-2 text-sm">Zoom:</label>
+            <input
+              type="range"
+              min="1"
+              max="3"
+              step="0.1"
+              value={zoom}
+              onChange={(e) => setZoom(parseFloat(e.target.value))}
+              className="w-48"
+            />
+            <span className="ml-2 text-sm">{Math.round(zoom * 100)}%</span>
+          </div>
+          <p className="text-sm text-gray-500 mt-2">
+            Click and drag to adjust the image position
+          </p>
+        </div>
+        <div className="flex justify-end gap-4 mt-6">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleComplete}
+            className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Rest of the UserSettingsModal component remains unchanged
 const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -15,6 +224,8 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [cropImage, setCropImage] = useState(null);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
   useEffect(() => {
     if (user) {
@@ -32,6 +243,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
       setNewPassword('');
       setConfirmPassword('');
       setMessage({ type: '', content: '' });
+      setCropImage(null);
       // Reset name and email to user values
       if (user) {
         setName(user.name || '');
@@ -56,11 +268,43 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
           canvas.height = htmlImg.height * scaleSize;
 
           const ctx = canvas.getContext('2d');
+          // Apply sharpening
+          ctx.filter = 'contrast(1.2) saturate(1.1)';
           ctx.drawImage(htmlImg, 0, 0, canvas.width, canvas.height);
+          
+          // Apply additional sharpening using convolution
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const sharpenKernel = [
+            0, -1, 0,
+            -1, 5, -1,
+            0, -1, 0
+          ];
+          const newImageData = new ImageData(
+            new Uint8ClampedArray(imageData.data),
+            imageData.width,
+            imageData.height
+          );
+          
+          for (let y = 1; y < imageData.height - 1; y++) {
+            for (let x = 1; x < imageData.width - 1; x++) {
+              for (let c = 0; c < 3; c++) {
+                let sum = 0;
+                for (let ky = -1; ky <= 1; ky++) {
+                  for (let kx = -1; kx <= 1; kx++) {
+                    const idx = ((y + ky) * imageData.width + (x + kx)) * 4 + c;
+                    sum += imageData.data[idx] * sharpenKernel[(ky + 1) * 3 + (kx + 1)];
+                  }
+                }
+                const idx = (y * imageData.width + x) * 4 + c;
+                newImageData.data[idx] = Math.max(0, Math.min(255, sum));
+              }
+            }
+          }
+          ctx.putImageData(newImageData, 0, 0);
           
           canvas.toBlob((blob) => {
             resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
-          }, 'image/jpeg', 0.8);
+          }, 'image/jpeg', 0.9);
         };
         htmlImg.src = e.target.result;
       };
@@ -74,13 +318,17 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setAvatarPreview(reader.result);
+      setCropImage(reader.result);
     };
     reader.readAsDataURL(file);
+  };
 
+  const handleCropComplete = async (blob) => {
     setIsUploading(true);
+    setCropImage(null);
+    
     try {
-      const resizedFile = await resizeImage(file);
+      const resizedFile = await resizeImage(new File([blob], 'cropped.jpg', { type: 'image/jpeg' }));
       const formData = new FormData();
       formData.append('avatar', resizedFile);
       formData.append('userId', user.id);
@@ -96,6 +344,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
 
       const data = await response.json();
       setAvatarPreview(data.avatar);
+      setTimestamp(Date.now()); // Force refresh preview
       setMessage({ type: 'success', content: 'Avatar updated successfully' });
       
       // Force refresh user data
@@ -159,8 +408,7 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
         body: JSON.stringify({
           id: user.id,
           name,
-          email,
-          avatar: avatarPreview
+          email
         }),
       });
 
@@ -169,6 +417,13 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
       }
 
       setMessage({ type: 'success', content: 'Settings updated successfully' });
+      
+      // Dispatch event to update avatar in UserButton
+      const event = new Event('user-avatar-updated');
+      window.dispatchEvent(event);
+      
+      // Close the modal after successful update
+      onClose();
     } catch (error) {
       console.error('Error updating settings:', error);
       setMessage({ type: 'error', content: 'Failed to update settings' });
@@ -178,8 +433,11 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
   const getAvatarSrc = () => {
     if (!avatarPreview) return null;
     if (avatarPreview.startsWith('data:')) return avatarPreview;
-    if (avatarPreview.startsWith('http')) return avatarPreview;
-    return `${process.env.NEXT_PUBLIC_BASE_URL || ''}${avatarPreview}`;
+    
+    // Add timestamp to force refresh
+    return avatarPreview.startsWith('http')
+      ? `${avatarPreview}?t=${timestamp}`
+      : `/user-avatars/${avatarPreview.split('/').pop()}?t=${timestamp}`;
   };
 
   return (
@@ -203,6 +461,14 @@ const UserSettingsModal = ({ user, isOpen, onClose }) => {
           }`}>
             {message.content}
           </div>
+        )}
+
+        {cropImage && (
+          <ImageCropModal
+            image={cropImage}
+            onComplete={handleCropComplete}
+            onCancel={() => setCropImage(null)}
+          />
         )}
 
         {showSecretQuestions ? (

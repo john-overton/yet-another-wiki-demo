@@ -63,6 +63,7 @@ const decrypt = (encryptedText) => {
 export async function PUT(request) {
   try {
     const data = await request.json();
+    const session = await getServerSession();
 
     const { 
       id, 
@@ -84,7 +85,6 @@ export async function PUT(request) {
     // Get user ID from session if not provided
     let userId = id;
     if (!userId) {
-      const session = await getServerSession();
       if (!session?.user?.id) {
         return Response.json(
           { error: 'User ID not found' },
@@ -162,6 +162,14 @@ export async function PUT(request) {
         secret_question_3_id: true,
       },
     });
+
+    // Update the session if the user being updated is the current user
+    if (session?.user?.id === userId) {
+      session.user = {
+        ...session.user,
+        ...updatedUser,
+      };
+    }
 
     return Response.json(updatedUser);
   } catch (error) {

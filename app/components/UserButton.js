@@ -1,17 +1,22 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserSettingsModal from './UserSettingsModal';
 
-export default function UserButton({ user }) {
+export default function UserButton({ user: initialUser }) {
+  const { data: session, update: updateSession } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [timestamp, setTimestamp] = useState(Date.now());
   const router = useRouter();
   const dropdownRef = useRef(null);
+
+  // Use session user data if available, fallback to initial user prop
+  const user = session?.user || initialUser;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -20,9 +25,23 @@ export default function UserButton({ user }) {
       }
     };
 
+    const handleAvatarUpdate = async () => {
+      // Update session to get fresh user data
+      await updateSession();
+      // Force refresh the avatar by updating timestamp
+      setTimestamp(Date.now());
+      // Force router refresh
+      router.refresh();
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    window.addEventListener('user-avatar-updated', handleAvatarUpdate);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+    };
+  }, [router, updateSession]);
 
   if (!user) {
     return null;
@@ -38,13 +57,10 @@ export default function UserButton({ user }) {
       return null;
     }
     
-    if (avatar.startsWith('http')) {
-      return avatar;
-    } else if (avatar.startsWith('/')) {
-      return avatar;
-    } else {
-      return `/user-avatars/${avatar}`;
-    }
+    // Add timestamp to force refresh
+    return avatar.startsWith('http') 
+      ? `${avatar}?t=${timestamp}`
+      : `/user-avatars/${avatar.split('/').pop()}?t=${timestamp}`;
   };
 
   const avatarUrl = getAvatarUrl(user.avatar);
@@ -67,6 +83,9 @@ export default function UserButton({ user }) {
               fill
               sizes="40px"
               onError={() => setAvatarError(true)}
+              priority={true}
+              unoptimized={true}
+              key={timestamp} // Force remount on timestamp change
             />
           </div>
         ) : (
@@ -103,7 +122,10 @@ export default function UserButton({ user }) {
       <UserSettingsModal
         user={user}
         isOpen={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
+        onClose={() => {
+          setShowSettingsModal(false);
+          setTimestamp(Date.now()); // Force refresh when modal closes
+        }}
       />
     </div>
   );
