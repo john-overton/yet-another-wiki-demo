@@ -22,6 +22,42 @@ DATABASE_URL="file:../db/yetanotherwiki.db"`;
     }
 }
 
+async function createConfigFiles() {
+    const configDir = 'config/settings';
+    
+    try {
+        await fs.access(configDir);
+    } catch {
+        await fs.mkdir(configDir, { recursive: true });
+    }
+
+    // Create licensing.json if it doesn't exist
+    try {
+        await fs.access(`${configDir}/licensing.json`);
+        console.log('licensing.json already exists');
+    } catch {
+        const licensingContent = {
+            email: "",
+            key: ""
+        };
+        await fs.writeFile(`${configDir}/licensing.json`, JSON.stringify(licensingContent, null, 2));
+        console.log('licensing.json created successfully');
+    }
+
+    // Create theming.json if it doesn't exist
+    try {
+        await fs.access(`${configDir}/theming.json`);
+        console.log('theming.json already exists');
+    } catch {
+        const themingContent = {
+            font: "Open Sans",
+            theme: "light"
+        };
+        await fs.writeFile(`${configDir}/theming.json`, JSON.stringify(themingContent, null, 2));
+        console.log('theming.json created successfully');
+    }
+}
+
 function runCommand(command, args) {
     return new Promise((resolve, reject) => {
         const proc = spawn(command, args, {
@@ -85,6 +121,7 @@ async function setup() {
     try {
         console.log('Starting setup process...');
         await createEnvFile();
+        await createConfigFiles();
         await setupDatabase();
         console.log('Setup completed successfully');
     } catch (error) {
