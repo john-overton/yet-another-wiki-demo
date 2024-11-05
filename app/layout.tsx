@@ -2,7 +2,6 @@ import './globals.css'
 import './markdown.css'
 import type { Metadata } from "next";
 import { Providers } from './components/Providers'
-import './lib/editorConfig'
 import { ClientLayout } from "./components/ClientLayout";
 
 export const metadata: Metadata = {

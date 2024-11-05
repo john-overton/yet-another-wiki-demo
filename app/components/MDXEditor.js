@@ -37,7 +37,7 @@ import {
   DiffSourceToggleWrapper
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import '../styles/mdxeditor.css';
+import '../mdxeditor.css';
 import { Open_Sans } from 'next/font/google';
 
 const openSans = Open_Sans({

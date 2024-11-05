@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import './logo.css';
+import '../logo.css';
 
 // Move words array outside component since it's constant
 const LOGO_WORDS = [

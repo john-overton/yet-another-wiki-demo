@@ -25,7 +25,7 @@ const DeleteConfirmModal = ({ isOpen, onConfirm, onCancel, itemTitle, hasChildre
         
         {hasChildren && source === 'sidebar' && (
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            This item has child pages. Do you want to delete them as well?
+            This item has child pages. They will be deleted as well.
           </p>
         )}
 
