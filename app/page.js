@@ -35,16 +35,19 @@ async function checkSetupNeeded() {
             return true;
         }
 
-        // Only check for admin user if files exist
+        // Check if admin exists
         const prisma = new PrismaClient();
-        const adminCount = await prisma.user.count({
-            where: {
-                role: 'Admin'
-            }
-        });
-        await prisma.$disconnect();
-        
-        return adminCount === 0;
+        try {
+            const adminUser = await prisma.user.findFirst({
+                where: {
+                    role: 'Admin'
+                }
+            });
+
+            return !adminUser; // Need setup if no admin exists
+        } finally {
+            await prisma.$disconnect();
+        }
     } catch (error) {
         console.error('Setup check failed:', error);
         return true;
@@ -59,7 +62,6 @@ export default async function Home() {
             redirect('/setup');
         }
 
-        // If we get here, setup is complete and we have users
         const topPage = meta.pages
             .filter(page => page.isPublic && !page.deleted)
             .sort((a, b) => a.sortOrder - b.sortOrder)[0];

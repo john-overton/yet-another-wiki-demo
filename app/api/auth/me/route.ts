@@ -13,10 +13,15 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions) as Session | null;
     
     if (!session?.user) {
+      console.log('No session found');
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log('Session user:', session.user); // Debug log
+    console.log('Session user:', {
+      id: session.user.id,
+      email: session.user.email,
+      role: session.user.role
+    });
 
     const userId = parseInt(session.user.id);
     
@@ -29,6 +34,11 @@ export async function GET(request: Request) {
       where: { 
         id: userId,
       },
+      include: {
+        secret_question_1: true,
+        secret_question_2: true,
+        secret_question_3: true,
+      }
     });
 
     if (!user) {
@@ -36,7 +46,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    console.log('Found user:', user); // Debug log
+    console.log('Found user:', {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    });
 
     // Return user fields including security question IDs but excluding sensitive data
     const sanitizedUser = {
@@ -47,13 +61,18 @@ export async function GET(request: Request) {
       auth_type: user.auth_type,
       role: user.role,
       is_active: user.is_active,
+      active: user.active,
       created_at: user.created_at,
       updated_at: user.updated_at,
       last_login: user.last_login,
       // Include security question IDs but not the answers
       secret_question_1_id: user.secret_question_1_id,
       secret_question_2_id: user.secret_question_2_id,
-      secret_question_3_id: user.secret_question_3_id
+      secret_question_3_id: user.secret_question_3_id,
+      // Include question text if questions are set
+      secret_question_1: user.secret_question_1?.question,
+      secret_question_2: user.secret_question_2?.question,
+      secret_question_3: user.secret_question_3?.question
     };
 
     return NextResponse.json(sanitizedUser);
@@ -63,5 +82,7 @@ export async function GET(request: Request) {
       { message: 'Error fetching user data', error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

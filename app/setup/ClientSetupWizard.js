@@ -112,7 +112,8 @@ export default function ClientSetupWizard() {
                     auth_type: 'credentials',
                     role: 'Admin', // First user is always admin
                     is_active: true,
-                    voting_rights: true,
+                    active: 1,
+                    voting_rights: false,
                     avatar: null
                 }),
             });
@@ -126,6 +127,7 @@ export default function ClientSetupWizard() {
 
                 if (result.error) {
                     setError('Account created but failed to log in. Please try logging in manually.');
+                    router.push('/auth/signin');
                 } else {
                     setShowSecurityQuestions(true);
                 }
@@ -150,7 +152,7 @@ export default function ClientSetupWizard() {
     };
 
     const handleSecurityQuestionsComplete = () => {
-        router.push('/mainapp');
+        router.push('/'); // Redirect to home page instead of /mainapp
     };
 
     if (showSecurityQuestions) {

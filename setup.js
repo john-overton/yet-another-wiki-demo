@@ -58,21 +58,55 @@ async function createConfigFiles() {
     }
 }
 
-function runCommand(command, args) {
-    return new Promise((resolve, reject) => {
-        const proc = spawn(command, args, {
-            stdio: 'inherit',
-            shell: true
-        });
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-        proc.on('close', (code) => {
-            if (code === 0) {
-                resolve();
-            } else {
-                reject(new Error(`Command failed with code ${code}`));
+function runCommand(command, args, retries = 3, delay = 1000) {
+    return new Promise(async (resolve, reject) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const proc = spawn(command, args, {
+                    stdio: 'inherit',
+                    shell: true
+                });
+
+                await new Promise((res, rej) => {
+                    proc.on('close', (code) => {
+                        if (code === 0) {
+                            res();
+                        } else {
+                            rej(new Error(`Command failed with code ${code}`));
+                        }
+                    });
+                });
+
+                return resolve();
+            } catch (error) {
+                if (attempt === retries) {
+                    return reject(error);
+                }
+                console.log(`Attempt ${attempt} failed, retrying in ${delay}ms...`);
+                await sleep(delay);
             }
-        });
+        }
     });
+}
+
+async function cleanPrismaClient() {
+    const prismaClientPath = path.join('node_modules', '.prisma', 'client');
+    try {
+        const exists = await fs.access(prismaClientPath).then(() => true).catch(() => false);
+        if (exists) {
+            // Instead of deleting, try renaming first
+            const tempPath = path.join('node_modules', '.prisma', `client_${Date.now()}`);
+            await fs.rename(prismaClientPath, tempPath);
+            // Then delete the renamed directory
+            await fs.rm(tempPath, { recursive: true, force: true }).catch(() => {});
+        }
+    } catch (error) {
+        console.log('Note: Could not clean Prisma client, continuing anyway...');
+    }
 }
 
 async function setupDatabase() {
@@ -91,16 +125,20 @@ async function setupDatabase() {
         // Ensure db directory exists
         await fs.mkdir('db', { recursive: true });
         
+        // Clean up Prisma client
+        await cleanPrismaClient();
+        
+        // Create initial migration if it doesn't exist
+        console.log('Creating initial migration...');
         try {
-            // Try to delete the existing Prisma client if it exists
-            await fs.rm('node_modules/.prisma', { recursive: true, force: true });
-        } catch (error) {
-            // Ignore errors if directory doesn't exist
+            await fs.access('prisma/migrations');
+        } catch {
+            await runCommand('npx', ['prisma', 'migrate', 'dev', '--name', 'init', '--create-only']);
         }
         
-        // Generate Prisma Client
+        // Generate Prisma Client with retries
         console.log('Generating Prisma Client...');
-        await runCommand('npx', ['prisma', 'generate']);
+        await runCommand('npx', ['prisma', 'generate'], 3, 1000);
         
         // Run migrations
         console.log('Running database migrations...');

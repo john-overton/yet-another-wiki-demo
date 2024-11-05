@@ -77,9 +77,11 @@ export default function UserButton({ user: initialUser }) {
     return null;
   }
 
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/');
+  const handleLogout = () => {
+    signOut({ 
+      callbackUrl: '/',
+      redirect: true
+    });
   };
 
   const getAvatarUrl = (avatar) => {

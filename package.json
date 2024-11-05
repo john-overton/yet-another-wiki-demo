@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:setup": "node scripts/setup-test-env.js",
+    "test:auth": "node scripts/test-auth.js",
+    "test:cleanup": "node scripts/cleanup-test-env.js",
+    "test": "pnpm test:setup && pnpm test:auth",
+    "test:reset": "pnpm test:cleanup && pnpm test:setup"
   },
   "dependencies": {
     "@codemirror/view": "^6.34.1",

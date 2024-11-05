@@ -14,6 +14,9 @@ declare module "next-auth" {
     id: string
     role: string
     avatar: string | null
+    auth_type: string
+    is_active: boolean
+    active: number
   }
 }
 
