@@ -139,8 +139,8 @@ const TrashBin = ({ onDelete }) => {
                 <option value="root">Root (Top Level)</option>
                 {availableParents.map(item => (
                   <option 
-                    key={item.path} 
-                    value={item.path}
+                    key={item.id} 
+                    value={item.id}
                     className={`${openSans.className}`}
                     >
                     {item.title}

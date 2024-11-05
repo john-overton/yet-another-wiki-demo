@@ -43,7 +43,19 @@
       "version": 1,
       "lastModified": "2024-11-04T01:22:47.842Z",
       "sortOrder": 4,
-      "children": []
+      "children": [
+        {
+          "id": "19",
+          "slug": "test-delete-child",
+          "title": "test delete child",
+          "path": "test-delete-child.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-05T22:22:13.406Z",
+          "children": [],
+          "sortOrder": 1
+        }
+      ]
     },
     {
       "id": "8",
@@ -66,7 +78,18 @@
       "lastModified": "2024-11-05T22:06:58.723Z",
       "sortOrder": 1,
       "children": []
+    },
+    {
+      "id": "20",
+      "slug": "test-root-delete",
+      "title": "test root delete",
+      "path": "test-root-delete.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-11-05T22:22:45.477Z",
+      "children": [],
+      "sortOrder": 5
     }
   ],
-  "lastId": 18
+  "lastId": 20
 }

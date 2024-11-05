@@ -4,6 +4,9 @@ import meta from '../data/docs/meta.json';
 import fs from 'fs/promises';
 import { execSync } from 'child_process';
 
+// Mark the page as dynamic
+export const dynamic = 'force-dynamic';
+
 async function runSetup() {
     try {
         console.log('Running setup script...');
