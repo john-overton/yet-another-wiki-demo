@@ -14,6 +14,7 @@ export default function UserButton({ user: initialUser }) {
   const [user, setUser] = useState(initialUser);
   const router = useRouter();
   const dropdownRef = useRef(null);
+  const retryTimeoutRef = useRef(null);
 
   useEffect(() => {
     setUser(initialUser);
@@ -52,14 +53,25 @@ export default function UserButton({ user: initialUser }) {
       }
     };
 
+    // Periodic avatar validation (every 5 minutes)
+    const validateInterval = setInterval(() => {
+      if (user?.avatar) {
+        setTimestamp(Date.now());
+      }
+    }, 5 * 60 * 1000);
+
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('user-avatar-updated', handleAvatarUpdate);
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('user-avatar-updated', handleAvatarUpdate);
+      clearInterval(validateInterval);
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [user?.avatar]);
 
   if (!user) {
     return null;
@@ -88,6 +100,21 @@ export default function UserButton({ user: initialUser }) {
     return `/api/uploads/user-avatars/${filename}?t=${timestamp}`;
   };
 
+  const handleAvatarError = () => {
+    setAvatarError(true);
+    
+    // Clear any existing retry timeout
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+    }
+    
+    // Attempt to reload with a new timestamp after a short delay
+    retryTimeoutRef.current = setTimeout(() => {
+      setTimestamp(Date.now());
+      setAvatarError(false);
+    }, 2000);
+  };
+
   const avatarUrl = getAvatarUrl(user.avatar);
 
   return (
@@ -107,7 +134,7 @@ export default function UserButton({ user: initialUser }) {
               className="object-cover"
               fill
               sizes="40px"
-              onError={() => setAvatarError(true)}
+              onError={handleAvatarError}
               unoptimized={true}
               priority
               key={timestamp} // Force remount when timestamp changes
