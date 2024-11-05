@@ -156,8 +156,8 @@ export default function SetupWizard() {
 
     if (showSecurityQuestions) {
         return (
-            <div className="flex items-center justify-center">
-                <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="flex items-center justify-center h-full">
+                <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
                     <SecretQuestionsFormContent onComplete={handleSecurityQuestionsComplete} />
                 </div>
             </div>

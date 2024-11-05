@@ -41,7 +41,16 @@ function runCommand(command, args) {
 
 async function setupDatabase() {
     try {
-        console.log('Setting up database...');
+        console.log('Checking database status...');
+        
+        // Check if database file exists
+        try {
+            await fs.access('db/yetanotherwiki.db');
+            console.log('Database already exists, skipping database setup');
+            return;
+        } catch {
+            console.log('Database not found, proceeding with setup...');
+        }
         
         // Ensure db directory exists
         await fs.mkdir('db', { recursive: true });
