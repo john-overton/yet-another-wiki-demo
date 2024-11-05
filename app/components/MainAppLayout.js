@@ -194,6 +194,7 @@ const MainAppLayout = () => {
       console.error('Error creating new item:', error);
     }
   }, [session, fetchFileStructure]);
+
   const handleDelete = useCallback(async (id, source) => {
     if (!session) return;
     try {
@@ -221,6 +222,7 @@ const MainAppLayout = () => {
       console.error('Error deleting item:', error);
     }
   }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible]);
+
   const handleDeleteClick = useCallback((id, title, hasChildren, source) => {
     setItemToDelete({ id, title, hasChildren });
     setDeleteModalSource(source);
@@ -464,18 +466,18 @@ const MainAppLayout = () => {
         onDiscard={handleDiscardAndNavigate}
         onClose={() => setIsPromptOpen(false)}
       />
-    <DeleteConfirmModal
-      isOpen={isDeleteModalOpen}
-      onConfirm={handleConfirmDelete}
-      onCancel={() => {
-        setIsDeleteModalOpen(false);
-        setItemToDelete(null);
-        setDeleteModalSource(null);
-      }}
-      itemTitle={itemToDelete?.title}
-      hasChildren={itemToDelete?.hasChildren}
-      source={deleteModalSource}
-    />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+          setDeleteModalSource(null);
+        }}
+        itemTitle={itemToDelete?.title}
+        hasChildren={itemToDelete?.hasChildren}
+        source={deleteModalSource}
+      />
     </div>
   );
 };
