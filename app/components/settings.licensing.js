@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const LicensingSettings = () => {
+const LicensingSettings = ({ onLicenseVerified }) => {
   const [email, setEmail] = useState('');
   const [licenseKey, setLicenseKey] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -51,15 +51,28 @@ const LicensingSettings = () => {
         setIsValid(result.isValid);
         setLicenseType(result.licenseType);
         setLastVerified(new Date().toISOString());
+        
+        // If we have a callback for license verification, call it
+        if (onLicenseVerified) {
+          onLicenseVerified(result.isValid);
+        }
       } else {
         setMessage(result.error || 'Failed to save license settings');
+        if (onLicenseVerified) {
+          onLicenseVerified(false);
+        }
       }
     } catch (error) {
       console.error('Error saving license settings:', error);
       setMessage('Failed to save license settings');
+      if (onLicenseVerified) {
+        onLicenseVerified(false);
+      }
     } finally {
       setIsSaving(false);
-      setTimeout(() => setMessage(''), 3000);
+      if (!onLicenseVerified) { // Only auto-clear message if not in setup wizard
+        setTimeout(() => setMessage(''), 3000);
+      }
     }
   };
 

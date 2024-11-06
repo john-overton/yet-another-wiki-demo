@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import SecretQuestionsFormContent from '../components/SecretQuestionsFormContent';
+import SetupLicensing from '../components/SetupLicensing';
 
 export default function ClientSetupWizard() {
     const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export default function ClientSetupWizard() {
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [isCheckingEmail, setIsCheckingEmail] = useState(false);
     const [showSecurityQuestions, setShowSecurityQuestions] = useState(false);
+    const [showLicensing, setShowLicensing] = useState(false);
     const router = useRouter();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -152,8 +154,23 @@ export default function ClientSetupWizard() {
     };
 
     const handleSecurityQuestionsComplete = () => {
-        router.push('/'); // Redirect to home page instead of /mainapp
+        setShowSecurityQuestions(false);
+        setShowLicensing(true);
     };
+
+    const handleLicensingComplete = () => {
+        router.push('/');
+    };
+
+    if (showLicensing) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="max-w-2xl w-full space-y-8 p-8 bg-white border dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
+                    <SetupLicensing onComplete={handleLicensingComplete} />
+                </div>
+            </div>
+        );
+    }
 
     if (showSecurityQuestions) {
         return (

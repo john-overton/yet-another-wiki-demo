@@ -46,6 +46,27 @@ async function cleanupNginxConfig() {
     }
 }
 
+async function cleanupConfigSettings() {
+    const licensingPath = path.join(__dirname, '../config/settings/licensing.json');
+    
+    try {
+        // Reset licensing.json to blank state
+        const blankLicensing = {
+            email: "",
+            key: "",
+            isValid: false,
+            token: "",
+            licenseType: "",
+            lastVerified: "",
+            lastCheck: ""
+        };
+        await fs.writeFile(licensingPath, JSON.stringify(blankLicensing, null, 2));
+        console.log('✓ Licensing settings reset');
+    } catch (error) {
+        console.error('Error resetting licensing settings:', error);
+    }
+}
+
 async function cleanupFiles() {
     // Files to clean up
     const files = [
@@ -91,6 +112,9 @@ async function cleanupTestEnvironment() {
 
         // Cleanup Nginx config
         await cleanupNginxConfig();
+
+        // Cleanup config settings
+        await cleanupConfigSettings();
 
         console.log('\n✨ Test environment cleanup complete!');
         console.log('\nYou can now run setup-test-env.js to create a fresh test environment.');

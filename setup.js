@@ -38,7 +38,12 @@ async function createConfigFiles() {
     } catch {
         const licensingContent = {
             email: "",
-            key: ""
+            key: "",
+            isValid: false,
+            token: "",
+            licenseType: "",
+            lastVerified: "",
+            lastCheck: ""
         };
         await fs.writeFile(`${configDir}/licensing.json`, JSON.stringify(licensingContent, null, 2));
         console.log('licensing.json created successfully');

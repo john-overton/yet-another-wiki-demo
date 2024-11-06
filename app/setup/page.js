@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client';
 import ClientSetupWizard from './ClientSetupWizard';
 import fs from 'fs/promises';
 
+// Mark this page as dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+
 export default async function SetupPage() {
     try {
         // First check if basic setup is complete
