@@ -7,6 +7,9 @@ const LicensingSettings = () => {
   const [licenseKey, setLicenseKey] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  const [licenseType, setLicenseType] = useState('');
+  const [lastVerified, setLastVerified] = useState(null);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -16,6 +19,9 @@ const LicensingSettings = () => {
           const settings = await response.json();
           setEmail(settings.email);
           setLicenseKey(settings.key);
+          setIsValid(settings.isValid);
+          setLicenseType(settings.licenseType);
+          setLastVerified(settings.lastVerified);
         }
       } catch (error) {
         console.error('Error loading licensing settings:', error);
@@ -34,14 +40,19 @@ const LicensingSettings = () => {
         },
         body: JSON.stringify({
           email,
-          key: licenseKey
+          licenseKey
         }),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        setMessage('License settings saved successfully');
+        setMessage(result.message || 'License settings saved successfully');
+        setIsValid(result.isValid);
+        setLicenseType(result.licenseType);
+        setLastVerified(new Date().toISOString());
       } else {
-        setMessage('Failed to save license settings');
+        setMessage(result.error || 'Failed to save license settings');
       }
     } catch (error) {
       console.error('Error saving license settings:', error);
@@ -75,9 +86,36 @@ const LicensingSettings = () => {
         </button>
       </div>
 
+      {/* License Status Banner */}
+      <div className={`mb-4 p-4 rounded-lg flex items-center ${
+        isValid 
+          ? 'bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600' 
+          : 'bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600'
+      }`}>
+        <i className={`text-xl mr-2 ${
+          isValid 
+            ? 'ri-checkbox-circle-line text-green-600 dark:text-green-400' 
+            : 'ri-error-warning-line text-red-600 dark:text-red-400'
+        }`}></i>
+        <div>
+          <p className={`font-medium ${
+            isValid 
+              ? 'text-green-700 dark:text-green-300' 
+              : 'text-red-700 dark:text-red-300'
+          }`}>
+            {isValid ? `License Valid - ${licenseType?.toUpperCase() || ''}` : 'License Invalid or Not Verified'}
+          </p>
+          {lastVerified && (
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Last verified: {new Date(lastVerified).toLocaleString()}
+            </p>
+          )}
+        </div>
+      </div>
+
       {message && (
         <div className={`mb-4 p-3 rounded-lg ${
-          message.includes('success') 
+          message.includes('success') || message.includes('verified') 
             ? 'bg-green-100 text-green-700 border border-green-400' 
             : 'bg-red-100 text-red-700 border border-red-400'
         }`}>
@@ -110,13 +148,23 @@ const LicensingSettings = () => {
             value={licenseKey}
             onChange={(e) => setLicenseKey(e.target.value)}
             className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your license key"
+            placeholder="Enter your license key (Format: XXXXX-XXXXXXXXXXXXXXXXXXX)"
           />
+          <p className="mt-1 text-sm text-gray-500">
+            Format: XXXXX-XXXXXXXXXXXXXXXXXXX
+          </p>
         </div>
 
         {/* Verify Button */}
-        <button className="mt-4 px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg">
-          <i className="ri-shield-check-line mr-2"></i>
+        <button 
+          onClick={handleSave}
+          className={`mt-4 px-4 py-2 shadow-lg border rounded-lg flex items-center gap-2 ${
+            isValid
+              ? 'bg-green-500 hover:bg-green-600 text-white border-green-600'
+              : 'bg-white dark:bg-gray-800 border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600'
+          }`}
+        >
+          <i className={`${isValid ? 'ri-shield-check-line' : 'ri-shield-keyhole-line'}`}></i>
           Verify License
         </button>
       </div>

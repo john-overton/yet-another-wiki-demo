@@ -11,7 +11,8 @@
     "test:auth": "node scripts/test-auth.js",
     "test:cleanup": "node scripts/cleanup-test-env.js",
     "test": "pnpm test:setup && pnpm test:auth",
-    "test:reset": "pnpm test:cleanup && pnpm test:setup"
+    "test:reset": "pnpm test:cleanup && pnpm test:setup",
+    "license:check": "node scripts/license-checker.js"
   },
   "dependencies": {
     "@codemirror/view": "^6.34.1",
@@ -37,6 +38,7 @@
     "next-auth": "^4.24.8",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.3.0",
+    "node-fetch": "^3.3.2",
     "pg": "^8.13.0",
     "prism-themes": "^1.9.0",
     "prisma": "^5.20.0",

@@ -11,6 +11,10 @@ const RATE_LIMIT = {
 const BLOCK_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_FAILED_ATTEMPTS = 3;
 
+// License checking configuration
+const LICENSE_CHECK_INTERVAL = 3 * 60 * 60 * 1000; // 3 hours
+let lastLicenseCheck = 0;
+
 // Use KV store for persistence (Edge compatible)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const failedAttemptsStore = new Map<string, { count: number; lastAttempt: number }>();
@@ -34,7 +38,29 @@ async function blockIP(ip: string) {
     }
 }
 
+async function checkLicense(request: NextRequest) {
+    const currentTime = Date.now();
+    if (currentTime - lastLicenseCheck >= LICENSE_CHECK_INTERVAL) {
+        try {
+            const response = await fetch(`${request.nextUrl.origin}/api/license-check`);
+            if (response.ok) {
+                const result = await response.json();
+                console.log(`License check completed: ${result.isValid ? 'Valid' : 'Invalid'}`);
+                if (!result.isValid) {
+                    console.warn('License validation failed');
+                }
+            }
+        } catch (error) {
+            console.error('Error during periodic license check:', error);
+        }
+        lastLicenseCheck = currentTime;
+    }
+}
+
 export async function middleware(request: NextRequest) {
+    // Perform license check
+    await checkLicense(request);
+
     // Skip middleware for NextAuth session endpoints
     if (request.nextUrl.pathname.startsWith('/api/auth/session')) {
         return NextResponse.next();
@@ -125,6 +151,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/api/auth/:path*',
-        '/auth/:path*'
+        '/auth/:path*',
+        '/:path*' // Added to ensure license checking runs for all routes
     ]
 };

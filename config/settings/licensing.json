@@ -1,4 +1,9 @@
 {
-  "email": "tester@tester.com",
-  "key": "t20958sdoflkh243t0np2o9gu20guj"
+  "email": "john@jroverton.com",
+  "key": "R8SZ2-29309HBGAWIHCAXJ4HB",
+  "isValid": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AanJvdmVydG9uLmNvbSIsImxpY2Vuc2VUeXBlIjoicHJvIiwiaWF0IjoxNzMwOTA3OTA4LCJleHAiOjE3MzA5OTQzMDh9.8bKVCe4lglwczP0AMoQyYjCUMF0CRnS6bcqFaDu4lmY",
+  "licenseType": "pro",
+  "lastVerified": "2024-11-06T15:45:08.730Z",
+  "lastCheck": "2024-11-06T15:45:08.730Z"
 }
