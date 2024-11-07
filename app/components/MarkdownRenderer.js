@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import rehypePrismPlus from 'rehype-prism-plus';
 import Image from 'next/image';
 import Link from 'next/link';
+import NavigationSection from './NavigationSection';
 import '../markdown.css';
 
 const imageLoader = ({ src, width, quality }) => {
@@ -66,7 +67,7 @@ const createHeadingComponent = (level) => {
           observer.unobserve(element);
         }
       };
-    }, [id, text]); // Added text to dependency array
+    }, [id, text]);
 
     return (
       <Tag id={id} className={`${baseStyle} ${styles[level]}`} {...props}>
@@ -76,9 +77,7 @@ const createHeadingComponent = (level) => {
     );
   };
 
-  // Add display name to the component
   HeadingComponent.displayName = `Heading${level.toUpperCase()}`;
-
   return HeadingComponent;
 };
 
@@ -137,9 +136,7 @@ const CopyButton = ({ text }) => {
     <button
       onClick={handleCopy}
       className={`text-xs uppercase tracking-wider opacity-75 hover:opacity-100 hover:text-white transition-colors ml-4 ${
-        copied
-          ? 'text-gray-300'
-          : 'text-gray-300'
+        copied ? 'text-gray-300' : 'text-gray-300'
       }`}
     >
       {copied ? 'Copied!' : 'Copy'}
@@ -172,7 +169,7 @@ const CodeBlock = ({ children, language }) => {
   );
 };
 
-const MarkdownRenderer = ({ content }) => {
+const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
   let markdownContent = content;
   if (typeof content === 'string' && content.trim().startsWith('{')) {
     try {
@@ -183,7 +180,6 @@ const MarkdownRenderer = ({ content }) => {
     }
   }
 
-  // Track if we've rendered the first image
   let isFirstImage = true;
 
   return (
@@ -193,11 +189,8 @@ const MarkdownRenderer = ({ content }) => {
         rehypePlugins={[rehypePrismPlus]}
         components={{
           img: ({ node, ...props }) => {
-            // Determine if this is the first image
             const isPriority = isFirstImage;
-            // Set to false after first image
             isFirstImage = false;
-
             return (
               <Image
                 {...props}
@@ -241,27 +234,20 @@ const MarkdownRenderer = ({ content }) => {
           code: ({ className, ...props }) => {
             const match = /language-(\w+)/.exec(className || '');
             const isInline = !className;
-
             if (isInline) {
-              return (
-                <code 
-                  className="font-mono text-sm"
-                  {...props} 
-                />
-              );
+              return <code className="font-mono text-sm" {...props} />;
             }
-
-            return (
-              <code 
-                className={`language-${match ? match[1] : 'text'}`} 
-                {...props} 
-              />
-            );
+            return <code className={`language-${match ? match[1] : 'text'}`} {...props} />;
           },
         }}
       >
         {markdownContent}
       </ReactMarkdown>
+      <NavigationSection 
+        currentPage={currentPage} 
+        pages={pages} 
+        isAuthenticated={!!session} 
+      />
     </div>
   );
 };

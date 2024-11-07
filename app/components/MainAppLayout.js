@@ -402,89 +402,94 @@ const renderEditor = () => {
   );
 };
 
-return (
-  <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
-    <div className="flex flex-1 overflow-hidden relative">
-      <div className="relative h-full">
-        <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
-          {memoizedSidebar}
+  return (
+    <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
+      <div className="flex flex-1 overflow-hidden relative">
+        <div className="relative h-full">
+          <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
+            {memoizedSidebar}
+          </div>
+          <button
+            onClick={toggleSidebar}
+            className="absolute z-[998] top-20 -right-5"
+            style={{
+              transform: 'translateY(-55%)',
+            }}
+          >
+            <i 
+              className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-[#F3F4F6] pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
+              style={{ fontSize: '1rem', display: 'block' }}
+            ></i>
+          </button>
         </div>
-        <button
-          onClick={toggleSidebar}
-          className="absolute z-[998] top-20 -right-5"
-          style={{
-            transform: 'translateY(-55%)',
-          }}
-        >
-          <i 
-            className={`ri-${isSidebarVisible ? 'arrow-left-line' : 'contract-right-line'} bg-[#F3F4F6] pt-2 pb-2 shadow-lg dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 pr-1 rounded-r-xl`}
-            style={{ fontSize: '1rem', display: 'block' }}
-          ></i>
-        </button>
-      </div>
-      <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
-        <div className="mx-auto px-6 py-8">
-          {isTrashBinVisible ? (
-            <TrashBin onDelete={handleDeleteClick} />
-          ) : (
-            selectedFile && !isEditing ? (
-              <MarkdownRenderer content={fileContent} />
+        <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
+          <div className="mx-auto px-6 py-8">
+            {isTrashBinVisible ? (
+              <TrashBin onDelete={handleDeleteClick} />
             ) : (
-              renderEditor() || <div>Select a file from the sidebar</div>
-            )
-          )}
-        </div>
-        {!isEditing && !isTrashBinVisible && (
-          <>
-            <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
-              {session && canModifyContent && (
+              selectedFile && !isEditing ? (
+                <MarkdownRenderer 
+                  content={fileContent} 
+                  currentPage={selectedFile}
+                  pages={fileStructure}
+                  session={session}
+                />
+              ) : (
+                renderEditor() || <div>Select a file from the sidebar</div>
+              )
+            )}
+          </div>
+          {!isEditing && !isTrashBinVisible && (
+            <>
+              <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
+                {session && canModifyContent && (
+                  <button
+                    onClick={toggleEdit}
+                    className="transition-colors duration-200"
+                  >
+                    <i 
+                      className="ri-edit-2-line text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
+                      style={{ fontSize: '1.25rem' }}
+                    ></i>
+                  </button>
+                )}
                 <button
-                  onClick={toggleEdit}
+                  onClick={toggleToc}
                   className="transition-colors duration-200"
                 >
                   <i 
-                    className="ri-edit-2-line text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
+                    className={`ri-list-unordered p-1 ${isTocVisible ? 'border border-gray-200 dark:border-gray-600 bg-gray-300 dark:bg-gray-700' : ''} text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300`}
                     style={{ fontSize: '1.25rem' }}
                   ></i>
                 </button>
-              )}
-              <button
-                onClick={toggleToc}
-                className="transition-colors duration-200"
-              >
-                <i 
-                  className={`ri-list-unordered p-1 ${isTocVisible ? 'border border-gray-200 dark:border-gray-600 bg-gray-300 dark:bg-gray-700' : ''} text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300`}
-                  style={{ fontSize: '1.25rem' }}
-                ></i>
-              </button>
-            </div>
-            <div className={`fixed z-[998] right-4 top-28 transition-opacity duration-300 ${isTocVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-              <TableOfContents source={fileContent} isVisible={isTocVisible} />
-            </div>
-          </>
-        )}
-      </main>
+              </div>
+              <div className={`fixed z-[998] right-4 top-28 transition-opacity duration-300 ${isTocVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <TableOfContents source={fileContent} isVisible={isTocVisible} />
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+      <SavePromptModal 
+        isOpen={isPromptOpen}
+        onSave={handleSaveAndNavigate}
+        onDiscard={handleDiscardAndNavigate}
+        onClose={() => setIsPromptOpen(false)}
+      />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+          setDeleteModalSource(null);
+        }}
+        itemTitle={itemToDelete?.title}
+        hasChildren={itemToDelete?.hasChildren}
+        source={deleteModalSource}
+      />
     </div>
-    <SavePromptModal 
-      isOpen={isPromptOpen}
-      onSave={handleSaveAndNavigate}
-      onDiscard={handleDiscardAndNavigate}
-      onClose={() => setIsPromptOpen(false)}
-    />
-    <DeleteConfirmModal
-      isOpen={isDeleteModalOpen}
-      onConfirm={handleConfirmDelete}
-      onCancel={() => {
-        setIsDeleteModalOpen(false);
-        setItemToDelete(null);
-        setDeleteModalSource(null);
-      }}
-      itemTitle={itemToDelete?.title}
-      hasChildren={itemToDelete?.hasChildren}
-      source={deleteModalSource}
-    />
-  </div>
-);
+  );
 };
 
 export default React.memo(MainAppLayout);
