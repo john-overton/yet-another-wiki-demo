@@ -318,7 +318,7 @@ const Sidebar = ({
 
   const userRole = session?.user?.role;
   const canModifyContent = userRole !== 'User';
-  const canAccessSettings = !['User', 'Contributor'].includes(userRole);
+  const canAccessSettings = userRole === 'Admin';
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);

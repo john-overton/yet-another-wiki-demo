@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server';
 // Rate limiting configuration
 const RATE_LIMIT = {
     windowMs: 60 * 1000, // 1 minute
-    max: 100 // limit each IP to 100 requests per minute
+    max: 300 // increased from 100 to 300 requests per minute
 };
 
 // IP blocking configuration
 const BLOCK_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-const MAX_FAILED_ATTEMPTS = 3;
+const MAX_FAILED_ATTEMPTS = 10; // increased from 3 to 10 attempts
 
 // License checking configuration
 const LICENSE_CHECK_INTERVAL = 3 * 60 * 60 * 1000; // 3 hours

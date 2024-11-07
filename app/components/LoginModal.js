@@ -25,7 +25,27 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeForm, setActiveForm] = useState('login');
+  const [licenseType, setLicenseType] = useState(null);
   const router = useRouter();
+
+  // Fetch license type when modal is opened
+  useEffect(() => {
+    const fetchLicenseType = async () => {
+      try {
+        const response = await fetch('/api/settings/licensing');
+        if (response.ok) {
+          const data = await response.json();
+          setLicenseType(data.licenseType);
+        }
+      } catch (error) {
+        console.error('Error fetching license type:', error);
+      }
+    };
+
+    if (isOpen || isStandalone) {
+      fetchLicenseType();
+    }
+  }, [isOpen, isStandalone]);
 
   // Reset form when modal is opened
   useEffect(() => {
@@ -183,20 +203,22 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
           </form>
 
           <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-            <p>
-              Don&apos;t have an account?{' '}
-              <button
-                onClick={() => {
-                  setError('');
-                  setSuccessMessage('');
-                  setActiveForm('register');
-                }}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                Register here
-              </button>
-            </p>
-            <p className="mt-2">
+            {licenseType === 'pro' && (
+              <p>
+                Don&apos;t have an account?{' '}
+                <button
+                  onClick={() => {
+                    setError('');
+                    setSuccessMessage('');
+                    setActiveForm('register');
+                  }}
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Register here
+                </button>
+              </p>
+            )}
+            <p className={licenseType === 'pro' ? 'mt-2' : ''}>
               Forgot your password?{' '}
               <button
                 onClick={() => {
@@ -213,7 +235,7 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
         </>
       )}
 
-      {activeForm === 'register' && (
+      {activeForm === 'register' && licenseType === 'pro' && (
         <RegisterFormContent
           onBackToLogin={() => setActiveForm('login')}
           onRegisterSuccess={() => setActiveForm('security')}
