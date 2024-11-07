@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yet Another Wiki
 
-## Getting Started
+A Next.js-based wiki application with advanced features including authentication, rate limiting, and security protections.
 
-First, run the development server:
+## System Requirements
+
+- Node.js 18.x or later
+- PNPM package manager
+- Linux server for production deployment
+- Nginx web server
+- Certbot for SSL certificates
+- PM2 process manager (installed automatically during deployment)
+
+## Development Setup
+
+First, install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+Then, run the development server:
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+
+1. A Linux server with:
+   - Node.js 18.x or later installed
+   - Nginx installed and running
+   - Certbot installed for SSL certificates
+   - Git for cloning the repository
+
+2. A domain name pointed to your server's IP address
+
+### Deployment Steps
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/yet-another-wiki.git
+cd yet-another-wiki
+```
+
+2. Install PNPM if not already installed:
+```bash
+npm install -g pnpm
+```
+
+3. Run the production deployment script:
+```bash
+node scripts/deploy-prod.js yourdomain.com
+```
+
+The deployment script will:
+- Generate production environment configuration
+- Set up SSL certificates using Let's Encrypt
+- Configure Nginx with security best practices
+- Set up the database and run migrations
+- Build and start the application using PM2
+
+### Post-Deployment
+
+Monitor your application:
+- Check PM2 status: `pm2 status`
+- View PM2 logs: `pm2 logs`
+- View Nginx access logs: `tail -f /var/log/nginx/access.log`
+- View Nginx error logs: `tail -f /var/log/nginx/error.log`
+
+### Security Features
+
+The application includes several security features:
+- Rate limiting for API and regular endpoints
+- IP blocking for repeated failed login attempts
+- SSL/TLS configuration with modern cipher suites
+- Security headers including HSTS, CSP, and XSS protection
+- Request body size limits and timeout configurations
+
+### Configuration
+
+Key configuration files:
+- `.env.production`: Environment variables
+- `nginx/conf.d/app.conf`: Nginx configuration
+- `config/settings/`: Application settings
+
+### Troubleshooting
+
+1. SSL Certificate Issues:
+   - Verify domain DNS settings
+   - Check Certbot logs: `journalctl -u certbot`
+   - Ensure ports 80/443 are open
+
+2. Database Issues:
+   - Check database migrations: `npx prisma migrate status`
+   - Verify database file permissions
+   - Check Prisma logs
+
+3. Application Not Starting:
+   - Check PM2 logs: `pm2 logs`
+   - Verify environment variables
+   - Check Node.js version compatibility
+
+4. Nginx Issues:
+   - Test configuration: `nginx -t`
+   - Check error logs: `tail -f /var/log/nginx/error.log`
+   - Verify permissions on config files
+
+## Testing
+
+Run the test suite:
+
+```bash
+# Set up test environment
+node scripts/setup-test-env.js
+
+# Run authentication tests
+node scripts/test-auth.js
+
+# Clean up test environment
+node scripts/cleanup-test-env.js
+```
+
+## License
+
+[MIT License](LICENSE)
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs/)
+- [NextAuth.js Documentation](https://next-auth.js.org)
