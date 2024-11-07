@@ -11,6 +11,7 @@ import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
 import TrashBin from './TrashBin';
+import Footer from './Footer';
 
 const MainAppLayout = () => {
   const [fileStructure, setFileStructure] = useState([]);
@@ -403,8 +404,8 @@ const renderEditor = () => {
 };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)] bg-background text-foreground">
-      <div className="flex flex-1 overflow-hidden relative">
+    <div className="flex flex-col h-[calc(100vh-3rem)] bg-background text-foreground">
+      <div className="flex flex-1 min-h-0">
         <div className="relative h-full">
           <div className={`transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} h-full flex-shrink-0 z-[999] overflow-hidden`}>
             {memoizedSidebar}
@@ -422,7 +423,7 @@ const renderEditor = () => {
             ></i>
           </button>
         </div>
-        <main className="z-[1] flex-1 bg-background-light overflow-y-auto">
+        <main className="z-[1] flex-1 bg-background-light overflow-y-auto min-h-0">
           <div className="mx-auto px-6 py-8">
             {isTrashBinVisible ? (
               <TrashBin onDelete={handleDeleteClick} />
@@ -470,6 +471,7 @@ const renderEditor = () => {
           )}
         </main>
       </div>
+      <Footer />
       <SavePromptModal 
         isOpen={isPromptOpen}
         onSave={handleSaveAndNavigate}
