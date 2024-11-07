@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ThemingSettings from './settings.theming';
 import LicensingSettings from './settings.licensing';
@@ -12,6 +12,22 @@ const Settings = () => {
     licensing: true,
     users: true
   });
+  const [licenseType, setLicenseType] = useState(null);
+
+  useEffect(() => {
+    const loadLicenseInfo = async () => {
+      try {
+        const response = await fetch('/api/settings/licensing');
+        if (response.ok) {
+          const settings = await response.json();
+          setLicenseType(settings.licenseType);
+        }
+      } catch (error) {
+        console.error('Error loading license info:', error);
+      }
+    };
+    loadLicenseInfo();
+  }, []);
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -45,21 +61,23 @@ const Settings = () => {
         </Link>
       </div>
 
-      {/* User Management Section */}
-      <div className="mb-4">
-        <div className="rounded-lg overflow-hidden border border-gray-700">
-          <SectionHeader 
-            title="User Management"
-            isExpanded={expandedSections.users}
-            onToggle={() => toggleSection('users')}
-          />
-          <div className={`transition-all duration-200 ${
-            expandedSections.users ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
-          }`}>
-            <UserManagementSettings />
+      {/* User Management Section - Only visible for pro license */}
+      {licenseType === 'pro' && (
+        <div className="mb-4">
+          <div className="rounded-lg overflow-hidden border border-gray-700">
+            <SectionHeader 
+              title="User Management"
+              isExpanded={expandedSections.users}
+              onToggle={() => toggleSection('users')}
+            />
+            <div className={`transition-all duration-200 ${
+              expandedSections.users ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+            }`}>
+              <UserManagementSettings />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Theming Section */}
       <div className="mb-4">

@@ -1,10 +1,27 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
+    // Check license type first
+    const licensePath = join(process.cwd(), 'config/settings/licensing.json');
+    const licenseContent = await fs.readFile(licensePath, 'utf8');
+    const licenseData = JSON.parse(licenseContent);
+
+    // Only allow user creation with pro license
+    if (licenseData.licenseType !== 'pro') {
+      return new Response(JSON.stringify({ 
+        error: 'User creation is only available with a pro license' 
+      }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const userData = await request.json();
 
     // Hash the password

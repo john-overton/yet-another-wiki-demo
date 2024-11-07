@@ -111,7 +111,7 @@ export default function ClientSetupWizard() {
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
-                    auth_type: 'credentials',
+                    auth_type: 'local',
                     role: 'Admin', // First user is always admin
                     is_active: true,
                     active: 1,

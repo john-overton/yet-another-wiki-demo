@@ -109,7 +109,7 @@ export default function RegisterFormContent({ onBackToLogin, onRegisterSuccess }
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          auth_type: 'credentials',
+          auth_type: 'local',
           role: 'user',
           is_active: true,
           voting_rights: false,
