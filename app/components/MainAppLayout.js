@@ -411,9 +411,9 @@ const renderEditor = () => {
           </div>
           <button
             onClick={toggleSidebar}
-            className="absolute z-[998] top-20 -right-5"
+            className="absolute z-[998] top-20 -right-[21px]"
             style={{
-              transform: 'translateY(-55%)',
+              transform: 'translateY(-150%)',
             }}
           >
             <i 
@@ -441,7 +441,7 @@ const renderEditor = () => {
           </div>
           {!isEditing && !isTrashBinVisible && (
             <>
-              <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
+              <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-[2.75rem] right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
                 {session && canModifyContent && (
                   <button
                     onClick={toggleEdit}
