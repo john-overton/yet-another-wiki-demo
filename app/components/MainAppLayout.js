@@ -409,6 +409,7 @@ const MainAppLayout = () => {
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
     return (
+      <div className = "h-[calc(100vh-3rem)]">
       <MDXEditor 
         file={selectedFile} 
         onSave={handleSave} 
@@ -416,6 +417,7 @@ const MainAppLayout = () => {
         refreshFileStructure={fetchFileStructure}
         onChangesPending={handleChangesPending}
       />
+      </div>
     );
   };
 
@@ -433,7 +435,7 @@ const MainAppLayout = () => {
         <div className={`sticky top-12 h-[calc(100vh-3rem)] transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} overflow-hidden`}>
           {memoizedSidebar}
         </div>
-        <main className="flex-1 bg-background-light overflow-y-auto">
+        <main className="flex-1 bg-background-light overflow-y-auto mb-4">
           <div className="mx-auto px-6 py-8">
             {isTrashBinVisible ? (
               <TrashBin onDelete={handleDeleteClick} />

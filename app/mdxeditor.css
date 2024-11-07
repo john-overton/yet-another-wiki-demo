@@ -121,6 +121,8 @@
   --accentSolidHover: var(--editor-accent-solid-hover);
   --accentText: var(--editor-accent-text);
   --accentTextContrast: var(--editor-accent-text-contrast);
+
+  position: relative;
 }
 
 /* Editor content styles */
@@ -273,8 +275,7 @@
 
 .mdxeditor-toolbar.sticky {
   position:fixed;
-    top:3rem !important;
-    width:100%;
+  top: 5rem !important;
 }
 
 .mdxeditor-popup-container {
