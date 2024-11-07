@@ -96,7 +96,7 @@ export async function PUT(request) {
 
     // Validate role if provided
     if (role) {
-      const validRoles = ['User', 'PowerUser', 'Admin'];
+      const validRoles = ['User', 'Contributer', 'Admin'];
       if (!validRoles.includes(role)) {
         return Response.json(
           { error: 'Invalid role specified' },
