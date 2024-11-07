@@ -1,9 +1,9 @@
 {
-  "email": "user.t8u1m@test.com",
-  "key": "WTI3P-VUQ2VUSKS32QPJWTW1M",
-  "isValid": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIudDh1MW1AdGVzdC5jb20iLCJsaWNlbnNlVHlwZSI6InBlcnNvbmFsIiwiaWF0IjoxNzMwOTQ3NDA1LCJleHAiOjE3MzEwMzM4MDV9.rDsfwDPeknK2FW1aHIQgwtmDF1T39vYUaRwKZ1iWHnY",
-  "licenseType": "personal",
-  "lastVerified": "2024-11-07T02:40:46.123Z",
-  "lastCheck": "2024-11-07T18:05:53.735Z"
+  "email": "",
+  "key": "",
+  "isValid": false,
+  "token": "",
+  "licenseType": "",
+  "lastVerified": "",
+  "lastCheck": ""
 }
