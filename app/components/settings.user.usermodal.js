@@ -26,7 +26,7 @@ const UserModal = ({ user, isOpen, onClose, onSubmit }) => {
 
   if (!isOpen) return null;
 
-  const roles = ['User', 'Contributer', 'Admin'];
+  const roles = ['User', 'Contributor', 'Admin'];
 
   const handleAvatarChange = async (event) => {
     const file = event.target.files?.[0];

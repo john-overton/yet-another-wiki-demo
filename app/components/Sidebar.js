@@ -47,7 +47,8 @@ const FileItem = ({
   level = 0, 
   isAuthenticated,
   refreshFileStructure,
-  onSortOrderChange
+  onSortOrderChange,
+  userRole
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -56,6 +57,8 @@ const FileItem = ({
   const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef(null);
   const itemRef = useRef(null);
+
+  const canModifyContent = userRole !== 'User';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -136,7 +139,7 @@ const FileItem = ({
           )}
           <span className="truncate">{displayName}</span>
         </div>
-        {isAuthenticated && (
+        {isAuthenticated && canModifyContent && (
           <div className={`flex items-center flex-shrink-0 ml-2 ${isHovered ? 'opacity-100' : 'sm:opacity-0 opacity-100'} transition-opacity duration-200`}>
             <i
               className="ri-delete-bin-line cursor-pointer text-gray-500 hover:text-red-500 font-normal px-1"
@@ -199,6 +202,7 @@ const FileItem = ({
               isAuthenticated={isAuthenticated}
               refreshFileStructure={refreshFileStructure}
               onSortOrderChange={onSortOrderChange}
+              userRole={userRole}
             />
           ))}
         </ul>
@@ -306,10 +310,15 @@ const Sidebar = ({
   refreshFileStructure, 
   isAuthenticated,
   onTrashBinClick,
-  onSortOrderChange
+  onSortOrderChange,
+  session
 }) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
+  const userRole = session?.user?.role;
+  const canModifyContent = userRole !== 'User';
+  const canAccessSettings = !['User', 'Contributor'].includes(userRole);
 
   const handleCreateRoot = () => {
     setIsCreatingRoot(true);
@@ -328,7 +337,7 @@ const Sidebar = ({
             onMouseLeave={() => setIsHeaderHovered(false)}
           >
             <div className="text-xl text-gray-900 dark:text-white"><b>Pages</b></div>
-            {isAuthenticated && (
+            {isAuthenticated && canModifyContent && (
               <button
                 onClick={handleCreateRoot}
                 className={`text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-opacity duration-200 ${isHeaderHovered ? 'opacity-100' : 'opacity-0'} flex-shrink-0`}
@@ -337,7 +346,7 @@ const Sidebar = ({
               </button>
             )}
           </div>
-          {isCreatingRoot && isAuthenticated && (
+          {isCreatingRoot && isAuthenticated && canModifyContent && (
             <CreateItemInterface
               onCreateNew={onCreateNew}
               onClose={() => setIsCreatingRoot(false)}
@@ -359,6 +368,7 @@ const Sidebar = ({
                 isAuthenticated={isAuthenticated}
                 refreshFileStructure={refreshFileStructure}
                 onSortOrderChange={onSortOrderChange}
+                userRole={userRole}
               />
             ))}
           </ul>
@@ -367,20 +377,24 @@ const Sidebar = ({
         {/* Footer Section - Always at bottom */}
         {isAuthenticated && (
           <div className="flex-none px-3 py-4 border-gray-200 dark:border-gray-700 mt-auto">
-            <Link 
-              href="/settings"
-              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"
-            >
-              <i className="ri-settings-3-line mr-2"></i>
-              <span>Settings</span>
-            </Link>
-            <button 
-              onClick={onTrashBinClick}
-              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
-            >
-              <i className="ri-delete-bin-7-line mr-2"></i>
-              <span>Trash Bin</span>
-            </button>
+            {canAccessSettings && (
+              <Link 
+                href="/settings"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"
+              >
+                <i className="ri-settings-3-line mr-2"></i>
+                <span>Settings</span>
+              </Link>
+            )}
+            {canModifyContent && (
+              <button 
+                onClick={onTrashBinClick}
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+              >
+                <i className="ri-delete-bin-7-line mr-2"></i>
+                <span>Trash Bin</span>
+              </button>
+            )}
           </div>
         )}
       </div>

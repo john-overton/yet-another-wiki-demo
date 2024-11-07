@@ -23,7 +23,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
 
   if (!isOpen) return null;
 
-  const roles = ['User', 'Contributer', 'Admin'];
+  const roles = ['User', 'Contributor', 'Admin'];
 
   // Email validation regex
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

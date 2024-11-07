@@ -34,6 +34,9 @@ const MainAppLayout = () => {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
 
+  const userRole = session?.user?.role;
+  const canModifyContent = userRole !== 'Users';
+
   // Check screen width on initial load
   useEffect(() => {
     const checkScreenWidth = () => {
@@ -154,7 +157,7 @@ const MainAppLayout = () => {
       setPendingNavigation(destination);
       return false;
     }
-    setIsEditing(false); // Reset editing state when navigation is allowed
+    setIsEditing(false);
     return true;
   }, [isEditing, hasUnsavedChanges]);
 
@@ -167,14 +170,14 @@ const MainAppLayout = () => {
         router.push(`/${file.slug}`, undefined, { shallow: true });
         setIsTrashBinVisible(false);
         if (isSameFile) {
-          setIsEditing(false); // Force exit edit mode when selecting the same file
+          setIsEditing(false);
         }
       }
     }
   }, [router, session, loadFileContent, handleNavigation, selectedFile]);
 
   const handleCreateNew = useCallback(async (parentPath, name, type) => {
-    if (!session) return;
+    if (!session || !canModifyContent) return;
     try {
       const response = await fetch('/api/create-item', {
         method: 'POST',
@@ -193,13 +196,13 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error creating new item:', error);
     }
-  }, [session, fetchFileStructure]);
+  }, [session, fetchFileStructure, canModifyContent]);
 
   const handleDelete = useCallback(async (id, source) => {
-    if (!session) return;
+    if (!session || !canModifyContent) return;
     try {
       const response = await fetch('/api/delete-item', {
-        method: 'POST',  // Changed from DELETE to POST to match API route
+        method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
         },
@@ -210,7 +213,6 @@ const MainAppLayout = () => {
       });
       if (response.ok) {
         await fetchFileStructure();
-        // Only redirect to home if deleting from sidebar and it's the currently selected file
         if (selectedFile && selectedFile.id === id && !isTrashBinVisible) {
           router.push('/');
         }
@@ -221,13 +223,14 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error deleting item:', error);
     }
-  }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible]);
+  }, [selectedFile, router, session, fetchFileStructure, isTrashBinVisible, canModifyContent]);
 
   const handleDeleteClick = useCallback((id, title, hasChildren, source) => {
+    if (!canModifyContent) return;
     setItemToDelete({ id, title, hasChildren });
     setDeleteModalSource(source);
     setIsDeleteModalOpen(true);
-  }, []);
+  }, [canModifyContent]);
 
   const handleConfirmDelete = useCallback(async () => {
     if (!itemToDelete) return;
@@ -238,7 +241,7 @@ const MainAppLayout = () => {
   }, [itemToDelete, deleteModalSource, handleDelete]);
 
   const handleRename = useCallback(async (oldPath, newName, type) => {
-    if (!session) return;
+    if (!session || !canModifyContent) return;
     try {
       const response = await fetch('/api/rename-item', {
         method: 'POST',
@@ -263,10 +266,10 @@ const MainAppLayout = () => {
       console.error('Error renaming item:', error);
       alert(`Error renaming item: ${error.message}`);
     }
-  }, [selectedFile, router, session, fetchFileStructure]);
+  }, [selectedFile, router, session, fetchFileStructure, canModifyContent]);
 
   const handleSave = useCallback(async (updatedFile) => {
-    if (!session) return;
+    if (!session || !canModifyContent) return;
     try {
       const response = await fetch('/api/update-file', {
         method: 'POST',
@@ -294,10 +297,10 @@ const MainAppLayout = () => {
     } catch (error) {
       console.error('Error updating file:', error);
     }
-  }, [router, session, fetchFileStructure, pendingNavigation]);
+  }, [router, session, fetchFileStructure, pendingNavigation, canModifyContent]);
 
   const handleSaveAndNavigate = useCallback(async () => {
-    if (selectedFile && currentEditorContent) {
+    if (selectedFile && currentEditorContent && canModifyContent) {
       try {
         const updatedFile = {
           ...selectedFile,
@@ -312,12 +315,12 @@ const MainAppLayout = () => {
         console.error('Error saving file:', error);
       }
     }
-  }, [selectedFile, currentEditorContent, handleSave]);
+  }, [selectedFile, currentEditorContent, handleSave, canModifyContent]);
 
   const handleDiscardAndNavigate = useCallback(() => {
     setIsPromptOpen(false);
     setHasUnsavedChanges(false);
-    setIsEditing(false); // Reset editing state when discarding changes
+    setIsEditing(false);
     if (pendingNavigation) {
       router.push(pendingNavigation);
       setPendingNavigation(null);
@@ -325,24 +328,24 @@ const MainAppLayout = () => {
   }, [pendingNavigation, router]);
 
   const handleSortOrderChange = useCallback(async (path, newSortOrder) => {
-    if (!session) return;
+    if (!session || !canModifyContent) return;
     try {
       await fetchFileStructure();
     } catch (error) {
       console.error('Error updating sort order:', error);
     }
-  }, [session, fetchFileStructure]);
+  }, [session, fetchFileStructure, canModifyContent]);
 
   const toggleToc = useCallback(() => {
     setIsTocVisible((prev) => !prev);
   }, []);
 
   const toggleEdit = useCallback(() => {
-    if (session) {
+    if (session && canModifyContent) {
       setIsEditing((prev) => !prev);
       setIsTocVisible(false);
     }
-  }, [session]);
+  }, [session, canModifyContent]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
@@ -354,6 +357,7 @@ const MainAppLayout = () => {
   }, []);
 
   const handleTrashBinClick = useCallback(() => {
+    if (!canModifyContent) return;
     if (handleNavigation('/trash')) {
       setIsTrashBinVisible(true);
       setSelectedFile(null);
@@ -361,7 +365,7 @@ const MainAppLayout = () => {
       setIsEditing(false);
       setIsTocVisible(false);
     }
-  }, [handleNavigation]);
+  }, [handleNavigation, canModifyContent]);
 
   const handleChangesPending = useCallback((isPending, editorState = null) => {
     setHasUnsavedChanges(isPending);
@@ -381,6 +385,7 @@ const MainAppLayout = () => {
       refreshFileStructure={fetchFileStructure}
       onTrashBinClick={handleTrashBinClick}
       onSortOrderChange={handleSortOrderChange}
+      session={session}
     />
   ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
 
@@ -432,7 +437,7 @@ const MainAppLayout = () => {
           {!isEditing && !isTrashBinVisible && (
             <>
               <div className="fixed z-[2010] border border-gray-200 dark:border-gray-600 top-12 right-5 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg rounded-b-xl px-4 py-2 flex gap-4">
-                {session && (
+                {session && canModifyContent && (
                   <button
                     onClick={toggleEdit}
                     className="transition-colors duration-200"
