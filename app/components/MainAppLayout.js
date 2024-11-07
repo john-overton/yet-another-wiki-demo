@@ -410,14 +410,14 @@ const MainAppLayout = () => {
     if (!selectedFile || !isEditing) return null;
     return (
       <div className = "h-[calc(100vh-3rem)]">
-      <MDXEditor 
-        file={selectedFile} 
-        onSave={handleSave} 
-        onCancel={handleCancel} 
-        refreshFileStructure={fetchFileStructure}
-        onChangesPending={handleChangesPending}
-      />
-      </div>
+        <MDXEditor 
+          file={selectedFile} 
+          onSave={handleSave} 
+          onCancel={handleCancel} 
+          refreshFileStructure={fetchFileStructure}
+          onChangesPending={handleChangesPending}
+        />
+        </div>
     );
   };
 
@@ -429,14 +429,17 @@ const MainAppLayout = () => {
           isMobile={isMobile}
           isSidebarVisible={isSidebarVisible}
           onToggleSidebar={toggleSidebar}
+          isEditing={isEditing}
         />
       </div>
       <div className="flex flex-1 relative pt-12">
-        <div className={`sticky top-12 h-[calc(100vh-3rem)] transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} overflow-hidden`}>
-          {memoizedSidebar}
-        </div>
-        <main className="flex-1 bg-background-light overflow-y-auto mb-4">
-          <div className="mx-auto px-6 py-8">
+        {!isEditing && (
+          <div className={`sticky top-12 h-[calc(100vh-3rem)] transition-all duration-300 ease-in-out ${isSidebarVisible ? (session ? 'w-[20rem]' : 'w-fit max-w-[16rem]') : 'w-0'} overflow-hidden`}>
+            {memoizedSidebar}
+          </div>
+        )}
+        <main className={`flex-1 bg-background-light overflow-y-auto ${isEditing ? 'w-full' : ''}`}>
+          <div className={`mx-auto ${isEditing ? '' : 'px-6'}`}>
             {isTrashBinVisible ? (
               <TrashBin onDelete={handleDeleteClick} />
             ) : (
@@ -483,7 +486,7 @@ const MainAppLayout = () => {
           )}
         </main>
       </div>
-      <Footer />
+      {!isEditing && <Footer />}
       <SavePromptModal 
         isOpen={isPromptOpen}
         onSave={handleSaveAndNavigate}

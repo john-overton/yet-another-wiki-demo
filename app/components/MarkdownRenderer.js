@@ -183,7 +183,7 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
   let isFirstImage = true;
 
   return (
-    <div className="mdx-content prose dark:prose-invert max-w-none">
+    <div className="mdx-content prose dark:prose-invert max-w-none mb-4">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypePrismPlus]}

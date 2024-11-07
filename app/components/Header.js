@@ -8,7 +8,7 @@ import SearchComponent from './SearchComponent';
 import Logo from './Logo';
 import LoginModal from './LoginModal';
 
-const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar }) => {
+const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isEditing }) => {
   const [mounted, setMounted] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
@@ -26,7 +26,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar }) =
     <>
       <div className="flex items-center justify-between w-full p-1">
         <div className="flex justify-content-start">
-          {isMobile && (
+          {isMobile && !isEditing && (
             <button
               onClick={onToggleSidebar}
               aria-label="Toggle Sidebar"

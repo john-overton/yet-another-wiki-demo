@@ -65,6 +65,18 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+const SectionHeader = ({ title, isExpanded, onToggle }) => (
+  <div className="flex justify-between items-center bg-[#717171] dark:bg-[#1F2937] text-gray-300 px-4 py-2 rounded-t text-sm border-b border-gray-700">
+    <span className="font-medium text-base">{title}</span>
+    <button
+      onClick={onToggle}
+      className="hover:text-white transition-colors text-xs uppercase tracking-wider opacity-75 hover:opacity-100"
+    >
+      {isExpanded ? '▲ Hide Section' : '▼ Show Section'}
+    </button>
+  </div>
+);
+
 const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onChangesPending }) => {
   const { theme } = useTheme();
   const [content, setContent] = useState('');
@@ -80,6 +92,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [bundledContent, setBundledContent] = useState(null);
+  const [isPageDetailsExpanded, setIsPageDetailsExpanded] = useState(true);
   const editorRef = useRef(null);
 
   // Track changes
@@ -265,25 +278,38 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex p-4 flex-col h-full">
         <div className="flex flex-col gap-4 mb-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
-            <input
-              type="text"
-              value={title || ''}
-              onChange={(e) => setTitle(e.target.value)}
-              className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          <div className="rounded-lg overflow-hidden border border-gray-700">
+            <SectionHeader 
+              title="Page Details"
+              isExpanded={isPageDetailsExpanded}
+              onToggle={() => setIsPageDetailsExpanded(!isPageDetailsExpanded)}
             />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL Slug</label>
-            <input
-              type="text"
-              value={slug || ''}
-              onChange={(e) => setSlug(e.target.value)}
-              className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <div className={`transition-all duration-200 ${
+              isPageDetailsExpanded ? 'opacity-100 p-4' : 'h-0 opacity-0 overflow-hidden'
+            }`}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
+                  <input
+                    type="text"
+                    value={title || ''}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL Slug</label>
+                  <input
+                    type="text"
+                    value={slug || ''}
+                    onChange={(e) => setSlug(e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
           <div className="flex items-center justify-between">
@@ -325,7 +351,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
           </div>
         </div>
         {errorMessage && (
-          <div className="text-red-500 mb-4">{errorMessage}</div>
+          <div className="text-red-500 mb-2">{errorMessage}</div>
         )}
         {isPreview ? (
           <div className="flex-grow overflow-auto">
@@ -338,7 +364,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
               markdown={content}
               onChange={handleEditorChange}
               contentEditableClassName="mdxeditor-content-editable"
-              className={`${openSans.className} mdxeditor flex-grow p-2 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
+              className={`${openSans.className} mdxeditor flex-grow overflow-auto p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
 
               plugins={[
                 toolbarPlugin({
