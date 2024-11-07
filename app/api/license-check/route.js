@@ -5,7 +5,7 @@ async function verifyLicense(email, licenseKey) {
   try {
     console.log('Periodic license check for:', { email, licenseKey });
     
-    const response = await fetch('http://localhost:3001/api/license/verify', {
+    const response = await fetch('http://192.168.68.62:3001/api/license/verify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
