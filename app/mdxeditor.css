@@ -121,9 +121,6 @@
   --accentSolidHover: var(--editor-accent-solid-hover);
   --accentText: var(--editor-accent-text);
   --accentTextContrast: var(--editor-accent-text-contrast);
-
-  position: relative;
-  z-index: 5000
 }
 
 /* Editor content styles */
@@ -271,6 +268,17 @@
 .mdxeditor-toolbar {
   background-color: var(--editor-toolbar-bg);
   border: 1px solid var(--editor-border);
+  z-index: 5000;
+}
+
+.mdxeditor-toolbar.sticky {
+  position:fixed;
+    top:3rem !important;
+    width:100%;
+}
+
+.mdxeditor-popup-container {
+  --tw-bg-opacity: 0 !important;
 }
 
 /* Code block styles */
@@ -423,13 +431,6 @@
 /* Toolbar file upload button styles */
 .toolbar-item i.ri-file-line {
   font-size: 1.1rem;
-}
-
-.mdxeditor-toolbar.sticky {
-  position:fixed;
-    top:3rem !important;
-    width:100%;
-    z-index:100;
 }
 
 .mdxeditor [role="listbox"] {
