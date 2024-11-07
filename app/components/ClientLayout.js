@@ -9,7 +9,6 @@ const openSans = Open_Sans({
   display: 'swap',
 });
 
-const Header = dynamic(() => import('./Header'), { ssr: false });
 const SetupHeader = dynamic(() => import('./SetupHeader'), { ssr: false });
 
 export function ClientLayout({ children }) {
@@ -33,9 +32,11 @@ export function ClientLayout({ children }) {
 
   return (
     <div className={`h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200 ${openSans.className}`}>
-      <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
-        {isSetupPage ? <SetupHeader /> : <Header onFileSelect={handleFileSelect} />}
-      </header>
+      {isSetupPage && (
+        <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
+          <SetupHeader />
+        </header>
+      )}
       <main className="flex-1 z-1 overflow-auto">
         {children}
       </main>

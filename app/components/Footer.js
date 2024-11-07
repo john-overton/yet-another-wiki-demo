@@ -1,53 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
 const Footer = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const mainContent = document.querySelector('main[class*="overflow-y-auto"]');
-      if (mainContent) {
-        const { scrollTop, scrollHeight, clientHeight } = mainContent;
-        const maxScroll = scrollHeight - clientHeight;
-        const threshold = 50; // pixels before bottom to start showing footer
-        
-        if (maxScroll > 0) {
-          // Only show footer when near bottom
-          const distanceFromBottom = maxScroll - scrollTop;
-          const shouldShow = distanceFromBottom < threshold;
-          
-          if (shouldShow) {
-            const progress = Math.max(0, Math.min(1, (threshold - distanceFromBottom) / threshold));
-            setScrollProgress(progress);
-            setIsVisible(true);
-          } else {
-            setIsVisible(false);
-            setScrollProgress(0);
-          }
-        }
-      }
-    };
-
-    const mainContent = document.querySelector('main[class*="overflow-y-auto"]');
-    if (mainContent) {
-      setIsVisible(false);
-      setScrollProgress(0);
-      mainContent.addEventListener('scroll', handleScroll);
-      return () => mainContent.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
   return (
-    <div 
-      className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 transition-all duration-300 ease-in-out overflow-hidden"
-      style={{
-        height: isVisible ? '23rem' : '0',
-        opacity: scrollProgress,
-      }}
-    >
+    <div className="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600">
       <div className="grid grid-cols-2 h-[20rem] sm:grid-cols-2">
         {/* Left Box */}
         <div className="flex items-center justify-center py-40 sm:w-full md:w-full lg:w-full xl:w-full">
