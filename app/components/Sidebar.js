@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import ImportModal from './ImportModal';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -311,7 +312,8 @@ const Sidebar = ({
   isAuthenticated,
   onTrashBinClick,
   onSortOrderChange,
-  session
+  session,
+  onImportClick // Add this prop
 }) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -377,23 +379,32 @@ const Sidebar = ({
         {/* Footer Section - Always at bottom */}
         {isAuthenticated && (
           <div className="flex-none px-3 py-4 border-gray-200 dark:border-gray-700 mt-auto">
+            {canModifyContent && (
+              <>
+                <button 
+                  onClick={onImportClick}
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full mb-2"
+                >
+                  <i className="ri-upload-2-line mr-2"></i>
+                  <span>Import Markdown</span>
+                </button>
+                <button 
+                  onClick={onTrashBinClick}
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full mb-2"
+                >
+                  <i className="ri-delete-bin-7-line mr-2"></i>
+                  <span>Trash Bin</span>
+                </button>
+              </>
+            )}
             {canAccessSettings && (
               <Link 
                 href="/settings"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 mb-2"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <i className="ri-settings-3-line mr-2"></i>
                 <span>Settings</span>
               </Link>
-            )}
-            {canModifyContent && (
-              <button 
-                onClick={onTrashBinClick}
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
-              >
-                <i className="ri-delete-bin-7-line mr-2"></i>
-                <span>Trash Bin</span>
-              </button>
             )}
           </div>
         )}

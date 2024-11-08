@@ -8,6 +8,7 @@ import TableOfContents from './TableOfContents';
 import MDXEditor from './MDXEditor';
 import SavePromptModal from './SavePromptModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import ImportModal from './ImportModal';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -36,6 +37,7 @@ const MainAppLayout = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteModalSource, setDeleteModalSource] = useState(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false); // Add this line
 
   const { theme } = useTheme();
   const router = useRouter();
@@ -403,6 +405,7 @@ const MainAppLayout = () => {
       onTrashBinClick={handleTrashBinClick}
       onSortOrderChange={handleSortOrderChange}
       session={session}
+      onImportClick={() => setIsImportModalOpen(true)}
     />
   ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
 
@@ -504,6 +507,15 @@ const MainAppLayout = () => {
         itemTitle={itemToDelete?.title}
         hasChildren={itemToDelete?.hasChildren}
         source={deleteModalSource}
+      />
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        fileStructure={fileStructure}
+        onImport={() => {
+          setIsImportModalOpen(false);
+          fetchFileStructure();
+        }}
       />
     </div>
   );

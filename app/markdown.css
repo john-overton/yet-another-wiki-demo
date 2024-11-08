@@ -30,6 +30,7 @@ pre {
   padding: 1rem;
   margin: 1rem 0;
   overflow-x: auto;
+  z-index: 1000;
 }
 
 /* Inline code styles */
@@ -39,6 +40,7 @@ pre {
   border-radius: 3px;
   padding: 0.2em 0.4em;
   font-size: 85%;
+  z-index: 1000;
 }
 
 /* Light theme syntax highlighting */

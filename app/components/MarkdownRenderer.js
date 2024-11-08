@@ -21,7 +21,7 @@ const imageLoader = ({ src, width, quality }) => {
 }
 
 const LinkButton = ({ id }) => (
-  <a href={`#${encodeURIComponent(id)}`} className="ml-2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+  <a href={`#${encodeURIComponent(id)}`} className="ml-2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity z-[1000]">
     <i className="ri-links-fill"></i>
   </a>
 );
