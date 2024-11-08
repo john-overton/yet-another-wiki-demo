@@ -385,8 +385,8 @@ const Sidebar = ({
                   onClick={onImportClick}
                   className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 w-full mb-2"
                 >
-                  <i className="ri-upload-2-line mr-2"></i>
-                  <span>Import Markdown</span>
+                  <i className="ri-file-upload-line mr-2"></i>
+                  <span>Import Page</span>
                 </button>
                 <button 
                   onClick={onTrashBinClick}
