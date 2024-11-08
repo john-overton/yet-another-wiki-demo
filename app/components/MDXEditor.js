@@ -92,7 +92,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isPageDetailsExpanded, setIsPageDetailsExpanded] = useState(true);
+  const [isPageDetailsExpanded, setIsPageDetailsExpanded] = useState(false);
+  const [isPageOrderExpanded, setIsPageOrderExpanded] = useState(false);
   const [fileStructure, setFileStructure] = useState([]);
   const editorRef = useRef(null);
 
@@ -329,7 +330,18 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
               </div>
             </div>
           </div>
-          <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
+          <div className="rounded-lg overflow-hidden border border-gray-700">
+            <SectionHeader 
+              title="Page Order"
+              isExpanded={isPageOrderExpanded}
+              onToggle={() => setIsPageOrderExpanded(!isPageOrderExpanded)}
+            />
+            <div className={`transition-all duration-200 ${
+              isPageOrderExpanded ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+            }`}>
+              <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
+            </div>
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <button
