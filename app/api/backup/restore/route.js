@@ -78,7 +78,6 @@ async function extractFile(zip, entry, rootDir) {
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const bodyParser = false;
 
 export async function POST(req) {
   try {
