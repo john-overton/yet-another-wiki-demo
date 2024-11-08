@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { mkdir, rm, writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -44,6 +44,43 @@ async function importDatabase(backupData) {
   } catch (error) {
     console.error('Error importing database:', error);
     throw new Error('Failed to import database');
+  }
+}
+
+// Helper to ensure directory exists
+async function ensureDir(dir) {
+  try {
+    await mkdir(dir, { recursive: true });
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      throw error;
+    }
+  }
+}
+
+// Helper to create directory structure from zip entries
+async function createDirectoryStructure(zipEntries, rootDir) {
+  const directories = new Set();
+  
+  // Collect all unique directory paths
+  zipEntries.forEach(entry => {
+    const parts = entry.entryName.split('/');
+    let currentPath = '';
+    
+    for (let i = 0; i < parts.length - 1; i++) {
+      currentPath = currentPath ? join(currentPath, parts[i]) : parts[i];
+      directories.add(currentPath);
+    }
+  });
+
+  // Create directories in order of depth
+  const sortedDirs = Array.from(directories).sort((a, b) => 
+    (a.match(/\//g) || []).length - (b.match(/\//g) || []).length
+  );
+
+  for (const dir of sortedDirs) {
+    const fullPath = join(rootDir, dir);
+    await ensureDir(fullPath);
   }
 }
 
@@ -149,12 +186,21 @@ export async function POST(req) {
       }
     }
 
+    // Create directory structure before extracting files
+    await createDirectoryStructure(zipEntries, rootDir);
+
     // Extract remaining files (excluding db/database_backup.json and already handled files)
-    zipEntries.forEach(entry => {
+    for (const entry of zipEntries) {
       if (!entry.entryName.startsWith('db/') && entry.entryName !== '.env') {
+        // Ensure the target directory exists
+        const targetPath = join(rootDir, entry.entryName);
+        const targetDir = entry.isDirectory ? targetPath : join(targetPath, '..');
+        await ensureDir(targetDir);
+        
+        // Extract the file
         zip.extractEntryTo(entry, rootDir, false, true);
       }
-    });
+    }
 
     // Clean up temp directory
     await rm(tempDir, { recursive: true, force: true });
