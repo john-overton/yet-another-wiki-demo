@@ -5,12 +5,14 @@ import Link from 'next/link';
 import ThemingSettings from './settings.theming';
 import LicensingSettings from './settings.licensing';
 import UserManagementSettings from './settings.users';
+import BackupSettings from './settings.backup';
 
 const Settings = () => {
   const [expandedSections, setExpandedSections] = useState({
     theming: true,
     licensing: true,
-    users: true
+    users: true,
+    backup: true
   });
   const [licenseType, setLicenseType] = useState(null);
 
@@ -78,6 +80,22 @@ const Settings = () => {
           </div>
         </div>
       )}
+
+      {/* Backup Section */}
+      <div className="mb-4">
+        <div className="rounded-lg overflow-hidden border border-gray-700">
+          <SectionHeader 
+            title="Backup & Import"
+            isExpanded={expandedSections.backup}
+            onToggle={() => toggleSection('backup')}
+          />
+          <div className={`transition-all duration-200 ${
+            expandedSections.backup ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}>
+            <BackupSettings />
+          </div>
+        </div>
+      </div>
 
       {/* Theming Section */}
       <div className="mb-4">

@@ -25,6 +25,8 @@
     "@mdxeditor/editor": "^3.14.0",
     "@next/mdx": "^14.2.15",
     "@prisma/client": "^5.20.0",
+    "adm-zip": "^0.5.16",
+    "archiver": "^7.0.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
@@ -52,7 +54,8 @@
     "rehype-prism-plus": "^2.0.0",
     "remark-gfm": "^4.0.0",
     "remixicon": "^4.3.0",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
