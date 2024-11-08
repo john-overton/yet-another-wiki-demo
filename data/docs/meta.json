@@ -7,8 +7,8 @@
       "path": "getting-started.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-04T02:46:12.758Z",
-      "sortOrder": 3,
+      "lastModified": "2024-11-08T02:28:54.513Z",
+      "sortOrder": 2,
       "children": [
         {
           "id": "2",
@@ -53,7 +53,7 @@
       "isPublic": true,
       "version": 1,
       "lastModified": "2024-11-04T01:22:31.234Z",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "children": []
     },
     {
@@ -63,7 +63,7 @@
       "path": "home.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-05T22:06:58.723Z",
+      "lastModified": "2024-11-08T02:27:41.670Z",
       "sortOrder": 1,
       "children": []
     }

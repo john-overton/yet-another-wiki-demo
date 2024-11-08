@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import { bundleMDXContent } from '../actions/mdx';
+import { useSession } from 'next-auth/react';
 import SortOrderEditor from './SortOrderEditor';
 import {
   MDXEditor,
@@ -45,7 +45,7 @@ const openSans = Open_Sans({
   display: 'swap',
 });
 
-const MDXRenderer = dynamic(() => import('./MDXRenderer'), { ssr: false });
+const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false });
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -79,6 +79,7 @@ const SectionHeader = ({ title, isExpanded, onToggle }) => (
 
 const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onChangesPending }) => {
   const { theme } = useTheme();
+  const { data: session } = useSession();
   const [content, setContent] = useState('');
   const [initialContent, setInitialContent] = useState('');
   const [title, setTitle] = useState(file.title);
@@ -91,8 +92,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [bundledContent, setBundledContent] = useState(null);
   const [isPageDetailsExpanded, setIsPageDetailsExpanded] = useState(true);
+  const [fileStructure, setFileStructure] = useState([]);
   const editorRef = useRef(null);
 
   // Track changes
@@ -144,12 +145,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
 
         setContent(actualContent);
         setInitialContent(actualContent);
-        
-        // Bundle the initial content
-        const bundled = await bundleMDXContent(actualContent);
-        if (bundled) {
-          setBundledContent(bundled.code);
-        }
       } catch (error) {
         console.error('Error fetching file content:', error);
         setErrorMessage('Failed to fetch file content. Please try again.');
@@ -157,7 +152,30 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         setIsLoading(false);
       }
     };
+
+    const fetchFileStructure = async () => {
+      try {
+        const response = await fetch('/api/file-structure', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setFileStructure(data.pages);
+      } catch (error) {
+        console.error('Error fetching file structure:', error);
+      }
+    };
+
     fetchContent();
+    fetchFileStructure();
   }, [file.path]);
 
   const handleImageUpload = async (image) => {
@@ -355,7 +373,12 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         )}
         {isPreview ? (
           <div className="flex-grow overflow-auto">
-            <MDXRenderer code={bundledContent} />
+            <MarkdownRenderer 
+              content={content}
+              currentPage={file}
+              pages={fileStructure}
+              session={session}
+            />
           </div>
         ) : (
           <ErrorBoundary>
