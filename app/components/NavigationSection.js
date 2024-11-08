@@ -14,14 +14,27 @@ const NavigationSection = ({ currentPage, pages, isAuthenticated }) => {
     return !page.deleted && (isAuthenticated || page.isPublic);
   };
 
+  // Recursively find a page and its parent in the page tree
+  const findPageAndParent = (pages, targetPath, parent = null) => {
+    for (const page of pages) {
+      if (page.path === targetPath) {
+        return { page, parent };
+      }
+      if (page.children?.length > 0) {
+        const result = findPageAndParent(page.children, targetPath, page);
+        if (result) return result;
+      }
+    }
+    return null;
+  };
+
   let prevPage = null;
   let nextPage = null;
 
   // Find current page context
-  const isRootPage = pages.some(p => p.path === currentPage.path);
-  const parentPage = isRootPage ? null : pages.find(p => 
-    p.children?.some(child => child.path === currentPage.path)
-  );
+  const pageContext = findPageAndParent(pages, currentPage.path);
+  const isRootPage = pageContext ? !pageContext.parent : false;
+  const parentPage = pageContext ? pageContext.parent : null;
 
   if (isRootPage) {
     // Current page is a root page
@@ -53,41 +66,69 @@ const NavigationSection = ({ currentPage, pages, isAuthenticated }) => {
       }
     }
   } else if (parentPage) {
-    // Current page is a child page
+    // Current page is a child page at any level
     const siblings = getPagesAtLevel(parentPage.children);
     const currentIndex = siblings.findIndex(p => p.path === currentPage.path);
 
+    // If first child of parent, previous is parent
     if (currentIndex === 0) {
-      // First child - previous is parent
       if (isAccessible(parentPage)) {
         prevPage = parentPage;
       }
     } else {
-      // Look for previous accessible sibling
+      // Look for previous accessible sibling or last accessible child of previous sibling
       for (let i = currentIndex - 1; i >= 0; i--) {
-        if (isAccessible(siblings[i])) {
-          prevPage = siblings[i];
+        const sibling = siblings[i];
+        if (isAccessible(sibling)) {
+          // If sibling has children, get the last accessible child recursively
+          let lastChild = sibling;
+          while (lastChild.children?.length > 0) {
+            const children = getPagesAtLevel(lastChild.children);
+            const lastAccessibleChild = [...children].reverse().find(child => isAccessible(child));
+            if (!lastAccessibleChild) break;
+            lastChild = lastAccessibleChild;
+          }
+          prevPage = lastChild;
           break;
         }
       }
     }
 
-    // Look for next accessible sibling
-    for (let i = currentIndex + 1; i < siblings.length; i++) {
-      if (isAccessible(siblings[i])) {
-        nextPage = siblings[i];
-        break;
-      }
+    // Next is either first child (if exists) or next sibling
+    if (currentPage.children?.length > 0) {
+      const children = getPagesAtLevel(currentPage.children);
+      nextPage = children.find(child => isAccessible(child));
     }
 
-    // If no next sibling, look for next root page after parent
     if (!nextPage) {
-      const rootPages = getPagesAtLevel(pages);
-      const parentIndex = rootPages.findIndex(p => p.path === parentPage.path);
-      for (let i = parentIndex + 1; i < rootPages.length; i++) {
-        if (isAccessible(rootPages[i])) {
-          nextPage = rootPages[i];
+      // Look for next accessible sibling
+      for (let i = currentIndex + 1; i < siblings.length; i++) {
+        if (isAccessible(siblings[i])) {
+          nextPage = siblings[i];
           break;
+        }
+      }
+
+      // If no next sibling, traverse up the tree to find next page
+      if (!nextPage) {
+        let currentParent = parentPage;
+        let currentChild = currentPage;
+        
+        while (currentParent && !nextPage) {
+          const parentSiblings = getPagesAtLevel(
+            findPageAndParent(pages, currentParent.path)?.parent?.children || pages
+          );
+          const parentIndex = parentSiblings.findIndex(p => p.path === currentParent.path);
+          
+          for (let i = parentIndex + 1; i < parentSiblings.length; i++) {
+            if (isAccessible(parentSiblings[i])) {
+              nextPage = parentSiblings[i];
+              break;
+            }
+          }
+          
+          currentChild = currentParent;
+          currentParent = findPageAndParent(pages, currentParent.path)?.parent;
         }
       }
     }

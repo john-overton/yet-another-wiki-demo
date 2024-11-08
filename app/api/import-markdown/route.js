@@ -30,6 +30,12 @@ export async function POST(request) {
     const filePath = join(process.cwd(), 'data', 'docs', fileName);
     await writeFile(filePath, fileContent);
 
+    // Function to get highest sort order
+    const getHighestSortOrder = (pages) => {
+      if (!pages || pages.length === 0) return 0;
+      return Math.max(...pages.map(page => page.sortOrder || 0));
+    };
+
     // Create new page object
     const newPage = {
       id: newId,
@@ -41,12 +47,14 @@ export async function POST(request) {
       isPublic: true,
       version: 1,
       lastModified: new Date().toISOString(),
-      sortOrder: meta.pages.length,
+      sortOrder: 1, // Default value, will be updated below
       children: []
     };
 
-    // Add page to appropriate location
+    // Add page to appropriate location with correct sort order
     if (targetLocation === 'root') {
+      // For root level, get highest sort order among root pages and add 1
+      newPage.sortOrder = getHighestSortOrder(meta.pages) + 1;
       meta.pages.push(newPage);
     } else {
       // Recursively find and update parent page
@@ -54,6 +62,10 @@ export async function POST(request) {
         for (let page of pages) {
           if (page.id === targetLocation) {
             if (!page.children) page.children = [];
+            // Get highest sort order among children and add 1, or use 1 if no children
+            newPage.sortOrder = page.children.length > 0 
+              ? getHighestSortOrder(page.children) + 1 
+              : 1;
             page.children.push(newPage);
             return true;
           }
