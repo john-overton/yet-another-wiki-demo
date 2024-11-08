@@ -76,6 +76,10 @@ async function extractFile(zip, entry, rootDir) {
   zip.extractEntryTo(entry, rootDir, true, true);
 }
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const bodyParser = false;
+
 export async function POST(req) {
   try {
     // Check authentication and admin role
@@ -212,9 +216,3 @@ export async function POST(req) {
     await prisma.$disconnect();
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
