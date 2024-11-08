@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { mkdir, rm, writeFile, readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import AdmZip from 'adm-zip';
@@ -58,30 +58,22 @@ async function ensureDir(dir) {
   }
 }
 
-// Helper to create directory structure from zip entries
-async function createDirectoryStructure(zipEntries, rootDir) {
-  const directories = new Set();
-  
-  // Collect all unique directory paths
-  zipEntries.forEach(entry => {
-    const parts = entry.entryName.split('/');
-    let currentPath = '';
-    
-    for (let i = 0; i < parts.length - 1; i++) {
-      currentPath = currentPath ? join(currentPath, parts[i]) : parts[i];
-      directories.add(currentPath);
-    }
-  });
-
-  // Create directories in order of depth
-  const sortedDirs = Array.from(directories).sort((a, b) => 
-    (a.match(/\//g) || []).length - (b.match(/\//g) || []).length
-  );
-
-  for (const dir of sortedDirs) {
-    const fullPath = join(rootDir, dir);
-    await ensureDir(fullPath);
+// Helper to extract file maintaining directory structure
+async function extractFile(zip, entry, rootDir) {
+  if (entry.isDirectory) {
+    const dirPath = join(rootDir, entry.entryName);
+    await ensureDir(dirPath);
+    return;
   }
+
+  const filePath = join(rootDir, entry.entryName);
+  const fileDir = dirname(filePath);
+  
+  // Ensure the directory exists
+  await ensureDir(fileDir);
+  
+  // Extract the file using extractEntryTo with maintainEntryPath
+  zip.extractEntryTo(entry, rootDir, true, true);
 }
 
 export async function POST(req) {
@@ -158,7 +150,7 @@ export async function POST(req) {
     // Handle .env file if present
     const envEntry = zipEntries.find(entry => entry.entryName === '.env');
     if (envEntry) {
-      zip.extractEntryTo(envEntry, rootDir, false, true);
+      await extractFile(zip, envEntry, rootDir);
     }
 
     // Remove existing directories (except .gitignore files and db directory)
@@ -186,20 +178,19 @@ export async function POST(req) {
       }
     }
 
-    // Create directory structure before extracting files
-    await createDirectoryStructure(zipEntries, rootDir);
-
     // Extract remaining files (excluding db/database_backup.json and already handled files)
-    for (const entry of zipEntries) {
-      if (!entry.entryName.startsWith('db/') && entry.entryName !== '.env') {
-        // Ensure the target directory exists
-        const targetPath = join(rootDir, entry.entryName);
-        const targetDir = entry.isDirectory ? targetPath : join(targetPath, '..');
-        await ensureDir(targetDir);
-        
-        // Extract the file
-        zip.extractEntryTo(entry, rootDir, false, true);
-      }
+    // Sort entries by path depth to ensure parent directories are created first
+    const remainingEntries = zipEntries
+      .filter(entry => !entry.entryName.startsWith('db/') && entry.entryName !== '.env')
+      .sort((a, b) => {
+        const depthA = a.entryName.split('/').length;
+        const depthB = b.entryName.split('/').length;
+        return depthA - depthB;
+      });
+
+    // Extract files maintaining directory structure
+    for (const entry of remainingEntries) {
+      await extractFile(zip, entry, rootDir);
     }
 
     // Clean up temp directory
