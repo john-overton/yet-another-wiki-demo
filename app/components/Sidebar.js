@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import ImportModal from './ImportModal';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;

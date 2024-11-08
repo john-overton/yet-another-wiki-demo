@@ -1,11 +1,51 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { mkdir, rm, writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import AdmZip from 'adm-zip';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+// Helper to import database using Prisma
+async function importDatabase(backupData) {
+  try {
+    // Parse the backup data
+    const backup = JSON.parse(backupData);
+
+    // Clear existing data
+    await prisma.user.deleteMany();
+    await prisma.secretQuestion.deleteMany();
+
+    // Restore secret questions first
+    for (const question of backup.data.secretQuestions) {
+      await prisma.secretQuestion.create({
+        data: {
+          id: question.id,
+          question: question.question
+        }
+      });
+    }
+
+    // Restore users
+    for (const user of backup.data.users) {
+      // Extract the relations to handle them separately
+      const { secret_question_1, secret_question_2, secret_question_3, ...userData } = user;
+      
+      await prisma.user.create({
+        data: userData
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error importing database:', error);
+    throw new Error('Failed to import database');
+  }
+}
 
 export async function POST(req) {
   try {
@@ -53,12 +93,16 @@ export async function POST(req) {
     const zipEntries = zip.getEntries();
 
     // Validate zip structure
-    const requiredDirs = ['data', 'db', 'config'];
+    const requiredDirs = ['data', 'config'];
     const hasRequiredDirs = requiredDirs.every(dir => 
       zipEntries.some(entry => entry.entryName.startsWith(`${dir}/`))
     );
 
-    if (!hasRequiredDirs) {
+    // Check for database backup and schema
+    const hasDatabaseBackup = zipEntries.some(entry => entry.entryName === 'db/database_backup.json');
+    const hasSchema = zipEntries.some(entry => entry.entryName === 'prisma/schema.prisma');
+
+    if (!hasRequiredDirs || !hasDatabaseBackup || !hasSchema) {
       await rm(tempDir, { recursive: true, force: true });
       return new NextResponse(JSON.stringify({ error: 'Invalid backup file structure' }), { 
         status: 400,
@@ -69,7 +113,18 @@ export async function POST(req) {
     // Get root directory
     const rootDir = process.cwd();
 
-    // Remove existing directories (except .gitignore files)
+    // Extract and import database backup
+    const dbBackupEntry = zipEntries.find(entry => entry.entryName === 'db/database_backup.json');
+    const dbBackupContent = zip.readAsText(dbBackupEntry);
+    await importDatabase(dbBackupContent);
+
+    // Handle .env file if present
+    const envEntry = zipEntries.find(entry => entry.entryName === '.env');
+    if (envEntry) {
+      zip.extractEntryTo(envEntry, rootDir, false, true);
+    }
+
+    // Remove existing directories (except .gitignore files and db directory)
     for (const dir of requiredDirs) {
       try {
         const dirPath = join(rootDir, dir);
@@ -94,8 +149,12 @@ export async function POST(req) {
       }
     }
 
-    // Extract files
-    zip.extractAllTo(rootDir, true);
+    // Extract remaining files (excluding db/database_backup.json and already handled files)
+    zipEntries.forEach(entry => {
+      if (!entry.entryName.startsWith('db/') && entry.entryName !== '.env') {
+        zip.extractEntryTo(entry, rootDir, false, true);
+      }
+    });
 
     // Clean up temp directory
     await rm(tempDir, { recursive: true, force: true });
@@ -112,6 +171,8 @@ export async function POST(req) {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 

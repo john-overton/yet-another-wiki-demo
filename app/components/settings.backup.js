@@ -36,7 +36,7 @@ const BackupImportModal = ({ isOpen, onClose, onImport }) => {
             </div>
 
             <div className="text-sm text-red-600 dark:text-red-400">
-              Warning: Importing a backup will overwrite all existing files and settings. This action cannot be undone.
+              Warning: Importing a backup will completely replace all existing data, database, and configuration directories with the contents from the backup file. All current files in these directories will be permanently deleted. This action cannot be undone.
             </div>
 
             <div className="flex justify-end gap-4 mt-6">
@@ -164,7 +164,7 @@ const BackupSettings = () => {
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Backup includes data, database, public files, and configuration. Import will overwrite existing content.
+          Backup includes data, database, public files, and configuration. Import will completely replace existing content.
         </p>
       </div>
 
