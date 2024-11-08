@@ -7,6 +7,7 @@
   --code-block-border: #eaecef;
   --inline-code-bg: #f6f8fa;
   --inline-code-border: #e1e4e8;
+  --code-selection-bg: rgba(33, 150, 243, 0.2);
 }
 
 /* Dark theme */
@@ -18,6 +19,7 @@
   --code-block-border: #2d2d2d;
   --inline-code-bg: #2d2d2d;
   --inline-code-border: #404040;
+  --code-selection-bg: rgba(33, 150, 243, 0.3);
 }
 
 /* Code block styles */
@@ -156,7 +158,13 @@ code[class*="language-"]::selection,
 code[class*="language-"] ::selection,
 pre[class*="language-"]::selection,
 pre[class*="language-"] ::selection {
-  background: transparent !important;
+  background: var(--code-selection-bg) !important;
+  text-shadow: none !important;
+}
+
+/* Inline code selection */
+:not(pre) > code::selection {
+  background: var(--code-selection-bg) !important;
   text-shadow: none !important;
 }
 

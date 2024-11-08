@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import SecretQuestionsFormContent from '../components/SecretQuestionsFormContent';
 import SetupLicensing from '../components/SetupLicensing';
+import SetupHeader from '../components/SetupHeader';
 
 export default function ClientSetupWizard() {
     const [formData, setFormData] = useState({
@@ -162,138 +163,134 @@ export default function ClientSetupWizard() {
         router.push('/');
     };
 
-    if (showLicensing) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <div className="max-w-2xl w-full space-y-8 p-8 bg-white border dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
-                    <SetupLicensing onComplete={handleLicensingComplete} />
-                </div>
-            </div>
-        );
-    }
-
-    if (showSecurityQuestions) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <div className="max-w-md w-full space-y-8 p-8 bg-white border dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
-                    <SecretQuestionsFormContent onComplete={handleSecurityQuestionsComplete} />
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="flex items-center justify-center h-full">
-            <div className="max-w-md w-full space-y-8 p-8 border bg-white dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-                        Welcome to Yet Another Wiki!
-                    </h2>
-                    <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-                        Please set up your admin account
-                    </p>
-                </div>
-
-                {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 border border-red-400">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Email
-                        </label>
-                        {emailError && (
-                            <div className="text-sm text-red-500 dark:text-red-400 mb-1">
-                                {emailError}
+        <div className="min-h-screen flex flex-col">
+            <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
+                <SetupHeader />
+            </header>
+            <div className="flex-1 flex items-center justify-center">
+                <div className="max-w-md w-full space-y-8 p-8 border bg-white dark:bg-gray-800 dark:border-gray-600 rounded-lg shadow">
+                    {showLicensing ? (
+                        <SetupLicensing onComplete={handleLicensingComplete} />
+                    ) : showSecurityQuestions ? (
+                        <SecretQuestionsFormContent onComplete={handleSecurityQuestionsComplete} />
+                    ) : (
+                        <>
+                            <div>
+                                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                                    Welcome to Yet Another Wiki!
+                                </h2>
+                                <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                                    Please set up your admin account
+                                </p>
                             </div>
-                        )}
-                        <div className="relative">
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleEmailChange}
-                                className={`w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 ${
-                                    emailError ? 'border-red-500' : ''
-                                }`}
-                                required
-                            />
-                            {isCheckingEmail && (
-                                <div className="absolute right-3 top-2">
-                                    <i className="ri-loader-4-line animate-spin text-gray-600 dark:text-gray-300"></i>
+
+                            {error && (
+                                <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 border border-red-400">
+                                    {error}
                                 </div>
                             )}
-                        </div>
-                    </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Confirm Password
-                        </label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Email
+                                    </label>
+                                    {emailError && (
+                                        <div className="text-sm text-red-500 dark:text-red-400 mb-1">
+                                            {emailError}
+                                        </div>
+                                    )}
+                                    <div className="relative">
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleEmailChange}
+                                            className={`w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 ${
+                                                emailError ? 'border-red-500' : ''
+                                            }`}
+                                            required
+                                        />
+                                        {isCheckingEmail && (
+                                            <div className="absolute right-3 top-2">
+                                                <i className="ri-loader-4-line animate-spin text-gray-600 dark:text-gray-300"></i>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading || !isEmailValid || isCheckingEmail}
-                        className={`w-full px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black rounded-lg flex items-center justify-center gap-2 ${
-                            !isEmailValid || isCheckingEmail || loading
-                                ? 'opacity-50 cursor-not-allowed'
-                                : 'hover:bg-gray-300 dark:hover:bg-gray-600'
-                        }`}
-                    >
-                        {loading ? (
-                            <>
-                                <i className="ri-loader-4-line animate-spin"></i>
-                                Creating Admin Account...
-                            </>
-                        ) : (
-                            <>
-                                <i className="ri-user-add-line"></i>
-                                Create Admin Account
-                            </>
-                        )}
-                    </button>
-                </form>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Confirm Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={loading || !isEmailValid || isCheckingEmail}
+                                    className={`w-full px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black rounded-lg flex items-center justify-center gap-2 ${
+                                        !isEmailValid || isCheckingEmail || loading
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : 'hover:bg-gray-300 dark:hover:bg-gray-600'
+                                    }`}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <i className="ri-loader-4-line animate-spin"></i>
+                                            Creating Admin Account...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="ri-user-add-line"></i>
+                                            Create Admin Account
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        </>
+                    )}
+                </div>
             </div>
+            <footer className="h-12 flex items-center justify-center">
+                <div className="text-gray-600 dark:text-gray-400">© 2024 - Yet Another Wiki - All Rights Reserved</div>
+            </footer>
         </div>
     );
 }

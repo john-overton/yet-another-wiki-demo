@@ -7,22 +7,28 @@ const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
-    // Check license type first
-    const licensePath = join(process.cwd(), 'config/settings/licensing.json');
-    const licenseContent = await fs.readFile(licensePath, 'utf8');
-    const licenseData = JSON.parse(licenseContent);
-
-    // Only allow user creation with pro license
-    if (licenseData.licenseType !== 'pro') {
-      return new Response(JSON.stringify({ 
-        error: 'User creation is only available with a pro license' 
-      }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
     const userData = await request.json();
+
+    // First check if any users exist in the database
+    const existingUsers = await prisma.user.findFirst();
+
+    // Only check license if users already exist (not first-time setup)
+    if (existingUsers) {
+      // Check license type
+      const licensePath = join(process.cwd(), 'config/settings/licensing.json');
+      const licenseContent = await fs.readFile(licensePath, 'utf8');
+      const licenseData = JSON.parse(licenseContent);
+
+      // Only allow additional user creation with pro license
+      if (licenseData.licenseType !== 'pro') {
+        return new Response(JSON.stringify({ 
+          error: 'Additional user creation is only available with a pro license' 
+        }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(userData.password, 10);
