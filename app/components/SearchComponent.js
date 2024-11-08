@@ -80,7 +80,7 @@ const SearchComponent = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search"
-        className="w-full p-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full p-1 border rounded-md searchbar dark:border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
       />
       {loading && (
         <div className="absolute right-2 top-2">
