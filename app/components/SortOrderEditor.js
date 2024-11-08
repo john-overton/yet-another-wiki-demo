@@ -129,7 +129,7 @@ const SortOrderEditor = ({ file, onSortOrderChange: parentOnSortOrderChange }) =
   const [rootSiblings, setRootSiblings] = useState([]);
   const [childItems, setChildItems] = useState([]);
   const [parentPath, setParentPath] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 

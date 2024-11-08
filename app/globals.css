@@ -9,7 +9,6 @@
 :root,
 .light {
   --background: #ffffff;
-  --foreground: #000000;
   --color-primary: #076bf8;
   --color-primary-hover: #0555c7;
   --color-background-light: #f6f6f6;
@@ -22,7 +21,6 @@
 
 .dark {
   --background: #111827;
-  --foreground: #ffffff;
   --color-primary: #3b82f6;
   --color-primary-hover: #60a5fa;
   --color-background-light: #2a2a2a;
