@@ -5,7 +5,7 @@ let metaData = null;
 
 async function loadMetaData() {
   try {
-    const metaPath = path.join(process.cwd(), 'public', 'docs', 'meta.json');
+    const metaPath = path.join(process.cwd(), 'data', 'docs', 'meta.json');
     const metaContent = await fs.readFile(metaPath, 'utf-8');
     metaData = JSON.parse(metaContent);
   } catch (error) {
@@ -28,7 +28,7 @@ function findPageInMeta(filePath, pages) {
 }
 
 async function searchFiles(query, authenticated) {
-  const docsDir = path.join(process.cwd(), 'public', 'docs');
+  const docsDir = path.join(process.cwd(), 'data', 'docs');
   const results = [];
 
   try {
