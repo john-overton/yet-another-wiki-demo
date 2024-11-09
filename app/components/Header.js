@@ -87,14 +87,16 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
     </button>
   );
 
-  const renderLink = (link) => (
+  const renderLink = (link, isCollapsed = false) => (
     <a
       key={link.id}
       href={link.url}
       title={link.hoverText}
       target={link.newTab ? "_blank" : "_self"}
       rel={link.newTab ? "noopener noreferrer" : ""}
-      className="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+      className={isCollapsed 
+        ? "block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+        : "whitespace-nowrap p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"}
       onClick={() => setShowMobileMenu(false)}
     >
       {link.text}
@@ -121,7 +123,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
           <Logo />
         </div>
 
-        <div className="hidden sm:flex flex-1 items-center justify-between ml-4">
+        <div className="flex flex-1 items-center justify-end ml-4">
           {/* Links Container */}
           <div className="relative flex items-center mr-4" ref={menuRef}>
             {shouldCollapseLinks ? (
@@ -133,14 +135,14 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
                 {showMobileMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10">
                     <div className="border-b border-gray-200 dark:border-gray-600">
-                      {links.map(renderLink)}
+                      {links.map(link => renderLink(link, true))}
                     </div>
                   </div>
                 )}
               </div>
             ) : (
               <div className="flex space-x-4">
-                {links.map(renderLink)}
+                {links.map(link => renderLink(link, false))}
               </div>
             )}
           </div>
@@ -176,54 +178,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu Button */}
-        <div className="sm:hidden flex items-center">
-          <MenuButton 
-            onClick={() => setShowMobileMenu(!showMobileMenu)} 
-            isActive={showMobileMenu}
-          />
-        </div>
-
-        {/* Mobile Right Section */}
-        <div className="flex sm:hidden items-center ml-4">
-          <button
-            onClick={() => setIsSearchModalOpen(true)}
-            className="p-2 mr-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-          >
-            <i className="ri-search-line text-xl"></i>
-          </button>
-          {session ? (
-            <UserButton user={session.user} />
-          ) : (
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              aria-label="Login"
-              type="button"
-              className="p-2 mr-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              Login
-            </button>
-          )}
-          <button
-            aria-label="Toggle Dark Mode"
-            type="button"
-            className="p-2 text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
-            onClick={toggleTheme}
-          >
-            <i className={`${resolvedTheme === 'light' ? 'ri-contrast-2-line' : 'ri-sun-fill'} text-xl`} style={{ fontSize: '20px' }}></i>
-          </button>
-        </div>
       </div>
-
-      {/* Mobile Menu Dropdown */}
-      {showMobileMenu && (
-        <div className="sm:hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 mx-2">
-          <div className="border-b border-gray-200 dark:border-gray-600">
-            {links.map(renderLink)}
-          </div>
-        </div>
-      )}
 
       <LoginModal 
         isOpen={isLoginModalOpen} 
