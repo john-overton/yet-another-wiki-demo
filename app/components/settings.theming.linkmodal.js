@@ -9,7 +9,8 @@ const LinkModal = ({ isOpen, onClose, onSubmit, link = null }) => {
     const linkData = {
       text: formData.get('text'),
       hoverText: formData.get('hoverText'),
-      url: formData.get('url')
+      url: formData.get('url'),
+      newTab: formData.get('newTab') === 'true'
     };
     if (link?.id) {
       linkData.id = link.id;
@@ -70,6 +71,20 @@ const LinkModal = ({ isOpen, onClose, onSubmit, link = null }) => {
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
               required
             />
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="newTab"
+              id="newTab"
+              value="true"
+              defaultChecked={link?.newTab}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="newTab" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              Open in new tab
+            </label>
           </div>
 
           <div className="flex justify-end gap-4 mt-6">

@@ -94,6 +94,16 @@ const ThemingSettings = () => {
     setLinkToDelete(null);
   };
 
+  const handleAddLink = () => {
+    if (links.length >= 5) {
+      setMessage('Maximum of 5 links allowed');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+    setEditingLink(null);
+    setIsLinkModalOpen(true);
+  };
+
   if (!mounted) {
     return null;
   }
@@ -187,13 +197,10 @@ const ThemingSettings = () => {
       <div>
         <div className="flex justify-between items-center mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Navigation Links
+            Header Navigation Links ({links.length}/5)
           </label>
           <button
-            onClick={() => {
-              setEditingLink(null);
-              setIsLinkModalOpen(true);
-            }}
+            onClick={handleAddLink}
             className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
           >
             <i className="ri-add-line"></i>
@@ -219,6 +226,7 @@ const ThemingSettings = () => {
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {link.url}
+                      {link.newTab && <span className="ml-2 text-xs">(opens in new tab)</span>}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

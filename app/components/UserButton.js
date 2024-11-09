@@ -154,6 +154,7 @@ export default function UserButton({ user: initialUser }) {
           <div className="px-4 py-2 text-right border-b border-gray-200 dark:border-gray-600">
             <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{user.role}</p>
           </div>
           <button
             onClick={() => {
