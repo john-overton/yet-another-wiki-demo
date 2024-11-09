@@ -94,10 +94,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
       title={link.hoverText}
       target={link.newTab ? "_blank" : "_self"}
       rel={link.newTab ? "noopener noreferrer" : ""}
-      className={shouldCollapseLinks 
-        ? "block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
-        : "whitespace-nowrap p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-      }
+      className="block w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
       onClick={() => setShowMobileMenu(false)}
     >
       {link.text}
@@ -135,7 +132,9 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
                 />
                 {showMobileMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10">
-                    {links.map(renderLink)}
+                    <div className="border-b border-gray-200 dark:border-gray-600">
+                      {links.map(renderLink)}
+                    </div>
                   </div>
                 )}
               </div>
@@ -220,7 +219,9 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
       {/* Mobile Menu Dropdown */}
       {showMobileMenu && (
         <div className="sm:hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10 mx-2">
-          {links.map(renderLink)}
+          <div className="border-b border-gray-200 dark:border-gray-600">
+            {links.map(renderLink)}
+          </div>
         </div>
       )}
 
