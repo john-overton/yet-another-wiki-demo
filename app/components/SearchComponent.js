@@ -47,6 +47,13 @@ const SearchComponent = ({ inModal = false, onClose }) => {
     }
   }, [searchTerm, session]);
 
+  const handleResultClick = useCallback((result) => {
+    router.push(result.path === 'home.md' ? '/' : `/${result.path.replace('.md', '')}`);
+    setSearchTerm('');
+    setSearchResults([]);
+    if (onClose) onClose();
+  }, [router, onClose]);
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchSearchResults();
@@ -86,14 +93,7 @@ const SearchComponent = ({ inModal = false, onClose }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [searchResults, selectedIndex, inModal]);
-
-  const handleResultClick = (result) => {
-    router.push(result.path === 'home.md' ? '/' : `/${result.path.replace('.md', '')}`);
-    setSearchTerm('');
-    setSearchResults([]);
-    if (onClose) onClose();
-  };
+  }, [searchResults, selectedIndex, inModal, handleResultClick]);
 
   return (
     <div className="relative" ref={searchRef}>
