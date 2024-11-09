@@ -1,4 +1,42 @@
 {
   "font": "Open Sans",
-  "theme": "light"
+  "theme": "light",
+  "links": [
+    {
+      "text": "Home",
+      "hoverText": "Home",
+      "url": "http://localhost:3000",
+      "id": 1731163181206
+    },
+    {
+      "text": "Test",
+      "hoverText": "Test",
+      "url": "https://www.google.com",
+      "id": 1731165375626
+    },
+    {
+      "text": "Another Test",
+      "hoverText": "Test",
+      "url": "https://www.weather.com",
+      "id": 1731165504132
+    },
+    {
+      "text": "ESPN",
+      "hoverText": "ESPN.COM",
+      "url": "https://www.espn.com",
+      "id": 1731165516181
+    },
+    {
+      "text": "500 Links",
+      "hoverText": "500",
+      "url": "https://www.500.com",
+      "id": 1731165534061
+    },
+    {
+      "text": "Bit.Ly",
+      "hoverText": "Bit.Ly",
+      "url": "https://www.bit.ly",
+      "id": 1731165547468
+    }
+  ]
 }

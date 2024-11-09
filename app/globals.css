@@ -267,3 +267,35 @@ body {
 .searchbar {
   background-color: var(--search-bg-color);
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Smooth scrolling behavior */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Navigation links container */
+.nav-links-container {
+  position: relative;
+  max-width: 500px;
+  overflow-x: auto;
+}
+
+/* Gradient overlays for scroll buttons */
+.scroll-gradient-left {
+  background: linear-gradient(to right, var(--background) 0%, transparent 100%);
+}
+
+.scroll-gradient-right {
+  background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+}

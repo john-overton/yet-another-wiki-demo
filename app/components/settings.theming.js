@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Open_Sans } from 'next/font/google';
 import { useTheme } from 'next-themes';
+import LinkModal from './settings.theming.linkmodal';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -11,12 +13,16 @@ const openSans = Open_Sans({
 
 const ThemingSettings = () => {
   const [font, setFont] = useState('Open Sans');
+  const [links, setLinks] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
   const { resolvedTheme, theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [editingLink, setEditingLink] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [linkToDelete, setLinkToDelete] = useState(null);
 
-  // Only load font settings initially
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -24,6 +30,7 @@ const ThemingSettings = () => {
         if (response.ok) {
           const settings = await response.json();
           setFont(settings.font);
+          setLinks(settings.links || []);
         }
       } catch (error) {
         console.error('Error loading theming settings:', error);
@@ -44,7 +51,8 @@ const ThemingSettings = () => {
         },
         body: JSON.stringify({
           font,
-          theme: currentTheme
+          theme: currentTheme,
+          links
         }),
       });
 
@@ -61,6 +69,29 @@ const ThemingSettings = () => {
       setIsSaving(false);
       setTimeout(() => setMessage(''), 3000);
     }
+  };
+
+  const handleLinkSubmit = async (e, linkData) => {
+    e.preventDefault();
+    if (editingLink) {
+      // Update existing link
+      setLinks(prevLinks => 
+        prevLinks.map(link => 
+          link.id === editingLink.id ? { ...linkData, id: link.id } : link
+        )
+      );
+    } else {
+      // Add new link
+      setLinks(prevLinks => [...prevLinks, { ...linkData, id: Date.now() }]);
+    }
+    setIsLinkModalOpen(false);
+    setEditingLink(null);
+  };
+
+  const handleDeleteConfirm = () => {
+    setLinks(prevLinks => prevLinks.filter(link => link.id !== linkToDelete.id));
+    setIsDeleteModalOpen(false);
+    setLinkToDelete(null);
   };
 
   if (!mounted) {
@@ -117,7 +148,7 @@ const ThemingSettings = () => {
       </div>
 
       {/* Theme Selection */}
-      <div>
+      <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Theme
         </label>
@@ -151,6 +182,93 @@ const ThemingSettings = () => {
           </button>
         </div>
       </div>
+
+      {/* Links Management */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Navigation Links
+          </label>
+          <button
+            onClick={() => {
+              setEditingLink(null);
+              setIsLinkModalOpen(true);
+            }}
+            className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+          >
+            <i className="ri-add-line"></i>
+            Add Link
+          </button>
+        </div>
+
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          {links.length === 0 ? (
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              No links added yet
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {links.map((link) => (
+                <div
+                  key={link.id}
+                  className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  <div className="flex-1 min-w-0 mr-4">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {link.text}
+                    </h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                      {link.url}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingLink(link);
+                        setIsLinkModalOpen(true);
+                      }}
+                      className="text-gray-500 hover:text-blue-500 dark:hover:text-blue-400"
+                      title="Edit Link"
+                    >
+                      <i className="ri-edit-line text-xl"></i>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLinkToDelete(link);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+                      title="Delete Link"
+                    >
+                      <i className="ri-delete-bin-line text-xl"></i>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <LinkModal
+        isOpen={isLinkModalOpen}
+        onClose={() => {
+          setIsLinkModalOpen(false);
+          setEditingLink(null);
+        }}
+        onSubmit={handleLinkSubmit}
+        link={editingLink}
+      />
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setLinkToDelete(null);
+        }}
+        itemTitle={linkToDelete?.text || ''}
+      />
     </div>
   );
 };
