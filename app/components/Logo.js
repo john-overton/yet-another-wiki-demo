@@ -23,7 +23,7 @@ const Logo = () => {
 
   useEffect(() => {
     const checkWidth = () => {
-      setIsSmallScreen(window.innerWidth < 600);
+      setIsSmallScreen(window.innerWidth < 680);
     };
 
     // Initial check
@@ -85,7 +85,7 @@ const Logo = () => {
 
   return (
     <Link href="/">
-      <div className={`text-lg font-medium m-2 ${isSmallScreen ? 'w-[127px]' : 'w-[327px]'}`}>
+      <div className="text-lg font-medium m-2">
         <div className={`console-text text-sm inline-flex items-center ${resolvedTheme === 'dark' ? 'console-text-dark' : 'console-text-light'}`}>
           <span className="mr-2">{'wikis\\yaw>'}</span>
           <span className="text-gray-100" dangerouslySetInnerHTML={{ __html: displayText }} />
