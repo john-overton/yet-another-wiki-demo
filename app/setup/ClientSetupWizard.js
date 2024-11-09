@@ -21,6 +21,7 @@ export default function ClientSetupWizard() {
     const [isCheckingEmail, setIsCheckingEmail] = useState(false);
     const [showSecurityQuestions, setShowSecurityQuestions] = useState(false);
     const [showLicensing, setShowLicensing] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
     const router = useRouter();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -163,6 +164,37 @@ export default function ClientSetupWizard() {
         router.push('/');
     };
 
+    const handleImport = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsImporting(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('backup', file);
+            formData.append('isSetup', 'true'); // Add flag to indicate this is a setup import
+
+            const response = await fetch('/api/backup/restore', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.error || `Failed to restore backup: ${response.status} ${response.statusText}`);
+            }
+
+            // Redirect to home page after successful import
+            router.push('/');
+        } catch (error) {
+            console.error('Error importing backup:', error);
+            setError(error.message);
+            setIsImporting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
             <header className="h-12 p-1 flex justify-end overflow-visible bg-gray-100 dark:bg-gray-800 transition-colors duration-200 border-gray-header shadow-lg z-[2000]">
@@ -284,6 +316,27 @@ export default function ClientSetupWizard() {
                                     )}
                                 </button>
                             </form>
+
+                            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                    Or import your existing data
+                                </p>
+                                <div className="flex flex-col items-center space-y-4">
+                                    <input
+                                        type="file"
+                                        accept=".zip"
+                                        onChange={handleImport}
+                                        className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                                        disabled={isImporting}
+                                    />
+                                    {isImporting && (
+                                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                            <i className="ri-loader-4-line animate-spin mr-2"></i>
+                                            Importing data...
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </>
                     )}
                 </div>

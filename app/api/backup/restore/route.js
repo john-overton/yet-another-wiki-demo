@@ -81,29 +81,31 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
   try {
-    // Check authentication and admin role
-    const session = await getServerSession(authOptions);
-    console.log('Session:', session); // Debug log
-    
-    if (!session?.user) {
-      console.log('No session found'); // Debug log
-      return new NextResponse(JSON.stringify({ error: 'Unauthorized - No session' }), { 
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    if (session.user.role !== 'Admin') {
-      console.log('User role:', session.user.role); // Debug log
-      return new NextResponse(JSON.stringify({ error: 'Unauthorized - Not admin' }), { 
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Get the uploaded file
+    // Get the uploaded file and check if this is a setup import
     const formData = await req.formData();
     const file = formData.get('backup');
+    const isSetup = formData.get('isSetup') === 'true';
+
+    // If not in setup mode, check authentication and admin role
+    if (!isSetup) {
+      const session = await getServerSession(authOptions);
+      
+      if (!session?.user) {
+        return new NextResponse(JSON.stringify({ error: 'Unauthorized - No session' }), { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      if (session.user.role !== 'Admin') {
+        return new NextResponse(JSON.stringify({ error: 'Unauthorized - Not admin' }), { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // Check for file
     if (!file) {
       return new NextResponse(JSON.stringify({ error: 'No file provided' }), { 
         status: 400,
