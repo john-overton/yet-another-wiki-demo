@@ -26,24 +26,34 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
   const [loading, setLoading] = useState(false);
   const [activeForm, setActiveForm] = useState('login');
   const [licenseType, setLicenseType] = useState(null);
+  const [preventUserRegistration, setPreventUserRegistration] = useState(false);
   const router = useRouter();
 
-  // Fetch license type when modal is opened
+  // Fetch license type and general settings when modal is opened
   useEffect(() => {
-    const fetchLicenseType = async () => {
+    const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings/licensing');
-        if (response.ok) {
-          const data = await response.json();
-          setLicenseType(data.licenseType);
+        const [licenseResponse, generalSettingsResponse] = await Promise.all([
+          fetch('/api/settings/licensing'),
+          fetch('/api/settings')
+        ]);
+        
+        if (licenseResponse.ok) {
+          const licenseData = await licenseResponse.json();
+          setLicenseType(licenseData.licenseType);
+        }
+        
+        if (generalSettingsResponse.ok) {
+          const generalData = await generalSettingsResponse.json();
+          setPreventUserRegistration(generalData.preventUserRegistration || false);
         }
       } catch (error) {
-        console.error('Error fetching license type:', error);
+        console.error('Error fetching settings:', error);
       }
     };
 
     if (isOpen || isStandalone) {
-      fetchLicenseType();
+      fetchSettings();
     }
   }, [isOpen, isStandalone]);
 
@@ -203,7 +213,7 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
           </form>
 
           <div className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-            {licenseType === 'pro' && (
+            {licenseType === 'pro' && !preventUserRegistration && (
               <p>
                 Don&apos;t have an account?{' '}
                 <button
@@ -218,7 +228,7 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
                 </button>
               </p>
             )}
-            <p className={licenseType === 'pro' ? 'mt-2' : ''}>
+            <p className={licenseType === 'pro' && !preventUserRegistration ? 'mt-2' : ''}>
               Forgot your password?{' '}
               <button
                 onClick={() => {
@@ -235,7 +245,7 @@ export default function LoginModal({ isOpen, onClose, isStandalone = false, prov
         </>
       )}
 
-      {activeForm === 'register' && licenseType === 'pro' && (
+      {activeForm === 'register' && licenseType === 'pro' && !preventUserRegistration && (
         <RegisterFormContent
           onBackToLogin={() => setActiveForm('login')}
           onRegisterSuccess={() => setActiveForm('security')}

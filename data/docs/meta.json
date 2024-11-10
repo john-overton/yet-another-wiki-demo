@@ -63,10 +63,21 @@
       "path": "home.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-08T02:27:41.670Z",
+      "lastModified": "2024-11-10T21:26:33.581Z",
       "sortOrder": 1,
       "children": []
+    },
+    {
+      "id": "21",
+      "slug": "test-editor-page",
+      "title": "test editor page",
+      "path": "test-editor-page.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-11-10T20:18:27.175Z",
+      "children": [],
+      "sortOrder": 5
     }
   ],
-  "lastId": 20
+  "lastId": 21
 }

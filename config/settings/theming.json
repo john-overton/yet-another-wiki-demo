@@ -1,6 +1,6 @@
 {
   "font": "Open Sans",
-  "theme": "light",
+  "theme": "dark",
   "links": [
     {
       "text": "Home",
@@ -24,19 +24,54 @@
       "text": "ESPN",
       "hoverText": "ESPN.COM",
       "url": "https://www.espn.com",
+      "newTab": true,
       "id": 1731165516181
-    },
-    {
-      "text": "500 Links",
-      "hoverText": "500",
-      "url": "https://www.500.com",
-      "id": 1731165534061
-    },
-    {
-      "text": "Bit.Ly",
-      "hoverText": "Bit.Ly",
-      "url": "https://www.bit.ly",
-      "id": 1731165547468
     }
-  ]
+  ],
+  "footerLinks": {
+    "column1": {
+      "header": "Documentation",
+      "links": [
+        {
+          "text": "Documentation",
+          "hoverText": "View Documentation",
+          "url": "/docs",
+          "id": 1731165516182
+        },
+        {
+          "text": "Getting Started",
+          "hoverText": "Get Started Guide",
+          "url": "/docs/getting-started",
+          "id": 1731165516183
+        },
+        {
+          "text": "API Reference",
+          "hoverText": "API Documentation",
+          "url": "/docs/api",
+          "id": 1731165516184
+        }
+      ]
+    },
+    "column2": {
+      "header": "Community",
+      "links": [
+        {
+          "text": "Support",
+          "hoverText": "Support",
+          "url": "https://localhost:3000/support",
+          "newTab": false,
+          "id": 1731174180193
+        },
+        {
+          "text": "Contact",
+          "hoverText": "Contact",
+          "url": "https://localhost:3000/contact",
+          "newTab": false,
+          "id": 1731174233344
+        }
+      ]
+    }
+  },
+  "headerLogo": "/api/theming-content?path=header-logo.png",
+  "footerLogo": "/api/theming-content?path=footer-logo.png"
 }

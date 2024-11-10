@@ -8,6 +8,18 @@
   --inline-code-bg: #f6f8fa;
   --inline-code-border: #e1e4e8;
   --code-selection-bg: rgba(33, 150, 243, 0.2);
+  
+  /* Admonition Colors - Light Theme */
+  --admonition-note-bg: #e7e7e7;
+  --admonition-note-border: #acacac;
+  --admonition-tip-bg: #e6f6e6;
+  --admonition-tip-border: #2e8555;
+  --admonition-info-bg: #d4e7fd;
+  --admonition-info-border: #5c9fef;
+  --admonition-caution-bg: #fff3e0;
+  --admonition-caution-border: #e6a700;
+  --admonition-danger-bg: #ffebee;
+  --admonition-danger-border: #ff1744;
 }
 
 /* Dark theme */
@@ -20,6 +32,88 @@
   --inline-code-bg: #2d2d2d;
   --inline-code-border: #404040;
   --code-selection-bg: rgba(33, 150, 243, 0.3);
+
+  /* Admonition Colors - Dark Theme */
+  --admonition-note-bg: #333333;
+  --admonition-note-border: #acacac;
+  --admonition-tip-bg: #1e3a29;
+  --admonition-tip-border: #2e8555;
+  --admonition-info-bg: #1e2a3d;
+  --admonition-info-border: #4d7cc3;
+  --admonition-caution-bg: #332b1c;
+  --admonition-caution-border: #e6a700;
+  --admonition-danger-bg: #3d1f21;
+  --admonition-danger-border: #ff1744;
+}
+
+/* Admonition Styles */
+.admonition {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid;
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-note-bg);
+  border-color: var(--admonition-note-border);
+}
+
+.admonition-heading {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: var(--admonition-note-border);
+}
+
+.admonition-content {
+  color: inherit;
+}
+
+/* Admonition Types */
+.admonition-note {
+  background-color: var(--admonition-note-bg);
+  border-color: var(--admonition-note-border);
+}
+
+.admonition-note .admonition-heading {
+  color: var(--admonition-note-border);
+}
+
+.admonition-tip {
+  background-color: var(--admonition-tip-bg);
+  border-color: var(--admonition-tip-border);
+}
+
+.admonition-tip .admonition-heading {
+  color: var(--admonition-tip-border);
+}
+
+.admonition-info {
+  background-color: var(--admonition-info-bg);
+  border-color: var(--admonition-info-border);
+}
+
+.admonition-info .admonition-heading {
+  color: var(--admonition-info-border);
+}
+
+.admonition-caution {
+  background-color: var(--admonition-caution-bg);
+  border-color: var(--admonition-caution-border);
+}
+
+.admonition-caution .admonition-heading {
+  color: var(--admonition-caution-border);
+}
+
+.admonition-danger {
+  background-color: var(--admonition-danger-bg);
+  border-color: var(--admonition-danger-border);
+}
+
+.admonition-danger .admonition-heading {
+  color: var(--admonition-danger-border);
 }
 
 /* Code block styles */

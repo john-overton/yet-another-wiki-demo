@@ -9,6 +9,7 @@ import {
   MDXEditor,
   UndoRedo,
   BoldItalicUnderlineToggles,
+  StrikeThroughSupSubToggles,
   toolbarPlugin,
   listsPlugin,
   quotePlugin,
@@ -35,7 +36,11 @@ import {
   InsertCodeBlock,
   ChangeCodeMirrorLanguage,
   DiffSourceToggleWrapper,
-  CodeMirrorEditor
+  CodeMirrorEditor,
+  directivesPlugin,
+  AdmonitionDirectiveDescriptor,
+  InsertAdmonition,
+  Separator
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import '../mdxeditor.css';
@@ -402,29 +407,25 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                   toolbarContents: () => (
                     <DiffSourceToggleWrapper>
                       <UndoRedo />
+                      <Separator />
                       <BoldItalicUnderlineToggles />
+                      <Separator />
+                      <StrikeThroughSupSubToggles />
+                      <Separator />
+                      <ListsToggle />
+                      <Separator />
                       <BlockTypeSelect />
+                      <Separator />
                       <CreateLink />
                       <InsertImage />
+                      <Separator />
                       <InsertTable />
                       <InsertThematicBreak />
-                      <ListsToggle />
+                      <Separator />
                       <CodeToggle />
-                      <ConditionalContents
-                        options={[
-                          {
-                            when: (editor) => editor?.editorType === 'codeblock',
-                            contents: () => <ChangeCodeMirrorLanguage />
-                          },
-                          {
-                            fallback: () => (
-                              <>
-                                <InsertCodeBlock />
-                              </>
-                            )
-                          }
-                        ]}
-                      />
+                      <InsertCodeBlock />
+                      <Separator />
+                      <InsertAdmonition />
                     </DiffSourceToggleWrapper>
                   ),
                 }),
@@ -450,7 +451,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),
                 diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
-                markdownShortcutPlugin()
+                markdownShortcutPlugin(),
+                directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] })
               ]}
             />
           </ErrorBoundary>

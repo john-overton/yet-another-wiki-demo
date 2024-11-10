@@ -4,10 +4,84 @@ import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypePrismPlus from 'rehype-prism-plus';
+import remarkDirective from 'remark-directive';
+import { visit } from 'unist-util-visit';
 import Image from 'next/image';
 import Link from 'next/link';
 import NavigationSection from './NavigationSection';
 import '../markdown.css';
+
+// Custom remark plugin to transform directives into admonitions
+const remarkAdmonitions = () => {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (
+        node.type === 'containerDirective' ||
+        node.type === 'leafDirective' ||
+        node.type === 'textDirective'
+      ) {
+        const type = node.name;
+        if (['note', 'tip', 'info', 'caution', 'danger'].includes(type)) {
+          const data = node.data || (node.data = {});
+          const tagName = 'div';
+
+          // Create the admonition container
+          data.hName = tagName;
+          data.hProperties = {
+            className: `admonition admonition-${type}`
+          };
+
+          // Create the heading and content structure
+          const headingNode = {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: 'admonition-heading' },
+            children: [
+              {
+                type: 'element',
+                tagName: 'i',
+                properties: { 
+                  className: `${getAdmonitionIcon(type)} mr-2`
+                },
+                children: []
+              },
+              {
+                type: 'element',
+                tagName: 'span',
+                properties: { className: 'admonition-title' },
+                children: [{ type: 'text', value: capitalizeFirstLetter(type) }]
+              }
+            ]
+          };
+
+          const contentNode = {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: 'admonition-content' },
+            children: node.children || []
+          };
+
+          node.children = [headingNode, contentNode];
+        }
+      }
+    });
+  };
+};
+
+const getAdmonitionIcon = (type) => {
+  const icons = {
+    note: "ri-information-line",
+    tip: "ri-lightbulb-flash-line",
+    info: "ri-information-line",
+    caution: "ri-error-warning-line",
+    danger: "ri-alert-line"
+  };
+  return icons[type] || icons.note;
+};
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 const imageLoader = ({ src, width, quality }) => {
   // If it's already an API route, use it directly
@@ -185,7 +259,7 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
   return (
     <div className="mdx-content prose dark:prose-invert max-w-none mb-4">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkDirective, remarkAdmonitions]}
         rehypePlugins={[rehypePrismPlus]}
         components={{
           img: ({ node, ...props }) => {
@@ -238,7 +312,7 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
               return <code className="font-mono text-sm" {...props} />;
             }
             return <code className={`language-${match ? match[1] : 'text'}`} {...props} />;
-          },
+          }
         }}
       >
         {markdownContent}

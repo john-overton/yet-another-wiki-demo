@@ -21,6 +21,45 @@ const UserManagementSettings = () => {
   const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const [preventUserRegistration, setPreventUserRegistration] = useState(false);
+
+  useEffect(() => {
+    const loadGeneralSettings = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setPreventUserRegistration(data.preventUserRegistration || false);
+        }
+      } catch (error) {
+        console.error('Error loading general settings:', error);
+      }
+    };
+    loadGeneralSettings();
+  }, []);
+
+  const handlePreventUserRegistrationChange = async (e) => {
+    const newValue = e.target.checked;
+    setPreventUserRegistration(newValue);
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          preventUserRegistration: newValue
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update settings');
+      }
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      setMessage('Failed to update registration settings');
+      setPreventUserRegistration(!newValue); // Revert on error
+    }
+  };
 
   useEffect(() => {
     const handleAvatarUpdate = () => {
@@ -217,6 +256,19 @@ const UserManagementSettings = () => {
           <i className="ri-user-add-line"></i>
           Add User
         </button>
+      </div>
+
+      <div className="mb-4 flex items-center">
+        <input
+          type="checkbox"
+          id="preventUserRegistration"
+          checked={preventUserRegistration}
+          onChange={handlePreventUserRegistrationChange}
+          className="mr-2"
+        />
+        <label htmlFor="preventUserRegistration" className="text-sm text-gray-700 dark:text-gray-300">
+          Prevent user registration. With this checked, users cannot register on their own.
+        </label>
       </div>
 
       {message && (

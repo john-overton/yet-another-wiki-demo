@@ -47,6 +47,18 @@
   --editor-popup-border: #E5E7EB;
   --editor-popup-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --editor-combobox-bg: #FFFFFF;
+
+  /* Admonition Colors - Light Theme */
+--admonition-note-bg: #e7e7e7;
+--admonition-note-border: #acacac;
+--admonition-tip-bg: #e6f6e6;
+--admonition-tip-border: #2e8555;
+--admonition-info-bg: #d4e7fd;
+--admonition-info-border: #5c9fef;
+--admonition-caution-bg: #fff3e0;
+--admonition-caution-border: #e6a700;
+--admonition-danger-bg: #ffebee;
+--admonition-danger-border: #ff1744;
 }
 
 /* Dark theme variables */
@@ -92,6 +104,18 @@
   --editor-popup-border: #374151;
   --editor-popup-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --editor-combobox-bg: #2B2A33;
+
+  /* Admonition Colors - Dark Theme */
+--admonition-note-bg: #333333;
+--admonition-note-border: #acacac;
+--admonition-tip-bg: #1e3a29;
+--admonition-tip-border: #2e8555;
+--admonition-info-bg: #1e2a3d;
+--admonition-info-border: #4d7cc3;
+--admonition-caution-bg: #332b1c;
+--admonition-caution-border: #e6a700;
+--admonition-danger-bg: #3d1f21;
+--admonition-danger-border: #ff1744;
 }
 
 /* Editor root styles */
@@ -270,7 +294,7 @@
 .mdxeditor-toolbar {
   background-color: var(--editor-toolbar-bg);
   border: 1px solid var(--editor-border);
-  z-index: 5000;
+  z-index: 2;
 }
 
 .mdxeditor-toolbar.sticky {
@@ -450,4 +474,71 @@
 .mdxeditor [role="combobox"] {
   background-color: var(--editor-combobox-bg);
   border: 1px solid var(--editor-border) !important;
+}
+
+/* Admonition Styles */
+.mdxeditor [class*='_admonitionNote'] {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid var(--admonition-note-border);
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-note-bg);
+}
+
+.mdxeditor [class*='_admonitionTip'] {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid var(--admonition-tip-border);
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-tip-bg);
+}
+
+.mdxeditor [class*='_admonitionInfo'] {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid var(--admonition-info-border);
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-info-bg);
+}
+
+.mdxeditor [class*='_admonitionCaution'] {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid var(--admonition-caution-border);
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-caution-bg);
+}
+
+.mdxeditor [class*='_admonitionDanger'] {
+  border-radius: 0.5rem;
+  border-left: 0.25rem solid var(--admonition-danger-border);
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: var(--admonition-danger-bg);
+}
+
+/* Target the nested editor inside admonitions */
+.mdxeditor [class*='_admonitionNote'] [class*='_nestedEditor'] {
+  background-color: var(--admonition-note-bg);
+}
+
+.mdxeditor [class*='_admonitionTip'] [class*='_nestedEditor'] {
+  background-color: var(--admonition-tip-bg);
+}
+
+.mdxeditor [class*='_admonitionInfo'] [class*='_nestedEditor'] {
+  background-color: var(--admonition-info-bg);
+}
+
+.mdxeditor [class*='_admonitionCaution'] [class*='_nestedEditor'] {
+  background-color: var(--admonition-caution-bg);
+}
+
+.mdxeditor [class*='_admonitionDanger'] [class*='_nestedEditor'] {
+  background-color: var(--admonition-danger-bg);
+}
+
+/* Remove any default background from the nested editor */
+.mdxeditor [class*='_nestedEditor'] {
+  background: transparent;
 }
