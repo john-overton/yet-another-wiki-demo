@@ -57,15 +57,48 @@ async function createConfigFiles() {
         const themingContent = {
             font: "Open Sans",
             theme: "light",
-            links: [],
+            headerLogo: "",
+            footerLogo: "",
+            links: [
+                {
+                    text: "Home",
+                    hoverText: "Home",
+                    url: "http://localhost:3000",
+                    id: Date.now(),
+                    newTab: false
+                }
+            ],
             footerLinks: {
                 column1: {
-                    header: "",
-                    links: []
+                    header: "Documentation",
+                    links: [
+                        {
+                            text: "Documentation",
+                            hoverText: "View Documentation",
+                            url: "/docs",
+                            id: Date.now() + 1,
+                            newTab: false
+                        },
+                        {
+                            text: "Getting Started",
+                            hoverText: "Get Started Guide",
+                            url: "/docs/getting-started",
+                            id: Date.now() + 2,
+                            newTab: false
+                        }
+                    ]
                 },
                 column2: {
-                    header: "",
-                    links: []
+                    header: "Support",
+                    links: [
+                        {
+                            text: "Support",
+                            hoverText: "Get Help",
+                            url: "/support",
+                            id: Date.now() + 3,
+                            newTab: false
+                        }
+                    ]
                 }
             }
         };
