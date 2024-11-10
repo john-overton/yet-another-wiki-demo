@@ -186,11 +186,21 @@ export default function ClientSetupWizard() {
                 throw new Error(errorData?.error || `Failed to restore backup: ${response.status} ${response.statusText}`);
             }
 
-            // Redirect to home page after successful import
-            router.push('/');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Add a small delay to ensure all data is properly restored
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Use replace instead of push to prevent back navigation
+                window.location.href = '/';
+            } else {
+                throw new Error('Import failed');
+            }
         } catch (error) {
             console.error('Error importing backup:', error);
             setError(error.message);
+        } finally {
             setIsImporting(false);
         }
     };

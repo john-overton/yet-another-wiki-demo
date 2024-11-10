@@ -56,7 +56,18 @@ async function createConfigFiles() {
     } catch {
         const themingContent = {
             font: "Open Sans",
-            theme: "light"
+            theme: "light",
+            links: [],
+            footerLinks: {
+                column1: {
+                    header: "",
+                    links: []
+                },
+                column2: {
+                    header: "",
+                    links: []
+                }
+            }
         };
         await fs.writeFile(`${configDir}/theming.json`, JSON.stringify(themingContent, null, 2));
         console.log('theming.json created successfully');
