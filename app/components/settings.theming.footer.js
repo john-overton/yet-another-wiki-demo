@@ -1,35 +1,19 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 const FooterLinks = ({ 
   footerLinks, 
+  footerLogo,
   onAddLink, 
   onEditLink, 
   onDeleteLink,
-  onHeaderChange 
+  onHeaderChange,
+  onLogoChange
 }) => {
-  const [footerLogo, setFooterLogo] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const response = await fetch('/api/settings/theming');
-        if (response.ok) {
-          const settings = await response.json();
-          if (settings.footerLogo) {
-            setFooterLogo(settings.footerLogo);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading footer logo:', error);
-      }
-    };
-    loadSettings();
-  }, []);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -61,7 +45,7 @@ const FooterLinks = ({
 
       if (response.ok) {
         const data = await response.json();
-        setFooterLogo(data.path);
+        onLogoChange(data.path);
         setMessage('Logo uploaded successfully');
       } else {
         setMessage('Failed to upload logo');
@@ -82,7 +66,7 @@ const FooterLinks = ({
       });
 
       if (response.ok) {
-        setFooterLogo(null);
+        onLogoChange(null);
         setMessage('Logo removed successfully');
       } else {
         setMessage('Failed to remove logo');

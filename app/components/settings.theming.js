@@ -20,6 +20,8 @@ const ThemingSettings = () => {
     column1: { header: '', links: [] },
     column2: { header: '', links: [] }
   });
+  const [headerLogo, setHeaderLogo] = useState(null);
+  const [footerLogo, setFooterLogo] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
   const { resolvedTheme, theme, setTheme } = useTheme();
@@ -42,6 +44,8 @@ const ThemingSettings = () => {
             column1: { header: '', links: [] },
             column2: { header: '', links: [] }
           });
+          setHeaderLogo(settings.headerLogo || null);
+          setFooterLogo(settings.footerLogo || null);
         }
       } catch (error) {
         console.error('Error loading theming settings:', error);
@@ -64,7 +68,9 @@ const ThemingSettings = () => {
           font,
           theme: currentTheme,
           links,
-          footerLinks
+          footerLinks,
+          headerLogo,
+          footerLogo
         }),
       });
 
@@ -156,6 +162,14 @@ const ThemingSettings = () => {
         header: value
       }
     }));
+  };
+
+  const handleHeaderLogoChange = (logoPath) => {
+    setHeaderLogo(logoPath);
+  };
+
+  const handleFooterLogoChange = (logoPath) => {
+    setFooterLogo(logoPath);
   };
 
   if (!mounted) {
@@ -251,6 +265,7 @@ const ThemingSettings = () => {
       {/* Header Links Management */}
       <HeaderLinks
         links={links}
+        headerLogo={headerLogo}
         onAddLink={() => handleAddLink('header')}
         onEditLink={(link) => {
           setCurrentEditingSection('header');
@@ -262,12 +277,14 @@ const ThemingSettings = () => {
           setLinkToDelete(link);
           setIsDeleteModalOpen(true);
         }}
+        onLogoChange={handleHeaderLogoChange}
       />
       <hr className="mb-3"></hr>
 
       {/* Footer Links Management */}
       <FooterLinks
         footerLinks={footerLinks}
+        footerLogo={footerLogo}
         onAddLink={handleAddLink}
         onEditLink={(link, section) => {
           setCurrentEditingSection(section);
@@ -280,6 +297,7 @@ const ThemingSettings = () => {
           setIsDeleteModalOpen(true);
         }}
         onHeaderChange={handleHeaderChange}
+        onLogoChange={handleFooterLogoChange}
       />
 
       <LinkModal

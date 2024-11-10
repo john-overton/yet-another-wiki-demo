@@ -4,31 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 
 const HeaderLinks = ({ 
   links, 
+  headerLogo,
   onAddLink, 
   onEditLink, 
-  onDeleteLink 
+  onDeleteLink,
+  onLogoChange
 }) => {
-  const [headerLogo, setHeaderLogo] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const response = await fetch('/api/settings/theming');
-        if (response.ok) {
-          const settings = await response.json();
-          if (settings.headerLogo) {
-            setHeaderLogo(settings.headerLogo);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading header logo:', error);
-      }
-    };
-    loadSettings();
-  }, []);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -60,7 +44,7 @@ const HeaderLinks = ({
 
       if (response.ok) {
         const data = await response.json();
-        setHeaderLogo(data.path);
+        onLogoChange(data.path);
         setMessage('Logo uploaded successfully');
       } else {
         setMessage('Failed to upload logo');
@@ -81,7 +65,7 @@ const HeaderLinks = ({
       });
 
       if (response.ok) {
-        setHeaderLogo(null);
+        onLogoChange(null);
         setMessage('Logo removed successfully');
       } else {
         setMessage('Failed to remove logo');

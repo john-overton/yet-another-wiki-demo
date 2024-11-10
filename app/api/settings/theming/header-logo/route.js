@@ -37,7 +37,7 @@ export async function POST(request) {
     }
 
     // Update the config with the new logo path
-    themingConfig.headerLogo = `/api/content/theming/${fileName}`;
+    themingConfig.headerLogo = `/api/theming-content?path=${fileName}`;
     await fs.writeFile(themingJsonPath, JSON.stringify(themingConfig, null, 2));
 
     return new Response(JSON.stringify({ 
@@ -68,7 +68,7 @@ export async function DELETE() {
 
     if (themingConfig.headerLogo) {
       // Extract filename from path
-      const fileName = themingConfig.headerLogo.split('/').pop();
+      const fileName = themingConfig.headerLogo.split('path=')[1];
       // Delete the file
       const filePath = join(process.cwd(), 'data/content/theming', fileName);
       try {
