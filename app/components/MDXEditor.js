@@ -34,7 +34,8 @@ import {
   ConditionalContents,
   InsertCodeBlock,
   ChangeCodeMirrorLanguage,
-  DiffSourceToggleWrapper
+  DiffSourceToggleWrapper,
+  CodeMirrorEditor
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import '../mdxeditor.css';
@@ -271,6 +272,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
     }
   };
 
+  // Only include officially supported languages
   const codeBlockLanguages = {
     'text': 'Plain Text',
     'c': 'C',
@@ -288,6 +290,13 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
     'docker': 'Docker',
     'yaml': 'YAML',
     'markdown': 'Markdown'
+  };
+
+  // Create a code block editor descriptor that uses CodeMirror for all languages
+  const codeBlockEditorDescriptor = {
+    match: () => true,
+    priority: 1,
+    Editor: CodeMirrorEditor
   };
 
   if (isLoading) {
@@ -388,7 +397,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
               onChange={handleEditorChange}
               contentEditableClassName="mdxeditor-content-editable"
               className={`${openSans.className} mdxeditor flex-grow overflow-auto p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
-
               plugins={[
                 toolbarPlugin({
                   toolbarContents: () => (
@@ -436,8 +444,8 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                 thematicBreakPlugin(),
                 frontmatterPlugin(),
                 codeBlockPlugin({
-                  defaultLanguage: 'text',
-                  forcedLanguage: 'text'
+                  defaultLanguage: 'js',
+                  codeBlockEditorDescriptors: [codeBlockEditorDescriptor]
                 }),
                 codeMirrorPlugin({ codeBlockLanguages }),
                 sandpackPlugin(),
