@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import pkg from '../../package.json';
 
 const Footer = () => {
   const [footerLinks, setFooterLinks] = useState({
@@ -76,10 +77,14 @@ const Footer = () => {
       </div>
 
       {/* Bottom Box - Copyright */}
-      <div className="h-12 flex items-center justify-center">
+      <div className="h-12 flex items-center justify-between px-4">
+        <div className="text-[10px] text-gray-600 dark:text-gray-400">
+          v{pkg.version}
+        </div>
         <div className="text-xs text-gray-600 dark:text-gray-400">
           © 2024 - Yet Another Wiki - All Rights Reserved
         </div>
+        <div className="w-[50px]"></div>
       </div>
     </div>
   );

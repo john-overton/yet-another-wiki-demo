@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import SecretQuestionsFormContent from '../components/SecretQuestionsFormContent';
 import SetupLicensing from '../components/SetupLicensing';
 import SetupHeader from '../components/SetupHeader';
+import pkg from '../../package.json';
 
 export default function ClientSetupWizard() {
     const [formData, setFormData] = useState({
@@ -345,6 +346,9 @@ export default function ClientSetupWizard() {
                                             Importing data...
                                         </div>
                                     )}
+                                </div>
+                                <div className="text-center mt-4">
+                                    <span className="text-[10px] text-gray-600 dark:text-gray-400">v{pkg.version}</span>
                                 </div>
                             </div>
                         </>

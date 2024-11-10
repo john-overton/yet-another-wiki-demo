@@ -6,6 +6,7 @@ import ThemingSettings from './settings.theming';
 import LicensingSettings from './settings.licensing';
 import UserManagementSettings from './settings.users';
 import BackupSettings from './settings.backup';
+import pkg from '../../package.json';
 
 const Settings = () => {
   const [expandedSections, setExpandedSections] = useState({
@@ -53,7 +54,10 @@ const Settings = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <span className="text-[10px] text-gray-600 dark:text-gray-400">v{pkg.version}</span>
+        </div>
         <Link
           href="/"
           className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
