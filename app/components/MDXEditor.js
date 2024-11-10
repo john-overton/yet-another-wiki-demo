@@ -410,8 +410,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
                       <Separator />
                       <BoldItalicUnderlineToggles />
                       <Separator />
-                      <StrikeThroughSupSubToggles />
-                      <Separator />
                       <ListsToggle />
                       <Separator />
                       <BlockTypeSelect />
