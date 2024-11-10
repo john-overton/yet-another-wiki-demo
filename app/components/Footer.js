@@ -8,9 +8,10 @@ const Footer = () => {
     column1: { header: '', links: [] },
     column2: { header: '', links: [] }
   });
+  const [footerLogo, setFooterLogo] = useState(null);
 
   useEffect(() => {
-    const loadLinks = async () => {
+    const loadSettings = async () => {
       try {
         const response = await fetch('/api/settings/theming');
         if (response.ok) {
@@ -19,12 +20,13 @@ const Footer = () => {
             column1: { header: '', links: [] },
             column2: { header: '', links: [] }
           });
+          setFooterLogo(settings.footerLogo || null);
         }
       } catch (error) {
-        console.error('Error loading footer links:', error);
+        console.error('Error loading footer settings:', error);
       }
     };
-    loadLinks();
+    loadSettings();
   }, []);
 
   const renderLinkColumn = (columnData) => {
@@ -59,9 +61,17 @@ const Footer = () => {
       <div className="grid grid-cols-2 h-[20rem] sm:grid-cols-2">
         {/* Left Box - Logo */}
         <div className="flex items-center justify-center sm:w-full md:w-full lg:w-full xl:w-full">
-          <div className="text-6xl font-bold text-gray-800 dark:text-gray-200">
-            Y.A.W.
-          </div>
+          {footerLogo ? (
+            <img 
+              src={footerLogo} 
+              alt="Footer Logo" 
+              className="max-w-[200px] max-h-[200px] object-contain"
+            />
+          ) : (
+            <div className="text-6xl font-bold text-gray-800 dark:text-gray-200">
+              Y.A.W.
+            </div>
+          )}
         </div>
 
         {/* Right Box - Links */}
@@ -82,7 +92,7 @@ const Footer = () => {
           v{pkg.version}
         </div>
         <div className="text-xs text-gray-600 dark:text-gray-400">
-          © 2024 - Yet Another Wiki - All Rights Reserved
+          © {new Date().getFullYear()} - Yet Another Wiki - All Rights Reserved
         </div>
         <div className="w-[50px]"></div>
       </div>

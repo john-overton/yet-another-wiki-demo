@@ -3,6 +3,7 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import UserButton from './UserButton';
 import SearchModal from './SearchModal';
 import Logo from './Logo';
@@ -15,23 +16,25 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
   const [links, setLinks] = useState([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [shouldCollapseLinks, setShouldCollapseLinks] = useState(false);
+  const [headerLogo, setHeaderLogo] = useState(null);
   const { resolvedTheme, setTheme } = useTheme();
   const { data: session } = useSession();
   const menuRef = useRef(null);
 
   useEffect(() => {
-    const loadLinks = async () => {
+    const loadSettings = async () => {
       try {
         const response = await fetch('/api/settings/theming');
         if (response.ok) {
           const settings = await response.json();
           setLinks(settings.links || []);
+          setHeaderLogo(settings.headerLogo || null);
         }
       } catch (error) {
-        console.error('Error loading links:', error);
+        console.error('Error loading settings:', error);
       }
     };
-    loadLinks();
+    loadSettings();
     setMounted(true);
   }, []);
 
@@ -120,7 +123,17 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
               ></i>
             </button>
           )}
-          <Logo />
+          {headerLogo ? (
+            <Link href="/">
+              <img 
+                src={headerLogo} 
+                alt="Site Logo" 
+                className="h-[40px] object-contain m-2"
+              />
+            </Link>
+          ) : (
+            <Logo />
+          )}
         </div>
 
         <div className="flex flex-1 items-center justify-end ml-4">
