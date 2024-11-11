@@ -2,71 +2,15 @@
   "pages": [
     {
       "id": "1",
-      "slug": "getting-started",
-      "title": "Getting Started Here",
-      "path": "getting-started.md",
+      "slug": "welcome",
+      "title": "Welcome to Yet Another Wiki!",
+      "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-08T03:23:45.564Z",
-      "sortOrder": 3,
-      "children": [
-        {
-          "id": "2",
-          "slug": "installation",
-          "title": "Installation",
-          "path": "installation.md",
-          "isPublic": false,
-          "version": 1,
-          "lastModified": "2024-11-04T01:52:35.231Z",
-          "sortOrder": 0,
-          "children": []
-        },
-        {
-          "id": "5",
-          "slug": "theming",
-          "title": "Theming",
-          "path": "theming.md",
-          "isPublic": true,
-          "version": 1,
-          "lastModified": "2024-11-04T01:21:36.017Z",
-          "sortOrder": 1,
-          "children": []
-        }
-      ]
-    },
-    {
-      "id": "7",
-      "slug": "code-examples",
-      "title": "Code Examples",
-      "path": "code-examples.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-11-04T01:22:47.842Z",
-      "sortOrder": 4,
-      "children": []
-    },
-    {
-      "id": "8",
-      "slug": "configuration",
-      "title": "Configuration",
-      "path": "configuration.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-11-04T01:22:31.234Z",
-      "sortOrder": 2,
-      "children": []
-    },
-    {
-      "id": "9",
-      "slug": "home",
-      "title": "Home",
-      "path": "home.md",
-      "isPublic": true,
-      "version": 1,
-      "lastModified": "2024-11-08T02:27:41.670Z",
+      "lastModified": "2024-11-11T02:30:22.860Z",
       "sortOrder": 1,
       "children": []
     }
   ],
-  "lastId": 20
+  "lastId": 1
 }
