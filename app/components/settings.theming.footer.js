@@ -158,7 +158,7 @@ const FooterLinks = ({
                 className="mr-2"
               />
               <label htmlFor="hidePoweredByText" className="text-sm text-gray-700 dark:text-gray-300">
-                Hide `&quot;`Powered by Yet Another Wiki`&quot;` text. With this checked, the powered by text will be hidden in the footer.
+                Hide &quot;Powered by Yet Another Wiki&quot; text. With this checked, the powered by text will be hidden in the footer.
               </label>
             </div>
           )}
