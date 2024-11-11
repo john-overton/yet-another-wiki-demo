@@ -9,9 +9,6 @@ const LOGO_WORDS = [
   'Y.A.W.',
   '<u>Y</u>et <u>A</u>nother <u>W</u>iki',
   'Markdown, minus complexity',
-  '<i>Pages bloom like spring</i>',
-  '<i>No code needed to flourish</i>',
-  '<i>Just write and inspire</i>',
   'Another Wiki? Obviously.',
   'The last wiki, I promise.'
 ];
