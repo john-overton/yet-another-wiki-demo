@@ -105,6 +105,18 @@ async function createConfigFiles() {
         await fs.writeFile(`${configDir}/theming.json`, JSON.stringify(themingContent, null, 2));
         console.log('theming.json created successfully');
     }
+
+    // Create generalsettings.json if it doesn't exist
+    try {
+        await fs.access(`${configDir}/generalsettings.json`);
+        console.log('generalsettings.json already exists');
+    } catch {
+        const generalSettingsContent = {
+            preventUserRegistration: false
+        };
+        await fs.writeFile(`${configDir}/generalsettings.json`, JSON.stringify(generalSettingsContent, null, 2));
+        console.log('generalsettings.json created successfully');
+    }
 }
 
 function sleep(ms) {

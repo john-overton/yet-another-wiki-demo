@@ -62,7 +62,7 @@ const Footer = () => {
         {/* Left Box - Logo */}
         <div className="flex items-center justify-center sm:w-full md:w-full lg:w-full xl:w-full">
           {footerLogo ? (
-            <img 
+            <image
               src={footerLogo} 
               alt="Footer Logo" 
               className="max-w-[200px] max-h-[200px] object-contain"

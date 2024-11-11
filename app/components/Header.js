@@ -125,7 +125,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
           )}
           {headerLogo ? (
             <Link href="/">
-              <img 
+              <image 
                 src={headerLogo} 
                 alt="Site Logo" 
                 className="h-[40px] object-contain m-2"
