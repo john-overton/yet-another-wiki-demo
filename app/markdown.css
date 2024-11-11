@@ -66,6 +66,16 @@
   color: var(--admonition-note-border);
 }
 
+/* Admonition Icon Styles */
+.admonition-heading i {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .admonition-content {
   color: inherit;
 }

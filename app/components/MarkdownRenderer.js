@@ -33,25 +33,7 @@ const remarkAdmonitions = () => {
 
           // Create the heading and content structure
           const headingNode = {
-            type: 'element',
-            tagName: 'div',
-            properties: { className: 'admonition-heading' },
-            children: [
-              {
-                type: 'element',
-                tagName: 'i',
-                properties: { 
-                  className: `${getAdmonitionIcon(type)} mr-2`
-                },
-                children: []
-              },
-              {
-                type: 'element',
-                tagName: 'span',
-                properties: { className: 'admonition-title' },
-                children: [{ type: 'text', value: capitalizeFirstLetter(type) }]
-              }
-            ]
+            
           };
 
           const contentNode = {
