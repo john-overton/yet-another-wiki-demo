@@ -9,6 +9,10 @@ const Footer = () => {
     column2: { header: '', links: [] }
   });
   const [footerLogo, setFooterLogo] = useState(null);
+  const [footerSettings, setFooterSettings] = useState({
+    customCopyrightText: '',
+    hidePoweredByText: false
+  });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -21,6 +25,10 @@ const Footer = () => {
             column2: { header: '', links: [] }
           });
           setFooterLogo(settings.footerLogo || null);
+          setFooterSettings(settings.footerSettings || {
+            customCopyrightText: '',
+            hidePoweredByText: false
+          });
         }
       } catch (error) {
         console.error('Error loading footer settings:', error);
@@ -92,9 +100,13 @@ const Footer = () => {
           v{pkg.version}
         </div>
         <div className="text-xs text-gray-600 dark:text-gray-400">
-          © {new Date().getFullYear()} - Yet Another Wiki - All Rights Reserved
+          {footerSettings.customCopyrightText || "Yet Another Wiki - © 2024"}
         </div>
-        <div className="w-[50px]"></div>
+        {!footerSettings.hidePoweredByText && (
+          <div className="text-[10px] text-gray-600 dark:text-gray-400">
+            Powered by Yet Another Wiki
+          </div>
+        ) || <div></div>}
       </div>
     </div>
   );

@@ -100,6 +100,10 @@ async function createConfigFiles() {
                         }
                     ]
                 }
+            },
+            footerSettings: {
+                customCopyrightText: "",
+                hidePoweredByText: false
             }
         };
         await fs.writeFile(`${configDir}/theming.json`, JSON.stringify(themingContent, null, 2));

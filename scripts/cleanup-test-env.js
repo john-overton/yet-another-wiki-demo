@@ -80,7 +80,11 @@ async function cleanupConfigSettings() {
                 }
             },
             headerLogo: "",
-            footerLogo: ""
+            footerLogo: "",
+            footerSettings: {
+                customCopyrightText: "",
+                hidePoweredByText: false
+            }
         };
         await fs.writeFile(themingPath, JSON.stringify(blankTheming, null, 2));
         console.log('✓ Theming settings reset');

@@ -1,17 +1,81 @@
 {
   "font": "Open Sans",
-  "theme": "dark",
-  "links": [],
+  "theme": "light",
+  "links": [
+    {
+      "text": "Home",
+      "hoverText": "Home",
+      "url": "http://localhost:3000",
+      "id": 1731163181206
+    },
+    {
+      "text": "Test",
+      "hoverText": "Test",
+      "url": "https://www.google.com",
+      "id": 1731165375626
+    },
+    {
+      "text": "Another Test",
+      "hoverText": "Test",
+      "url": "https://www.weather.com",
+      "id": 1731165504132
+    },
+    {
+      "text": "ESPN",
+      "hoverText": "ESPN.COM",
+      "url": "https://www.espn.com",
+      "newTab": true,
+      "id": 1731165516181
+    }
+  ],
   "footerLinks": {
     "column1": {
-      "header": "",
-      "links": []
+      "header": "Documentation",
+      "links": [
+        {
+          "text": "Documentation",
+          "hoverText": "View Documentation",
+          "url": "/docs",
+          "id": 1731165516182
+        },
+        {
+          "text": "Getting Started",
+          "hoverText": "Get Started Guide",
+          "url": "/docs/getting-started",
+          "id": 1731165516183
+        },
+        {
+          "text": "API Reference",
+          "hoverText": "API Documentation",
+          "url": "/docs/api",
+          "id": 1731165516184
+        }
+      ]
     },
     "column2": {
-      "header": "",
-      "links": []
+      "header": "Community",
+      "links": [
+        {
+          "text": "Support",
+          "hoverText": "Support",
+          "url": "https://localhost:3000/support",
+          "newTab": false,
+          "id": 1731174180193
+        },
+        {
+          "text": "Contact",
+          "hoverText": "Contact",
+          "url": "https://localhost:3000/contact",
+          "newTab": false,
+          "id": 1731174233344
+        }
+      ]
     }
   },
-  "headerLogo": "",
-  "footerLogo": ""
+  "footerSettings": {
+    "customCopyrightText": "Test Text",
+    "hidePoweredByText": true
+  },
+  "headerLogo": null,
+  "footerLogo": null
 }

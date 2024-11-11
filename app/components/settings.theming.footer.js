@@ -5,11 +5,14 @@ import { useState, useRef } from 'react';
 const FooterLinks = ({ 
   footerLinks, 
   footerLogo,
+  footerSettings = {},
   onAddLink, 
   onEditLink, 
   onDeleteLink,
   onHeaderChange,
-  onLogoChange
+  onLogoChange,
+  onSettingsChange,
+  isProLicense
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
@@ -117,6 +120,51 @@ const FooterLinks = ({
 
   return (
     <div className="space-y-8">
+      {/* Footer Settings Section */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Footer Configuration</h2>
+        </div>
+      <div className="mb-8">
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Custom Copyright Text
+            </label>
+            <input
+              type="text"
+              value={footerSettings?.customCopyrightText || ''}
+              onChange={(e) => onSettingsChange({
+                ...footerSettings,
+                customCopyrightText: e.target.value
+              })}
+              placeholder="Yet Another Wiki - © 2024"
+              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Leave empty to use default text
+            </p>
+          </div>
+
+          {isProLicense && (
+            <div className="mb-4 flex items-center">
+              <input
+                type="checkbox"
+                id="hidePoweredByText"
+                checked={footerSettings?.hidePoweredByText || false}
+                onChange={(e) => onSettingsChange({
+                  ...footerSettings,
+                  hidePoweredByText: e.target.checked
+                })}
+                className="mr-2"
+              />
+              <label htmlFor="hidePoweredByText" className="text-sm text-gray-700 dark:text-gray-300">
+                Hide `&quot;`Powered by Yet Another Wiki`&quot;` text. With this checked, the powered by text will be hidden in the footer.
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Footer Logo Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">

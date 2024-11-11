@@ -80,6 +80,9 @@ const HeaderLinks = ({
   return (
     <div className="space-y-8">
       {/* Header Logo Section */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Header Configuration</h2>
+        </div>
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <label className="block font-medium text-gray-700 dark:text-gray-300">
@@ -171,7 +174,7 @@ const HeaderLinks = ({
           </button>
         </div>
 
-        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
           {links.length === 0 ? (
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               No header links added yet

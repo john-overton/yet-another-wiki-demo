@@ -1,32 +1,8 @@
 # Welcome to Yet Another Wiki!
 
-:::tip
-This is with a title
-
-eyah
-:::
-
-:::note
-Notes:
-:::
-
-:::danger
-Danger:
-:::
-
-:::info
-Info:
-:::
-
-:::caution
-Caution:
-:::
-
 Your centralized knowledge hub for creating, organizing, and sharing documentation with the simplicity and power of Markdown. Transform your ideas into beautifully formatted content while keeping everything organized and accessible.
 
 ## Interactive Features
-
-lksj~~fg;lksjf~~<sup>g;lksjdf</sup><sub>g;lksjf;lgj</sub>
 
 ### Dynamic Navigation
 

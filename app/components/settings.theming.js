@@ -20,6 +20,10 @@ const ThemingSettings = () => {
     column1: { header: '', links: [] },
     column2: { header: '', links: [] }
   });
+  const [footerSettings, setFooterSettings] = useState({
+    customCopyrightText: '',
+    hidePoweredByText: false
+  });
   const [headerLogo, setHeaderLogo] = useState(null);
   const [footerLogo, setFooterLogo] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -31,24 +35,38 @@ const ThemingSettings = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
   const [currentEditingSection, setCurrentEditingSection] = useState('header');
+  const [isProLicense, setIsProLicense] = useState(false);
 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch('/api/settings/theming');
-        if (response.ok) {
-          const settings = await response.json();
+        const [themingResponse, licenseResponse] = await Promise.all([
+          fetch('/api/settings/theming'),
+          fetch('/api/settings/licensing')
+        ]);
+
+        if (licenseResponse.ok) {
+          const licenseData = await licenseResponse.json();
+          setIsProLicense(licenseData.licenseType === 'pro');
+        }
+
+        if (themingResponse.ok) {
+          const settings = await themingResponse.json();
           setFont(settings.font);
           setLinks(settings.links || []);
           setFooterLinks(settings.footerLinks || {
             column1: { header: '', links: [] },
             column2: { header: '', links: [] }
           });
+          setFooterSettings(settings.footerSettings || {
+            customCopyrightText: '',
+            hidePoweredByText: false
+          });
           setHeaderLogo(settings.headerLogo || null);
           setFooterLogo(settings.footerLogo || null);
         }
       } catch (error) {
-        console.error('Error loading theming settings:', error);
+        console.error('Error loading settings:', error);
       }
       setMounted(true);
     };
@@ -69,6 +87,7 @@ const ThemingSettings = () => {
           theme: currentTheme,
           links,
           footerLinks,
+          footerSettings,
           headerLogo,
           footerLogo
         }),
@@ -172,6 +191,10 @@ const ThemingSettings = () => {
     setFooterLogo(logoPath);
   };
 
+  const handleFooterSettingsChange = (newSettings) => {
+    setFooterSettings(newSettings);
+  };
+
   if (!mounted) {
     return null;
   }
@@ -179,7 +202,7 @@ const ThemingSettings = () => {
   return (
     <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Theming</h2>
+        <h2 className="text-xl font-semibold">System Theming</h2>
         <button
           onClick={handleSave}
           disabled={isSaving}
@@ -285,6 +308,7 @@ const ThemingSettings = () => {
       <FooterLinks
         footerLinks={footerLinks}
         footerLogo={footerLogo}
+        footerSettings={footerSettings}
         onAddLink={handleAddLink}
         onEditLink={(link, section) => {
           setCurrentEditingSection(section);
@@ -298,6 +322,8 @@ const ThemingSettings = () => {
         }}
         onHeaderChange={handleHeaderChange}
         onLogoChange={handleFooterLogoChange}
+        onSettingsChange={handleFooterSettingsChange}
+        isProLicense={isProLicense}
       />
 
       <LinkModal
