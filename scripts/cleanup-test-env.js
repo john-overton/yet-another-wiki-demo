@@ -48,6 +48,7 @@ async function cleanupNginxConfig() {
 
 async function cleanupConfigSettings() {
     const licensingPath = path.join(__dirname, '../config/settings/licensing.json');
+    const themingPath = path.join(__dirname, '../config/settings/theming.json');
     
     try {
         // Reset licensing.json to blank state
@@ -62,8 +63,29 @@ async function cleanupConfigSettings() {
         };
         await fs.writeFile(licensingPath, JSON.stringify(blankLicensing, null, 2));
         console.log('✓ Licensing settings reset');
+
+        // Reset theming.json to blank state
+        const blankTheming = {
+            font: "Open Sans",
+            theme: "dark",
+            links: [],
+            footerLinks: {
+                column1: {
+                    header: "Documentation",
+                    links: []
+                },
+                column2: {
+                    header: "Community",
+                    links: []
+                }
+            },
+            headerLogo: "",
+            footerLogo: ""
+        };
+        await fs.writeFile(themingPath, JSON.stringify(blankTheming, null, 2));
+        console.log('✓ Theming settings reset');
     } catch (error) {
-        console.error('Error resetting licensing settings:', error);
+        console.error('Error resetting config settings:', error);
     }
 }
 
