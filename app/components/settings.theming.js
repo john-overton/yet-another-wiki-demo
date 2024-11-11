@@ -233,7 +233,8 @@ const ThemingSettings = () => {
       )}
       
       {/* Font Selection */}
-      <div className="mb-6">
+      {/* COMMENTED OUT FONT SECTION FOR LATER USE
+        <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Font Family
         </label>
@@ -247,6 +248,7 @@ const ThemingSettings = () => {
           <option value="Arial">Arial</option>
         </select>
       </div>
+      */}
 
       {/* Theme Selection */}
       <div className="mb-6">
