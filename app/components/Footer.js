@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import pkg from '../../package.json';
 
 const Footer = () => {
@@ -8,7 +9,7 @@ const Footer = () => {
     column1: { header: '', links: [] },
     column2: { header: '', links: [] }
   });
-  const [footerLogo, setFooterLogo] = useState(null);
+  const [footerLogo, setFooterLogo] = useState(true);
   const [footerSettings, setFooterSettings] = useState({
     customCopyrightText: '',
     hidePoweredByText: false
@@ -70,9 +71,11 @@ const Footer = () => {
         {/* Left Box - Logo */}
         <div className="flex items-center justify-center sm:w-full md:w-full lg:w-full xl:w-full">
           {footerLogo ? (
-            <image
+            <Image
               src={footerLogo} 
               alt="Footer Logo" 
+              width={200}
+              height={200}
               className="max-w-[200px] max-h-[200px] object-contain"
             />
           ) : (

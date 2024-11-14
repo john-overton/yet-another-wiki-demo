@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 
 const FooterLinks = ({ 
   footerLinks, 
@@ -233,9 +234,11 @@ const FooterLinks = ({
         {footerLogo && (
           <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Logo:</p>
-            <image
+            <Image
               src={footerLogo} 
               alt="Footer Logo" 
+              width={200}
+              height={200}
               className="max-w-[200px] max-h-[200px] object-contain"
             />
           </div>

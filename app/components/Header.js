@@ -4,6 +4,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import UserButton from './UserButton';
 import SearchModal from './SearchModal';
 import Logo from './Logo';
@@ -16,7 +17,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
   const [links, setLinks] = useState([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [shouldCollapseLinks, setShouldCollapseLinks] = useState(false);
-  const [headerLogo, setHeaderLogo] = useState(null);
+  const [headerLogo, setHeaderLogo] = useState(true);
   const { resolvedTheme, setTheme } = useTheme();
   const { data: session } = useSession();
   const menuRef = useRef(null);
@@ -125,9 +126,11 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
           )}
           {headerLogo ? (
             <Link href="/">
-              <image 
+              <Image 
                 src={headerLogo} 
-                alt="Site Logo" 
+                alt="Site Logo"
+                width={120}
+                height={40}
                 className="h-[40px] object-contain m-2"
               />
             </Link>

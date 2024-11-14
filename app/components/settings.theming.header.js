@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 const HeaderLinks = ({ 
   links, 
@@ -150,9 +151,11 @@ const HeaderLinks = ({
         {headerLogo && (
           <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Logo:</p>
-            <image
+            <Image
               src={headerLogo} 
-              alt="Header Logo" 
+              alt="Header Logo"
+              width={120}
+              height={40} 
               className="max-h-[40px] object-contain"
             />
           </div>
