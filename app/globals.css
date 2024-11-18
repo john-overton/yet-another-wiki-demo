@@ -18,8 +18,8 @@
   --table-of-contents-bg: #717171AA;
   --table-of-contents-border: #9b9b9b;
   --search-bg-color: #ffffff;
-  --selected-bg: rgb(219,234,254);
-  --selected-gradient: linear-gradient(90deg, rgba(219,234,254,1) 0%, rgba(255,255,255,0) 100%);
+  --selected-bg: rgb(243,244,246);
+  --selected-gradient: linear-gradient(90deg, rgba(243,244,246,1) 0%, rgba(255,255,255,0) 100%);
 }
 
 .dark {
