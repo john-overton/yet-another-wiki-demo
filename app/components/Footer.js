@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import pkg from '../../package.json';
 
@@ -9,11 +10,12 @@ const Footer = () => {
     column1: { header: '', links: [] },
     column2: { header: '', links: [] }
   });
-  const [footerLogo, setFooterLogo] = useState(true);
+  const [footerLogo, setFooterLogo] = useState({ lightLogo: null, darkLogo: null });
   const [footerSettings, setFooterSettings] = useState({
     customCopyrightText: '',
     hidePoweredByText: false
   });
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -25,7 +27,7 @@ const Footer = () => {
             column1: { header: '', links: [] },
             column2: { header: '', links: [] }
           });
-          setFooterLogo(settings.footerLogo || null);
+          setFooterLogo(settings.footerLogo || { lightLogo: null, darkLogo: null });
           setFooterSettings(settings.footerSettings || {
             customCopyrightText: '',
             hidePoweredByText: false
@@ -62,6 +64,18 @@ const Footer = () => {
     );
   };
 
+  const getCurrentLogo = () => {
+    if (!footerLogo) return null;
+    if (resolvedTheme === 'dark' && footerLogo.darkLogo) {
+      return footerLogo.darkLogo;
+    }
+    if (resolvedTheme === 'light' && footerLogo.lightLogo) {
+      return footerLogo.lightLogo;
+    }
+    // Fallback to the appropriate logo if one mode is missing
+    return footerLogo.lightLogo || footerLogo.darkLogo;
+  };
+
   // Determine if we should show two columns
   const hasTwoColumns = footerLinks.column2 && footerLinks.column2.links && footerLinks.column2.links.length > 0;
 
@@ -70,9 +84,9 @@ const Footer = () => {
       <div className="grid grid-cols-2 h-[20rem] sm:grid-cols-2">
         {/* Left Box - Logo */}
         <div className="flex items-center justify-center sm:w-full md:w-full lg:w-full xl:w-full">
-          {footerLogo ? (
+          {getCurrentLogo() ? (
             <Image
-              src={footerLogo} 
+              src={getCurrentLogo()}
               alt="Footer Logo" 
               width={200}
               height={200}

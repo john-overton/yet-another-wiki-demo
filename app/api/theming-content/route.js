@@ -1,8 +1,6 @@
-import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
-import path from 'path';
-
-export const dynamic = 'force-dynamic';
+import { join } from 'path';
+import { NextResponse } from 'next/server';
 
 export async function GET(request) {
   try {
@@ -10,42 +8,31 @@ export async function GET(request) {
     const filePath = searchParams.get('path');
 
     if (!filePath) {
-      return NextResponse.json({ error: 'No path provided' }, { status: 400 });
+      return NextResponse.json({ error: 'No file path provided' }, { status: 400 });
     }
 
     // Resolve the path relative to the data/content/theming directory
-    const fullPath = path.join(process.cwd(), 'data', 'content', 'theming', filePath);
+    const fullPath = join(process.cwd(), 'data', 'content', 'theming', filePath);
     console.log('Reading theming file from:', fullPath);
 
+    // Read the file
     const fileBuffer = await fs.readFile(fullPath);
 
     // Determine content type based on file extension
-    const extension = path.extname(fullPath).toLowerCase();
-    let contentType = 'application/octet-stream';
+    const extension = filePath.split('.').pop().toLowerCase();
+    const contentType = {
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      'svg': 'image/svg+xml',
+    }[extension] || 'application/octet-stream';
 
-    switch (extension) {
-      case '.png':
-        contentType = 'image/png';
-        break;
-      case '.jpg':
-      case '.jpeg':
-        contentType = 'image/jpeg';
-        break;
-      case '.gif':
-        contentType = 'image/gif';
-        break;
-      case '.svg':
-        contentType = 'image/svg+xml';
-        break;
-      case '.webp':
-        contentType = 'image/webp';
-        break;
-    }
-
-    return new NextResponse(fileBuffer, {
+    // Return the file with appropriate content type
+    return new Response(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000',
+        'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
       },
     });
   } catch (error) {

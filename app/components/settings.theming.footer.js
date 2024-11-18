@@ -17,9 +17,10 @@ const FooterLinks = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
-  const fileInputRef = useRef(null);
+  const lightLogoInputRef = useRef(null);
+  const darkLogoInputRef = useRef(null);
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = async (e, mode) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -40,6 +41,7 @@ const FooterLinks = ({
     setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('mode', mode);
 
     try {
       const response = await fetch('/api/settings/theming/footer-logo', {
@@ -49,7 +51,10 @@ const FooterLinks = ({
 
       if (response.ok) {
         const data = await response.json();
-        onLogoChange(data.path);
+        onLogoChange({ 
+          ...footerLogo, 
+          [mode === 'light' ? 'lightLogo' : 'darkLogo']: data.path 
+        });
         setMessage('Logo uploaded successfully');
       } else {
         setMessage('Failed to upload logo');
@@ -63,14 +68,18 @@ const FooterLinks = ({
     }
   };
 
-  const handleRemoveLogo = async () => {
+  const handleRemoveLogo = async (mode) => {
     try {
       const response = await fetch('/api/settings/theming/footer-logo', {
         method: 'DELETE',
+        body: JSON.stringify({ mode })
       });
 
       if (response.ok) {
-        onLogoChange(null);
+        onLogoChange({
+          ...footerLogo,
+          [mode === 'light' ? 'lightLogo' : 'darkLogo']: null
+        });
         setMessage('Logo removed successfully');
       } else {
         setMessage('Failed to remove logo');
@@ -124,7 +133,7 @@ const FooterLinks = ({
       {/* Footer Settings Section */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Footer Configuration</h2>
-        </div>
+      </div>
       <div className="mb-8">
         <div className="flex flex-col gap-4">
           <div>
@@ -159,7 +168,7 @@ const FooterLinks = ({
                 className="mr-2"
               />
               <label htmlFor="hidePoweredByText" className="text-sm text-gray-700 dark:text-gray-300">
-                Hide &quot;Powered by Yet Another Wiki&quot; text. With this checked, the powered by text will be hidden in the footer.
+                Hide &quot;Powered by Yet Another Wiki&quot; text
               </label>
             </div>
           )}
@@ -168,45 +177,118 @@ const FooterLinks = ({
 
       {/* Footer Logo Section */}
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <label className="block font-medium text-gray-700 dark:text-gray-300">
-            Footer Logo
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
-            >
-              {isUploading ? (
-                <>
-                  <i className="ri-loader-4-line animate-spin"></i>
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <i className="ri-upload-2-line"></i>
-                  Upload Logo
-                </>
-              )}
-            </button>
-            {footerLogo && (
+        {/* Light Mode Logo */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block font-medium text-gray-700 dark:text-gray-300">
+              Light Mode Logo
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="file"
+                ref={lightLogoInputRef}
+                onChange={(e) => handleFileChange(e, 'light')}
+                accept="image/*"
+                className="hidden"
+              />
               <button
-                onClick={handleRemoveLogo}
+                onClick={() => lightLogoInputRef.current?.click()}
+                disabled={isUploading}
                 className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
               >
-                <i className="ri-delete-bin-line"></i>
-                Remove Logo
+                {isUploading ? (
+                  <>
+                    <i className="ri-loader-4-line animate-spin"></i>
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <i className="ri-upload-2-line"></i>
+                    Upload Light Logo
+                  </>
+                )}
               </button>
-            )}
+              {footerLogo?.lightLogo && (
+                <button
+                  onClick={() => handleRemoveLogo('light')}
+                  className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+                >
+                  <i className="ri-delete-bin-line"></i>
+                  Remove Light Logo
+                </button>
+              )}
+            </div>
           </div>
+
+          {footerLogo?.lightLogo && (
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Light Logo:</p>
+              <Image
+                src={footerLogo.lightLogo}
+                alt="Footer Light Logo"
+                width={200}
+                height={200}
+                className="max-w-[200px] max-h-[200px] object-contain"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Dark Mode Logo */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block font-medium text-gray-700 dark:text-gray-300">
+              Dark Mode Logo
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="file"
+                ref={darkLogoInputRef}
+                onChange={(e) => handleFileChange(e, 'dark')}
+                accept="image/*"
+                className="hidden"
+              />
+              <button
+                onClick={() => darkLogoInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+              >
+                {isUploading ? (
+                  <>
+                    <i className="ri-loader-4-line animate-spin"></i>
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <i className="ri-upload-2-line"></i>
+                    Upload Dark Logo
+                  </>
+                )}
+              </button>
+              {footerLogo?.darkLogo && (
+                <button
+                  onClick={() => handleRemoveLogo('dark')}
+                  className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+                >
+                  <i className="ri-delete-bin-line"></i>
+                  Remove Dark Logo
+                </button>
+              )}
+            </div>
+          </div>
+
+          {footerLogo?.darkLogo && (
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Dark Logo:</p>
+              <Image
+                src={footerLogo.darkLogo}
+                alt="Footer Dark Logo"
+                width={200}
+                height={200}
+                className="max-w-[200px] max-h-[200px] object-contain"
+              />
+            </div>
+          )}
         </div>
 
         {message && (
@@ -221,28 +303,15 @@ const FooterLinks = ({
 
         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Upload a logo to replace the default footer text. The image will be automatically resized to fit within a 200x200 pixel area while maintaining its aspect ratio. For best results:
+            Upload logos for light and dark mode. The images will be automatically resized to fit within a 200x200 pixel area while maintaining their aspect ratio. For best results:
           </p>
           <ul className="list-disc list-inside mt-2 text-sm text-gray-600 dark:text-gray-400">
-            <li>Use a transparent PNG or SVG file</li>
-            <li>Keep the file size under 2MB</li>
-            <li>Use an image with dimensions up to 200x200 pixels</li>
-            <li>Ensure the image has adequate padding</li>
+            <li>Use transparent PNG or SVG files</li>
+            <li>Keep file sizes under 2MB</li>
+            <li>Use images with dimensions up to 200x200 pixels</li>
+            <li>Ensure images have adequate padding</li>
           </ul>
         </div>
-
-        {footerLogo && (
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Logo:</p>
-            <Image
-              src={footerLogo} 
-              alt="Footer Logo" 
-              width={200}
-              height={200}
-              className="max-w-[200px] max-h-[200px] object-contain"
-            />
-          </div>
-        )}
       </div>
 
       {/* Footer Column 1 */}

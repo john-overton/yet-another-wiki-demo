@@ -17,7 +17,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
   const [links, setLinks] = useState([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [shouldCollapseLinks, setShouldCollapseLinks] = useState(false);
-  const [headerLogo, setHeaderLogo] = useState(true);
+  const [headerLogo, setHeaderLogo] = useState({ lightLogo: null, darkLogo: null });
   const { resolvedTheme, setTheme } = useTheme();
   const { data: session } = useSession();
   const menuRef = useRef(null);
@@ -29,7 +29,7 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
         if (response.ok) {
           const settings = await response.json();
           setLinks(settings.links || []);
-          setHeaderLogo(settings.headerLogo || null);
+          setHeaderLogo(settings.headerLogo || { lightLogo: null, darkLogo: null });
         }
       } catch (error) {
         console.error('Error loading settings:', error);
@@ -107,6 +107,18 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
     </a>
   );
 
+  const getCurrentLogo = () => {
+    if (!headerLogo) return null;
+    if (resolvedTheme === 'dark' && headerLogo.darkLogo) {
+      return headerLogo.darkLogo;
+    }
+    if (resolvedTheme === 'light' && headerLogo.lightLogo) {
+      return headerLogo.lightLogo;
+    }
+    // Fallback to the appropriate logo if one mode is missing
+    return headerLogo.lightLogo || headerLogo.darkLogo;
+  };
+
   return (
     <>
       <div className="flex items-center justify-between w-full p-1">
@@ -124,10 +136,10 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
               ></i>
             </button>
           )}
-          {headerLogo ? (
+          {getCurrentLogo() ? (
             <Link href="/">
               <Image 
-                src={headerLogo} 
+                src={getCurrentLogo()} 
                 alt="Site Logo"
                 width={120}
                 height={40}
