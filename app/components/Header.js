@@ -144,6 +144,9 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
                 width={120}
                 height={40}
                 className="h-[40px] object-contain m-2"
+                key={getCurrentLogo()} // Add key prop to force re-render
+                priority // Add priority to load image immediately
+                unoptimized // Bypass image optimization to prevent caching
               />
             </Link>
           ) : (

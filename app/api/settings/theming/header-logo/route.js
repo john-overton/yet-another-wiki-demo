@@ -19,12 +19,25 @@ export async function POST(request) {
     await fs.mkdir(themingDir, { recursive: true });
 
     const fileExtension = file.name.substring(file.name.lastIndexOf('.'));
-    const fileName = `header-logo-${mode}${fileExtension}`;
+    const timestamp = Date.now();
+    const fileName = `header-logo-${mode}-${timestamp}${fileExtension}`;
     const filePath = join(themingDir, fileName);
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     await fs.writeFile(filePath, buffer);
+
+    // Clean up old files
+    const files = await fs.readdir(themingDir);
+    for (const oldFile of files) {
+      if (oldFile.startsWith(`header-logo-${mode}-`) && oldFile !== fileName) {
+        try {
+          await fs.unlink(join(themingDir, oldFile));
+        } catch (error) {
+          console.error('Error deleting old file:', error);
+        }
+      }
+    }
 
     // Update theming.json
     const themingJsonPath = join(process.cwd(), 'config/settings/theming.json');

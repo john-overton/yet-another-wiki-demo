@@ -28,11 +28,13 @@ export async function GET(request) {
       'svg': 'image/svg+xml',
     }[extension] || 'application/octet-stream';
 
-    // Return the file with appropriate content type
+    // Return the file with appropriate content type and cache control headers
     return new Response(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
+        'Cache-Control': 'no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       },
     });
   } catch (error) {

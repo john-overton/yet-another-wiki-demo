@@ -91,6 +91,9 @@ const Footer = () => {
               width={200}
               height={200}
               className="max-w-[200px] max-h-[200px] object-contain"
+              key={getCurrentLogo()} // Add key prop to force re-render
+              priority // Add priority to load image immediately
+              unoptimized // Bypass image optimization to prevent caching
             />
           ) : (
             <div className="text-6xl font-bold text-gray-800 dark:text-gray-200">
