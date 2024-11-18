@@ -48,7 +48,9 @@ const FileItem = ({
   isAuthenticated,
   refreshFileStructure,
   onSortOrderChange,
-  userRole
+  userRole,
+  currentPage,
+  parentExpanded = true
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -59,6 +61,27 @@ const FileItem = ({
   const itemRef = useRef(null);
 
   const canModifyContent = userRole !== 'User';
+  const isCurrentPage = currentPage?.id === item.id;
+
+  // Check if this item is in the path to the current page
+  const isInCurrentPath = useCallback((item) => {
+    if (!currentPage) return false;
+    if (item.id === currentPage.id) return true;
+    if (item.children) {
+      return item.children.some(child => {
+        if (child.id === currentPage.id) return true;
+        return isInCurrentPath(child);
+      });
+    }
+    return false;
+  }, [currentPage]);
+
+  // Auto-expand if this item is in the path to the current page
+  useEffect(() => {
+    if (parentExpanded && isInCurrentPath(item)) {
+      setIsExpanded(true);
+    }
+  }, [currentPage, item, parentExpanded, isInCurrentPath]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -117,15 +140,16 @@ const FileItem = ({
   };
 
   const displayName = item.title.replace(/\.md$/, '');
-
-  // Sort children by sortOrder if they exist
   const sortedChildren = item.children ? [...item.children].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)) : [];
 
   return (
     <li ref={itemRef}>
       <button
         type="button"
-        className="flex items-center justify-between w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 p-2"
+        className={`flex items-center justify-between w-full text-base font-normal rounded-lg transition duration-75 group p-2
+          ${isCurrentPage 
+            ? 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100' 
+            : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}`}
         onClick={() => onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -203,6 +227,8 @@ const FileItem = ({
               refreshFileStructure={refreshFileStructure}
               onSortOrderChange={onSortOrderChange}
               userRole={userRole}
+              currentPage={currentPage}
+              parentExpanded={isExpanded}
             />
           ))}
         </ul>
@@ -312,7 +338,8 @@ const Sidebar = ({
   onTrashBinClick,
   onSortOrderChange,
   session,
-  onImportClick // Add this prop
+  onImportClick,
+  currentPage
 }) => {
   const [isCreatingRoot, setIsCreatingRoot] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -370,6 +397,8 @@ const Sidebar = ({
                 refreshFileStructure={refreshFileStructure}
                 onSortOrderChange={onSortOrderChange}
                 userRole={userRole}
+                currentPage={currentPage}
+                parentExpanded={true}
               />
             ))}
           </ul>

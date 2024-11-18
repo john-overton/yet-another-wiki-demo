@@ -406,6 +406,7 @@ const MainAppLayout = () => {
       onSortOrderChange={handleSortOrderChange}
       session={session}
       onImportClick={() => setIsImportModalOpen(true)}
+      currentPage={selectedFile}
     />
   ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
 
