@@ -18,6 +18,8 @@
   --table-of-contents-bg: #717171AA;
   --table-of-contents-border: #9b9b9b;
   --search-bg-color: #ffffff;
+  --selected-bg: rgb(219,234,254);
+  --selected-gradient: linear-gradient(90deg, rgba(219,234,254,1) 0%, rgba(255,255,255,0) 100%);
 }
 
 .dark {
@@ -31,6 +33,8 @@
   --table-of-contents-bg: #374151AA;
   --table-of-contents-border: #4b5563;
   --search-bg-color: #2B2A33;
+  --selected-bg: rgb(199,202,208);
+  --selected-gradient: linear-gradient(90deg, rgba(199,202,208,0.15) 0%, rgba(255,255,255,0) 100%);
 }
 
 .roboto-thin {
@@ -298,4 +302,9 @@ body {
 
 .scroll-gradient-right {
   background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+}
+
+.page-selected {
+  background: var(--selected-bg);
+  background: var(--selected-gradient)
 }

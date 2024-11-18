@@ -148,7 +148,7 @@ const FileItem = ({
         type="button"
         className={`flex items-center justify-between w-full text-base font-normal rounded-lg transition duration-75 group p-2
           ${isCurrentPage 
-            ? 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100' 
+            ? 'page-selected'
             : 'text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700'}`}
         onClick={() => onSelect(item)}
         onMouseEnter={() => setIsHovered(true)}
