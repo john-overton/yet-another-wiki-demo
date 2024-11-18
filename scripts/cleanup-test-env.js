@@ -64,7 +64,7 @@ async function cleanupConfigSettings() {
         await fs.writeFile(licensingPath, JSON.stringify(blankLicensing, null, 2));
         console.log('✓ Licensing settings reset');
 
-        // Reset theming.json to blank state
+        // Reset theming.json to blank state with new logo structure
         const blankTheming = {
             font: "Open Sans",
             theme: "dark",
@@ -79,8 +79,14 @@ async function cleanupConfigSettings() {
                     links: []
                 }
             },
-            headerLogo: "",
-            footerLogo: "",
+            headerLogo: {
+                lightLogo: null,
+                darkLogo: null
+            },
+            footerLogo: {
+                lightLogo: null,
+                darkLogo: null
+            },
             footerSettings: {
                 customCopyrightText: "",
                 hidePoweredByText: false
@@ -88,6 +94,16 @@ async function cleanupConfigSettings() {
         };
         await fs.writeFile(themingPath, JSON.stringify(blankTheming, null, 2));
         console.log('✓ Theming settings reset');
+
+        // Clean up theming content directory
+        const themingDir = path.join(__dirname, '../data/content/theming');
+        try {
+            await fs.rm(themingDir, { recursive: true, force: true });
+            await fs.mkdir(themingDir, { recursive: true });
+            console.log('✓ Theming content directory cleaned');
+        } catch (error) {
+            console.error('Error cleaning theming content directory:', error);
+        }
     } catch (error) {
         console.error('Error resetting config settings:', error);
     }

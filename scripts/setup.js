@@ -24,11 +24,18 @@ DATABASE_URL="file:../db/yetanotherwiki.db"`;
 
 async function createConfigFiles() {
     const configDir = 'config/settings';
+    const themingDir = 'data/content/theming';
     
     try {
         await fs.access(configDir);
     } catch {
         await fs.mkdir(configDir, { recursive: true });
+    }
+
+    try {
+        await fs.access(themingDir);
+    } catch {
+        await fs.mkdir(themingDir, { recursive: true });
     }
 
     // Create licensing.json if it doesn't exist
@@ -57,8 +64,14 @@ async function createConfigFiles() {
         const themingContent = {
             font: "Open Sans",
             theme: "light",
-            headerLogo: "",
-            footerLogo: "",
+            headerLogo: {
+                lightLogo: null,
+                darkLogo: null
+            },
+            footerLogo: {
+                lightLogo: null,
+                darkLogo: null
+            },
             links: [
                 {
                     text: "Home",
