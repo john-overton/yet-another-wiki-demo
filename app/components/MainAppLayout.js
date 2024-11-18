@@ -408,7 +408,7 @@ const MainAppLayout = () => {
       onImportClick={() => setIsImportModalOpen(true)}
       currentPage={selectedFile}
     />
-  ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange]);
+  ), [fileStructure, handleFileSelect, handleCreateNew, handleDeleteClick, handleRename, session, fetchFileStructure, handleTrashBinClick, handleSortOrderChange, selectedFile]);
 
   const renderEditor = () => {
     if (!selectedFile || !isEditing) return null;
