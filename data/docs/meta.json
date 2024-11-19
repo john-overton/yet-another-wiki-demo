@@ -7,10 +7,21 @@
       "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-19T03:21:07.522Z",
+      "lastModified": "2024-11-19T18:00:37.900Z",
       "sortOrder": 1,
       "children": []
+    },
+    {
+      "id": "2",
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "path": "getting-started.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-11-19T17:22:39.301Z",
+      "children": [],
+      "sortOrder": 2
     }
   ],
-  "lastId": 1
+  "lastId": 2
 }
