@@ -1,10 +1,5 @@
-# Use Node.js LTS (Debian-based)
+# Use Node.js LTS
 FROM node:22-alpine
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    openssl \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install PNPM
 RUN npm install -g pnpm
@@ -21,8 +16,8 @@ RUN pnpm install --frozen-lockfile
 # Copy application files
 COPY . .
 
-# Generate Prisma client
-RUN pnpm next setup
+# Run setup script
+RUN pnpm run setup
 
 # Build the application
 RUN pnpm next build
