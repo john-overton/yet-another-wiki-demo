@@ -1,125 +1,64 @@
-# Welcome to Yet Another Wiki!
+# Yet Another Wiki
 
-Your centralized knowledge hub for creating, organizing, and sharing documentation with the simplicity and power of Markdown. Transform your ideas into beautifully formatted content while keeping everything organized and accessible.
+Yes, we know what you're thinking - *another* wiki platform? 🙄 
 
-## Interactive Features
+But this one's different, promise! While exploring Nextra, Docusaurus, Bookstack and friends, we noticed something: most wikis seem to be built either for tech wizards who dream in markdown, or massive teams with dedicated DevOps departments. But what about the rest of us?
 
-### Dynamic Navigation
+## Born From Frustration
+(The mother of all inventions, right?)
 
-* **Table of Contents**: A dynamic table of contents is automatically generated from your page headers, making navigation effortless
-* **Magnet Links**: Click the magnet icon next to any header to get a direct link to that section
-* **Hierarchical Sidebar**: Organize your content with a drag-and-drop sidebar that supports nested pages and folders
-* **Edit Button**: Easily edit any page by clicking the edit button in the top-right corner
+You know that feeling when you just want to document stuff without:
+- Teaching your entire team the sacred arts of markdown
+- SSH-ing into servers just to update the company lunch menu
+- Explaining to Bob from accounting why his `# Header` isn't working
+- Running a kubernetes cluster just to maintain your D&D campaign notes
 
-### Sidebar Organization
+Yeah, we've been there too.
 
-The sidebar provides powerful organization features:
+## What Makes This One Different?
+(Besides our charming self-awareness)
 
-* Drag and drop pages to reorder them
-* Create nested hierarchies by dragging pages into folders
-* Add new pages with the '+' button
-* Delete pages with the trash icon
-* Expand/collapse folders to manage your view
+### Content Creation That Doesn't Suck
+- Powered by the fantastic [MDXEditor](https://mdxeditor.dev/) - because life's too short for bad editors
+- Automatic table of contents that actually works
+- Organize content like you'd organize your thoughts (or at least try to)
+- URLs that humans can actually read and remember
 
-## Markdown Magic
+### Looks Good Without Trying Too Hard
+- Light mode for the optimists
+- Dark mode for the realists
+- Add your own logo (yes, even that one)
+- Theme it until your heart's content
 
-Markdown makes documentation a breeze! Here's what you can do:
+### By Real Humans, For Real Humans
+- Code highlighting that just works (no PhD required)
+- Write naturally with a rich text editor
+- Simple setup that respects your time
+- Works on phones because we all have them
 
-### Text Formatting
+### Navigation That Makes Sense
+- Read it like a book (remember those?)
+- Categories that actually categorize things
+- Nested subcategories for the organizationally obsessed
+- Breadcrumbs that won't get you lost
 
-* **Bold** text using `**text**`
-* *Italic* text using `*text*`
-* ~~Strikethrough~~ using `~~text~~`
-* `Inline code` using backticks
-* [Links](https://example.com) using `[text](url)`
+## Perfect For
+- Solo maintainers tired of over-engineered solutions
+- Teams where "git push" isn't part of everyone's vocabulary
+- Documentation that needs to be, you know, actually maintained
+- Anyone who believes wikis shouldn't require a CS degree
+- Sleep-deprived parents documenting things at 3am (we've been there!)
 
-### Lists
+## Ready to Wiki?
 
-1. Ordered lists
-2. Are easy
-3. To create
+Check out our not-so-lengthy docs:
+- [Setup Guide](/docs/setup) (it's actually easy)
+- [Configuration](/docs/config) (you got this)
+- [Content Management](/docs/content) (you'll figure it out)
+- [Theming](/docs/themes) (go wild)
+- [API Reference](/docs/api) (for the curious)
 
-* Unordered lists
-* Use simple
-* Dash or asterisk
+---
+Built with ❤️ and the occasional witty banter from Anthropic's Claude. Standing on the shoulders of giants (looking at you, Nextra, Docusaurus, and Bookstack) but with our own twist on things.
 
-### Code Blocks
-
-```java
-// Syntax highlighted code blocks
-function greet() {
-    return "Hello, Wiki!";
-}
-```
-
-Check out our [Code Examples](/code-examples) page for more comprehensive examples in JavaScript, C, HTML, SQL, and other languages!
-
-### Tables
-
-| Feature     | Support | Notes                    |
-| ----------- | ------- | ------------------------ |
-| Tables      | ✅       | Easy to create           |
-| Lists       | ✅       | Ordered and unordered    |
-| Code Blocks | ✅       | With syntax highlighting |
-
-### Quotes
-
-> Knowledge is power> But sharing knowledge is even more powerful> \* Yet Another Wiki
-
-## File Organization
-
-Your wiki content is organized in the `app/docs/` directory. Here's how to manage it:
-
-### Creating Content
-
-1. Create `.md` files in the `app/docs/` directory
-2. Use descriptive filenames (e.g., `getting-started.md`)
-3. Start with a clear title using `# Title`
-4. Add your content using Markdown syntax
-
-### Directory Structure
-
-```text
-app/docs/
-├── home.md
-├── getting-started.md
-├── guides/
-│   ├── basics.md
-│   └── advanced.md
-└── reference/
-    ├── markdown-syntax.md
-    └── best-practices.md
-```
-
-## Advanced Features
-
-### Task Lists
-
-* [x] Create documentation
-* [x] Add formatting examples
-* [ ] Share with team
-* [ ] Gather feedback
-
-### Images
-
-Include images using: `![Alt text](image-path.png)`
-
-### Horizontal Rules
-
-Create visual separators with three dashes:
-
-***
-
-## Tips & Tricks
-
-1. **Use Headers Wisely**: Structure your content with clear hierarchy for better table of contents
-2. **Keep it Simple**: Markdown shines in its simplicity
-3. **Preview Often**: Check how your content looks while writing
-4. **Use References**: Link between pages to create a connected knowledge base
-5. **Stay Consistent**: Maintain a consistent formatting style
-6. **Leverage Magnet Links**: Share direct links to specific sections using the magnet icon
-7. **Organize Thoughtfully**: Use the sidebar's hierarchy to create logical content groupings
-
-## Ready to Start?
-
-Begin your documentation journey by clicking the edit button to modify this page or creating a new page using the sidebar. Remember, great documentation is clear, concise, and well-organized. Happy documenting!
+*P.S. We made this because we believe good documentation should be as easy to maintain as it is to read. Revolutionary, we know. Now go get some sleep!*
