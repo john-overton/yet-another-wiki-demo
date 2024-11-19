@@ -6,9 +6,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./data:/app/data
-      - ./db:/app/db
-      - ./config:/app/config
+      - ./data:/data
+      - ./db:/db
+      - ./config:/config
+      - ./public:/public
     environment:
       - NODE_ENV=production
       - NEXTAUTH_URL=http://localhost:3000
