@@ -12,8 +12,14 @@
       "links": []
     }
   },
-  "headerLogo": "",
-  "footerLogo": "",
+  "headerLogo": {
+    "lightLogo": null,
+    "darkLogo": null
+  },
+  "footerLogo": {
+    "lightLogo": null,
+    "darkLogo": null
+  },
   "footerSettings": {
     "customCopyrightText": "",
     "hidePoweredByText": false

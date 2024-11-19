@@ -110,12 +110,6 @@ Create visual separators with three dashes:
 
 ***
 
-### Footnotes
-
-Add footnotes to your content\[^1]
-
-\[^1]: This is a footnote!
-
 ## Tips & Tricks
 
 1. **Use Headers Wisely**: Structure your content with clear hierarchy for better table of contents

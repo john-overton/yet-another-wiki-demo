@@ -1,13 +1,13 @@
 {
   "pages": [
     {
-      "id": "1",
+      "id": "9",
       "slug": "welcome",
-      "title": "Welcome to Yet Another Wiki!",
+      "title": "Welcome",
       "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-11T02:30:22.860Z",
+      "lastModified": "2024-11-19T03:21:07.522Z",
       "sortOrder": 1,
       "children": []
     }
