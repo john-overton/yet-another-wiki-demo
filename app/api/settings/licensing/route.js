@@ -5,7 +5,7 @@ async function verifyLicense(email, licenseKey) {
   try {
     console.log('Verifying license with:', { email, licenseKey });
     
-    const response = await fetch('http://localhost:3001/api/license/verify', {
+    const response = await fetch('https://lic.yetanotherwiki.com/api/license/verify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
