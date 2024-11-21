@@ -9,10 +9,10 @@ const RATE_LIMIT = {
 
 // IP blocking configuration
 const BLOCK_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-const MAX_FAILED_ATTEMPTS = 10; // increased from 3 to 10 attempts
+const MAX_FAILED_ATTEMPTS = 15;
 
 // License checking configuration
-const LICENSE_CHECK_INTERVAL = 3 * 60 * 60 * 1000; // 3 hours
+const LICENSE_CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 let lastLicenseCheck = 0;
 
 // Use KV store for persistence (Edge compatible)
