@@ -266,9 +266,17 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
           h4: createHeadingComponent('h4'),
           h5: createHeadingComponent('h5'),
           h6: createHeadingComponent('h6'),
-          ul: (props) => <ul className="list-disc list-inside mb-4" {...props} />,
-          ol: (props) => <ol className="list-decimal list-inside mb-4" {...props} />,
-          li: (props) => <li className="mb-1" {...props} />,
+          ul: (props) => <ul className="list-disc list-outside pl-6 mb-4" {...props} />,
+          ol: (props) => <ol className="list-decimal list-outside pl-6 mb-4" {...props} />,
+          li: ({ children, ordered, ...props }) => {
+            // Handle both direct text and nested paragraph content
+            const content = children?.type === 'p' ? children.props.children : children;
+            return (
+              <li className="mb-1 pl-1" {...props}>
+                {content}
+              </li>
+            );
+          },
           blockquote: (props) => <blockquote className="border-l-4 border-gray-300 pl-4 italic mb-4" {...props} />,
           table: Table,
           thead: THead,
