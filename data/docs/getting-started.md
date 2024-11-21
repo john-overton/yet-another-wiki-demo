@@ -8,11 +8,11 @@ This guide will help you navigate and use the core features of Yet Another Wiki 
 
 The sidebar on the left provides your main navigation structure:
 
-- **Browse Documents**: Click on any document title to open it
-- **Expand/Collapse**: Use the `+` and `-` icons to show/hide nested pages
-- **Current Page**: The current page is highlighted with a gradient background
-- **Add New Pages**: Click the "Add Page" button at the top of the sidebar (requires appropriate permissions)
-- **Nested Structure**: Documents can be organized in a hierarchical structure for better organization
+* **Browse Documents**: Click on any document title to open it
+* **Expand/Collapse**: Use the `+` and `-` icons to show/hide nested pages
+* **Current Page**: The current page is highlighted with a gradient background
+* **Add New Pages**: Click the "Add Page" button at the top of the sidebar (requires appropriate permissions)
+* **Nested Structure**: Documents can be organized in a hierarchical structure for better organization
 
 :::tip
 You can quickly collapse/expand the sidebar using the menu button in the top-left corner of the screen.
@@ -22,12 +22,12 @@ You can quickly collapse/expand the sidebar using the menu button in the top-lef
 
 The search feature helps you quickly find content:
 
-- Press `/` anywhere to focus the search bar
-- Type your search term to see matching results
-- Results show both document titles and content excerpts
-- Use arrow keys (↑/↓) to navigate results
-- Press Enter to open the selected result
-- Click any result to navigate to that document
+* Press `ctrl + k` anywhere to focus the search bar
+* Type your search term to see matching results
+* Results show both document titles and content excerpts
+* Use arrow keys (↑/↓) to navigate results
+* Press Enter to open the selected result
+* Click any result to navigate to that document
 
 :::info
 Search results are context-aware and will only show content you have permission to access.
@@ -39,20 +39,19 @@ Search results are context-aware and will only show content you have permission 
 
 Every document has an automatic table of contents:
 
-- Click the list icon (☰) in the top-right to show/hide
-- Automatically generated from document headings
-- Click any entry to jump to that section
-- Highlights the current section as you scroll
-- Follows you as you scroll through the document
+* Click the list icon (☰) in the top-right to show/hide
+* Automatically generated from document headings
+* Click any entry to jump to that section
+* Highlights the current section as you scroll
+* Follows you as you scroll through the document
 
 ### In-Document Navigation
 
-The MarkdownRenderer provides several navigation features:
+The markdown renderer provides several navigation features:
 
-- **Section Links**: Hover over any heading to reveal a link icon (🔗)
-- **Auto-Scrolling**: Clicking ToC entries smoothly scrolls to the section
-- **Previous/Next**: Navigate between documents using the buttons at the bottom
-- **Breadcrumbs**: Track your location in the document hierarchy
+* **Section Links**: Hover over any heading to reveal a link icon (🔗)
+* **Auto-Scrolling**: Clicking ToC entries smoothly scrolls to the section
+* **Previous/Next**: Navigate between documents using the buttons at the bottom
 
 ## Special Features ✨
 
@@ -126,10 +125,10 @@ const example = "Hello World";
 
 Common keyboard shortcuts to improve your workflow:
 
-- `/` - Focus search
-- `↑/↓` - Navigate search results
-- `Enter` - Select search result
-- `Esc` - Close modals/search
+* `ctrl + K` - Focus search
+* `↑/↓` - Navigate search results
+* `Enter` - Select search result
+* `Esc` - Close modals/search
 
 ## Next Steps 🚀
 
