@@ -46,6 +46,17 @@ async function checkLicense() {
       return { success: false, message: 'No license data found' };
     }
 
+    // If we already know the license is valid, return early
+    if (licenseData.isValid) {
+      return {
+        success: true,
+        isValid: true,
+        message: 'License is valid',
+        licenseType: licenseData.licenseType,
+        lastCheck: licenseData.lastCheck
+      };
+    }
+
     // Use stored 'key' as licenseKey for verification
     const verificationResult = await verifyLicense(licenseData.email, licenseData.key);
     console.log('Periodic verification result:', verificationResult);
