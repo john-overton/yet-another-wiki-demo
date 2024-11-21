@@ -49,3 +49,6 @@ pocketbase.exe
 
 #public files
 /public
+
+# documentation
+/documentation
