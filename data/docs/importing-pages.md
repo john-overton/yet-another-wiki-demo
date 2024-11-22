@@ -4,12 +4,16 @@ The wiki provides a built-in page import feature that allows you to add existing
 
 ## Features
 
-- **Markdown Support**: Import any valid markdown (.md) files into your wiki
-- **Location Selection**: Choose where to place imported pages:
-  - Root level (top of the hierarchy)
-  - Under any existing page
-- **Simple Interface**: User-friendly modal with file selection and location dropdown
-- **Validation**: Ensures only markdown files are selected
+* **Markdown Support**: Import any valid markdown (.md) files into your wiki
+* **Location Selection**: Choose where to place imported pages:
+  * Root level (top of the hierarchy)
+  * Under any existing page
+* **Simple Interface**: User-friendly modal with file selection and location dropdown
+* **Validation**: Ensures only markdown files are selected
+
+:::caution
+Images in imported Markdown documents may break if they are not publicly available links.  It may be necessary to re-upload your images in the page editor after you import the document.
+:::
 
 ## Import Process
 
