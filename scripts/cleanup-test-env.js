@@ -85,8 +85,8 @@ async function cleanupConfigSettings() {
                 darkLogo: null
             },
             footerLogo: {
-                "lightLogo": "/api/theming-content?path=footer-logo-light-1732296787344.png",
-                "darkLogo": "/api/theming-content?path=footer-logo-dark-1732296514874.png"
+                "lightLogo": "/api/theming-content?path=footer-logo-light-1732298958761.png",
+                "darkLogo": "/api/theming-content?path=footer-logo-dark-1732298963639.png"
             },
             footerSettings: {
                 customCopyrightText: "",
