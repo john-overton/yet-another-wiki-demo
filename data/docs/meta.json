@@ -131,10 +131,21 @@
           "lastModified": "2024-11-22T03:00:48.596Z",
           "children": [],
           "sortOrder": 7
+        },
+        {
+          "id": "13",
+          "slug": "server-side-stuff",
+          "title": "Server Side Stuff",
+          "path": "server-side-stuff.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T17:45:08.086Z",
+          "children": [],
+          "sortOrder": 8
         }
       ],
       "sortOrder": 2
     }
   ],
-  "lastId": 12
+  "lastId": 13
 }
