@@ -7,6 +7,7 @@ The wiki uses a powerful markdown renderer that supports GitHub Flavored Markdow
 ### Headers
 
 Markdown:
+
 ```markdown
 # H1 Header
 ## H2 Header
@@ -19,15 +20,21 @@ Markdown:
 Renders as:
 
 # H1 Header
+
 ## H2 Header
+
 ### H3 Header
+
 #### H4 Header
+
 ##### H5 Header
+
 ###### H6 Header
 
 ### Text Formatting
 
 Markdown:
+
 ```markdown
 **Bold text**
 *Italic text*
@@ -43,6 +50,7 @@ Renders as:
 ### Lists
 
 Markdown:
+
 ```markdown
 - Unordered list item
 - Another item
@@ -55,9 +63,9 @@ Markdown:
 
 Renders as:
 
-- Unordered list item
-- Another item
-  - Nested item
+* Unordered list item
+* Another item
+  * Nested item
 
 1. Ordered list item
 2. Another item
@@ -66,19 +74,21 @@ Renders as:
 ### Links and Images
 
 Markdown:
+
 ```markdown
 [Link text](https://example.com)
-![Wiki Logo](favicon-32x32.png)
+![Wiki Logo](/static/images/android-chrome-192x192.png)
 ```
 
 Renders as:
 
 [Link text](https://example.com)
-![Wiki Logo](favicon-32x32.png)
+![Wiki Logo](/static/images/android-chrome-192x192.png)
 
 ### Blockquotes
 
 Markdown:
+
 ```markdown
 > This is a blockquote
 > Multiple lines
@@ -88,14 +98,14 @@ Markdown:
 Renders as:
 
 > This is a blockquote
-> Multiple lines
->> Nested blockquotes
+> Multiple lines> Nested blockquotes
 
 ## Enhanced Features
 
 ### Tables
 
 Markdown:
+
 ```markdown
 | Header 1 | Header 2 |
 |----------|----------|
@@ -106,13 +116,14 @@ Markdown:
 Renders as:
 
 | Header 1 | Header 2 |
-|----------|----------|
+| -------- | -------- |
 | Cell 1   | Cell 2   |
 | Cell 3   | Cell 4   |
 
 ### Code Blocks
 
 Markdown:
+
 ````markdown
 ```javascript
 const hello = "world";
@@ -130,6 +141,7 @@ console.log(hello);
 ### Admonitions
 
 Markdown:
+
 ```markdown
 :::note
 This is a note admonition
@@ -179,6 +191,7 @@ This is a danger admonition
 #### Task Lists
 
 Markdown:
+
 ```markdown
 - [x] Completed task
 - [ ] Incomplete task
@@ -186,12 +199,13 @@ Markdown:
 
 Renders as:
 
-- [x] Completed task
-- [ ] Incomplete task
+* [x] Completed task
+* [ ] Incomplete task
 
 #### Tables with Alignment
 
 Markdown:
+
 ```markdown
 | Left | Center | Right |
 |:-----|:------:|------:|
@@ -201,12 +215,13 @@ Markdown:
 Renders as:
 
 | Left | Center | Right |
-|:-----|:------:|------:|
-|Left  |Center  |Right  |
+| :--- | :----: | ----: |
+| Left | Center | Right |
 
 #### Footnotes
 
 Markdown:
+
 ```markdown
 Here's a sentence with a footnote[^1].
 
@@ -215,13 +230,14 @@ Here's a sentence with a footnote[^1].
 
 Renders as:
 
-Here's a sentence with a footnote[^1].
+Here's a sentence with a footnote\[^1].
 
-[^1]: This is the footnote.
+\[^1]: This is the footnote.
 
 #### Autolinked References
 
 Markdown:
+
 ```markdown
 https://example.com
 #123
@@ -230,8 +246,8 @@ https://example.com
 
 Renders as:
 
-https://example.com
-#123
+[https://example.com](https://example.com)
+\#123
 123abc
 
 ## Special Features
@@ -243,10 +259,11 @@ All headers automatically get anchor links that appear on hover, allowing easy l
 ### Image Optimization
 
 Images are automatically optimized using Next.js Image component, providing:
-- Lazy loading
-- Automatic sizing
-- Priority loading for the first image
-- WebP format conversion
+
+* Lazy loading
+* Automatic sizing
+* Priority loading for the first image
+* WebP format conversion
 
 Example image with optimization:
 
@@ -271,17 +288,18 @@ def example_function():
 
 Tables include responsive features:
 
-| Feature | Description | Example |
-|---------|-------------|---------|
-| Responsive | Tables scroll horizontally on small screens | This table demonstrates the feature |
-| Hover Effects | Rows highlight on mouse hover | Try hovering over these rows |
-| Styling | Consistent borders and spacing | Visible in this table |
+| Feature       | Description                                 | Example                             |
+| ------------- | ------------------------------------------- | ----------------------------------- |
+| Responsive    | Tables scroll horizontally on small screens | This table demonstrates the feature |
+| Hover Effects | Rows highlight on mouse hover               | Try hovering over these rows        |
+| Styling       | Consistent borders and spacing              | Visible in this table               |
 
 ### Navigation
 
 Each page includes an automatic navigation section at the bottom showing:
-- Previous page link
-- Next page link
-- Page hierarchy
+
+* Previous page link
+* Next page link
+* Page hierarchy
 
 Try scrolling to the bottom of this page to see the navigation in action.

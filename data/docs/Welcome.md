@@ -1,4 +1,4 @@
-# Yet Another Wiki 🚀
+# Yet Another Wiki 🙃
 
 *"Because the world needed another wiki platform... said no one ever."*
 
@@ -14,7 +14,7 @@ Yet Another Wiki is like that friend who's really good at organizing stuff but d
 
 * Rich text editing powered by [MDXEditor](https://mdxeditor.dev/) (because markdown is great, but options are better)
 
-![](/api/uploads/post-images/c58756c3f9afbcee26194f2e15b97cad-firefox-Yh5k8jqfdo.png)
+![](/api/uploads/post-images/e63e198506eb7cd5a5cff170898b5c97-firefox-vTdRNU9naO.png)
 
 * Nest pages like you're organizing your thoughts
 * Private pages for your secret documentation stash
