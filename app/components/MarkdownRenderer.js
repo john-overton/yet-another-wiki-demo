@@ -252,7 +252,7 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
                 {...props}
                 width={1920}
                 height={1080}
-                style={{ maxWidth: '100%', width: 'auto', height: 'auto', margin: '1rem 0', border: '1px solid #e5e7eb' }}
+                style={{ maxWidth: '100%', width: 'auto', height: 'auto', margin: '1rem 0'}}
                 alt={props.alt || ''}
                 unoptimized={true}
                 priority={isPriority}
