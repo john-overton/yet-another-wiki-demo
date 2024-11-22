@@ -124,7 +124,14 @@ const Footer = () => {
         </div>
         {!footerSettings.hidePoweredByText && (
           <div className="text-[10px] text-gray-600 dark:text-gray-400">
-            Powered by Yet Another Wiki
+            <a 
+              href="https://www.yetanotherwiki.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-gray-800 dark:hover:text-gray-200"
+            >
+              Powered by Yet Another Wiki
+            </a>
           </div>
         ) || <div></div>}
       </div>
