@@ -250,9 +250,9 @@ const MarkdownRenderer = ({ content, currentPage, pages, session }) => {
             return (
               <Image
                 {...props}
-                width={800}
-                height={400}
-                style={{ maxWidth: '100%', height: 'auto', margin: '1rem 0' }}
+                width={1920}
+                height={1080}
+                style={{ maxWidth: '100%', width: 'auto', height: 'auto', margin: '1rem 0', border: '1px solid #e5e7eb' }}
                 alt={props.alt || ''}
                 unoptimized={true}
                 priority={isPriority}
