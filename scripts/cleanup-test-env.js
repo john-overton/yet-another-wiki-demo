@@ -72,11 +72,11 @@ async function cleanupConfigSettings() {
             links: [],
             footerLinks: {
                 column1: {
-                    header: null,
+                    header: "",
                     links: []
                 },
                 column2: {
-                    header: null,
+                    header: "",
                     links: []
                 }
             },
@@ -103,15 +103,6 @@ async function cleanupConfigSettings() {
         await fs.writeFile(generalSettingsPath, JSON.stringify(baseGeneralSettings, null, 2));
         console.log('✓ General settings reset');
 
-        // Clean up theming content directory
-        const themingDir = path.join(__dirname, '../data/content/theming');
-        try {
-            await fs.rm(themingDir, { recursive: true, force: true });
-            await fs.mkdir(themingDir, { recursive: true });
-            console.log('✓ Theming content directory cleaned');
-        } catch (error) {
-            console.error('Error cleaning theming content directory:', error);
-        }
     } catch (error) {
         console.error('Error resetting config settings:', error);
     }
