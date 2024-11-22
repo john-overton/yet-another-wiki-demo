@@ -13,6 +13,9 @@ Yet Another Wiki is like that friend who's really good at organizing stuff but d
 #### Content Creation Made Human 📝
 
 * Rich text editing powered by [MDXEditor](https://mdxeditor.dev/) (because markdown is great, but options are better)
+
+![](/api/uploads/post-images/c58756c3f9afbcee26194f2e15b97cad-firefox-Yh5k8jqfdo.png)
+
 * Nest pages like you're organizing your thoughts
 * Private pages for your secret documentation stash
 * Custom URLs that don't look like keyboard smashes

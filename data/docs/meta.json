@@ -7,7 +7,7 @@
       "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-11-21T02:16:36.668Z",
+      "lastModified": "2024-11-22T15:36:42.448Z",
       "sortOrder": 1,
       "children": []
     },
@@ -120,10 +120,21 @@
             }
           ],
           "sortOrder": 6
+        },
+        {
+          "id": "12",
+          "slug": "application-updates",
+          "title": "Application Updates",
+          "path": "application-updates.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T03:00:48.596Z",
+          "children": [],
+          "sortOrder": 7
         }
       ],
       "sortOrder": 2
     }
   ],
-  "lastId": 11
+  "lastId": 12
 }
