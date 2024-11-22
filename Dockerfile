@@ -1,6 +1,10 @@
 # Use Node.js LTS
 FROM node:22-alpine
 
+# Add version argument
+ARG VERSION
+ENV APP_VERSION=$VERSION
+
 # Install PNPM
 RUN npm install -g pnpm
 
