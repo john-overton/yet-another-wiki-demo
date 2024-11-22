@@ -10,7 +10,120 @@
       "lastModified": "2024-11-21T02:16:36.668Z",
       "sortOrder": 1,
       "children": []
+    },
+    {
+      "id": "2",
+      "slug": "manual",
+      "title": "Manual",
+      "path": "manual.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-11-22T02:34:46.041Z",
+      "children": [
+        {
+          "id": "3",
+          "slug": "markdown-renderer-and-cheat-sheet",
+          "title": "Markdown Renderer and Cheat Sheet",
+          "path": "markdown-renderer-and-cheat-sheet.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:33:20.816Z",
+          "children": [],
+          "sortOrder": 1
+        },
+        {
+          "id": "4",
+          "slug": "editing-a-page",
+          "title": "Editing A Page",
+          "path": "editing-a-page.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:33:35.505Z",
+          "children": [],
+          "sortOrder": 2
+        },
+        {
+          "id": "5",
+          "slug": "importing-pages",
+          "title": "Importing Pages",
+          "path": "importing-pages.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:33:41.658Z",
+          "children": [],
+          "sortOrder": 3
+        },
+        {
+          "id": "6",
+          "slug": "trash-bin",
+          "title": "Trash Bin",
+          "path": "trash-bin.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:33:51.181Z",
+          "children": [],
+          "sortOrder": 4
+        },
+        {
+          "id": "7",
+          "slug": "settings",
+          "title": "Settings",
+          "path": "settings.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:34:06.477Z",
+          "children": [],
+          "sortOrder": 5,
+          "deleted": true
+        },
+        {
+          "id": "8",
+          "slug": "app-settings",
+          "title": "App Settings",
+          "path": "app-settings.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-22T02:34:16.353Z",
+          "children": [
+            {
+              "id": "9",
+              "slug": "user-management",
+              "title": "User Management",
+              "path": "user-management.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-22T02:34:57.666Z",
+              "children": [],
+              "sortOrder": 1
+            },
+            {
+              "id": "10",
+              "slug": "theming",
+              "title": "Theming",
+              "path": "theming.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-22T02:35:07.251Z",
+              "children": [],
+              "sortOrder": 2
+            },
+            {
+              "id": "11",
+              "slug": "backup-and-restore",
+              "title": "Backup and Restore",
+              "path": "backup-and-restore.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-22T02:35:18.985Z",
+              "children": [],
+              "sortOrder": 3
+            }
+          ],
+          "sortOrder": 6
+        }
+      ],
+      "sortOrder": 2
     }
   ],
-  "lastId": 1
+  "lastId": 11
 }
