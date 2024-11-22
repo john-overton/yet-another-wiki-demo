@@ -49,6 +49,7 @@ async function cleanupNginxConfig() {
 async function cleanupConfigSettings() {
     const licensingPath = path.join(__dirname, '../config/settings/licensing.json');
     const themingPath = path.join(__dirname, '../config/settings/theming.json');
+    const generalSettingsPath = path.join(__dirname, '../config/settings/generalsettings.json');
     
     try {
         // Reset licensing.json to blank state
@@ -67,15 +68,15 @@ async function cleanupConfigSettings() {
         // Reset theming.json to blank state with new logo structure
         const blankTheming = {
             font: "Open Sans",
-            theme: "dark",
+            theme: "light",
             links: [],
             footerLinks: {
                 column1: {
-                    header: "Documentation",
+                    header: null,
                     links: []
                 },
                 column2: {
-                    header: "Community",
+                    header: null,
                     links: []
                 }
             },
@@ -84,8 +85,8 @@ async function cleanupConfigSettings() {
                 darkLogo: null
             },
             footerLogo: {
-                lightLogo: null,
-                darkLogo: null
+                "lightLogo": "/api/theming-content?path=footer-logo-light-1732296787344.png",
+                "darkLogo": "/api/theming-content?path=footer-logo-dark-1732296514874.png"
             },
             footerSettings: {
                 customCopyrightText: "",
@@ -94,6 +95,13 @@ async function cleanupConfigSettings() {
         };
         await fs.writeFile(themingPath, JSON.stringify(blankTheming, null, 2));
         console.log('✓ Theming settings reset');
+
+        // Reset generalsettings.json to base state
+        const baseGeneralSettings = {
+            preventUserRegistration: false
+        };
+        await fs.writeFile(generalSettingsPath, JSON.stringify(baseGeneralSettings, null, 2));
+        console.log('✓ General settings reset');
 
         // Clean up theming content directory
         const themingDir = path.join(__dirname, '../data/content/theming');
