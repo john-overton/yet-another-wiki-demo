@@ -13,9 +13,12 @@ const Settings = () => {
     theming: true,
     licensing: true,
     users: true,
-    backup: true
+    backup: true,
+    env: true
   });
   const [licenseType, setLicenseType] = useState(null);
+  const [nextAuthUrl, setNextAuthUrl] = useState('');
+  const [envMessage, setEnvMessage] = useState('');
 
   useEffect(() => {
     const loadLicenseInfo = async () => {
@@ -30,6 +33,19 @@ const Settings = () => {
       }
     };
     loadLicenseInfo();
+
+    const loadEnvSettings = async () => {
+      try {
+        const response = await fetch('/api/settings/env');
+        if (response.ok) {
+          const data = await response.json();
+          setNextAuthUrl(data.nextAuthUrl);
+        }
+      } catch (error) {
+        console.error('Error loading env settings:', error);
+      }
+    };
+    loadEnvSettings();
   }, []);
 
   const toggleSection = (section) => {
@@ -51,6 +67,29 @@ const Settings = () => {
     </div>
   );
 
+  const handleNextAuthUrlUpdate = async () => {
+    try {
+      const response = await fetch('/api/settings/env', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nextAuthUrl }),
+      });
+
+      if (response.ok) {
+        setEnvMessage('Server URL updated successfully');
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update Server URL');
+      }
+    } catch (error) {
+      setEnvMessage(error.message);
+    }
+
+    setTimeout(() => setEnvMessage(''), 3000);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -65,6 +104,60 @@ const Settings = () => {
           <i className="ri-arrow-left-line"></i>
           Back to Home
         </Link>
+      </div>
+
+      {/* Environment Settings Section */}
+      <div className="mb-4">
+        <div className="rounded-lg overflow-hidden border border-gray-700">
+          <SectionHeader 
+            title="Environment Settings"
+            isExpanded={expandedSections.env}
+            onToggle={() => toggleSection('env')}
+          />
+          <div className={`transition-all duration-200 ${
+            expandedSections.env ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
+          }`}>
+            <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-4">
+                <div>
+                  <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Server URL
+                  </label>
+                  <input
+                    type="text"
+                    value={nextAuthUrl}
+                    onChange={(e) => setNextAuthUrl(e.target.value)}
+                    placeholder="http://localhost:3000"
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    For development, use localhost:3000. For production, use your domain (e.g., https://example.com)
+                  </p>
+                </div>
+
+                {envMessage && (
+                  <div className={`p-3 rounded-lg ${
+                    envMessage.includes('success') 
+                      ? 'bg-green-100 text-green-700 border border-green-400' 
+                      : 'bg-red-100 text-red-700 border border-red-400'
+                  }`}>
+                    {envMessage}
+                  </div>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleNextAuthUrlUpdate}
+                    className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+                  >
+                    <i className="ri-save-line"></i>
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* User Management Section - Only visible for pro license */}
