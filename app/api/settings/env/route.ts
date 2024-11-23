@@ -8,7 +8,7 @@ export async function GET() {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session?.user?.role || session.user.role !== 'admin') {
+    if (!session?.user?.role || session.user.role !== 'Admin') {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session?.user?.role || session.user.role !== 'admin') {
+    if (!session?.user?.role || session.user.role !== 'Admin') {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
