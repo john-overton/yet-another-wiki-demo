@@ -20,9 +20,9 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const failedAttemptsStore = new Map<string, { count: number; lastAttempt: number }>();
 const blockedIPs = new Map<string, number>();
 
-async function blockIP(ip: string) {
+async function blockIP(ip: string, request: NextRequest) {
     try {
-        const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/block-ip`, {
+        const response = await fetch(`${request.nextUrl.origin}/api/auth/block-ip`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,7 +106,7 @@ export async function middleware(request: NextRequest) {
         if (failedAttempts.count >= MAX_FAILED_ATTEMPTS) {
             blockedIPs.set(ip, Date.now() + BLOCK_DURATION);
             // Persist IP block
-            await blockIP(ip);
+            await blockIP(ip, request);
             return new NextResponse(null, {
                 status: 403,
                 statusText: 'Forbidden: Too many failed login attempts'
@@ -131,7 +131,7 @@ export async function middleware(request: NextRequest) {
         // Block IP if rate limit is exceeded
         blockedIPs.set(ip, now + BLOCK_DURATION);
         // Persist IP block
-        await blockIP(ip);
+        await blockIP(ip, request);
         
         return new NextResponse(null, {
             status: 429,

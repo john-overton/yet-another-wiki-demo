@@ -19,6 +19,7 @@ const Settings = () => {
   const [licenseType, setLicenseType] = useState(null);
   const [nextAuthUrl, setNextAuthUrl] = useState('');
   const [envMessage, setEnvMessage] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const loadLicenseInfo = async () => {
@@ -68,7 +69,9 @@ const Settings = () => {
   );
 
   const handleNextAuthUrlUpdate = async () => {
+    setIsUpdating(true);
     try {
+      // First update the .env file
       const response = await fetch('/api/settings/env', {
         method: 'POST',
         headers: {
@@ -77,17 +80,28 @@ const Settings = () => {
         body: JSON.stringify({ nextAuthUrl }),
       });
 
-      if (response.ok) {
-        setEnvMessage('Server URL updated successfully');
-      } else {
+      if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to update Server URL');
       }
+
+      // Then reload the environment variables
+      const reloadResponse = await fetch('/api/settings/env/reload', {
+        method: 'POST',
+      });
+
+      if (!reloadResponse.ok) {
+        const data = await reloadResponse.json();
+        throw new Error(data.error || 'Failed to reload environment variables');
+      }
+
+      setEnvMessage('Server URL updated and reloaded successfully');
     } catch (error) {
       setEnvMessage(error.message);
+    } finally {
+      setIsUpdating(false);
+      setTimeout(() => setEnvMessage(''), 3000);
     }
-
-    setTimeout(() => setEnvMessage(''), 3000);
   };
 
   return (
@@ -148,10 +162,20 @@ const Settings = () => {
                 <div className="flex justify-end">
                   <button
                     onClick={handleNextAuthUrlUpdate}
-                    className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2"
+                    disabled={isUpdating}
+                    className="px-4 py-2 bg-white shadow-lg dark:bg-gray-800 border border-gray-200 dark:text-white text-black hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg flex items-center gap-2 disabled:opacity-50"
                   >
-                    <i className="ri-save-line"></i>
-                    Save Changes
+                    {isUpdating ? (
+                      <>
+                        <i className="ri-loader-4-line animate-spin"></i>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="ri-save-line"></i>
+                        Save Changes
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
