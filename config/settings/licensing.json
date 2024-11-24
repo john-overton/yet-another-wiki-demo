@@ -1,9 +1,9 @@
 {
-  "email": "john@jroverton.com",
-  "key": "RT9JW-78MDNG6IP2CVSXUVFPF",
-  "isValid": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AanJvdmVydG9uLmNvbSIsImxpY2Vuc2VUeXBlIjoicHJvIiwiaWF0IjoxNzMyMzkwMDA4LCJleHAiOjE3MzI0NzY0MDh9.tyn9JEJkBgZXwNru4MbbF98v6o8h5k7Kl3IufwwO2fg",
-  "licenseType": "pro",
-  "lastVerified": "2024-11-23T19:26:49.891Z",
-  "lastCheck": "2024-11-23T19:26:49.891Z"
+  "email": "",
+  "key": "",
+  "isValid": false,
+  "token": "",
+  "licenseType": "",
+  "lastVerified": "",
+  "lastCheck": ""
 }
