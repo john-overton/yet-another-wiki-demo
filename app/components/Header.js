@@ -156,27 +156,29 @@ const Header = ({ onFileSelect, isMobile, isSidebarVisible, onToggleSidebar, isE
 
         <div className="flex flex-1 items-center justify-end ml-4">
           {/* Links Container */}
-          <div className="relative flex items-center mr-4" ref={menuRef}>
-            {shouldCollapseLinks ? (
-              <div className="relative">
-                <MenuButton 
-                  onClick={() => setShowMobileMenu(!showMobileMenu)} 
-                  isActive={showMobileMenu}
-                />
-                {showMobileMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10">
-                    <div className="border-b border-gray-200 dark:border-gray-600">
-                      {links.map(link => renderLink(link, true))}
+          {links.length > 0 && (
+            <div className="relative flex items-center mr-4" ref={menuRef}>
+              {shouldCollapseLinks ? (
+                <div className="relative">
+                  <MenuButton 
+                    onClick={() => setShowMobileMenu(!showMobileMenu)} 
+                    isActive={showMobileMenu}
+                  />
+                  {showMobileMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-10">
+                      <div className="border-b border-gray-200 dark:border-gray-600">
+                        {links.map(link => renderLink(link, true))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex space-x-4">
-                {links.map(link => renderLink(link, false))}
-              </div>
-            )}
-          </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex space-x-4">
+                  {links.map(link => renderLink(link, false))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Search and User Controls */}
           <div className="flex items-center">
