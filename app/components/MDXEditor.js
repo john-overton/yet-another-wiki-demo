@@ -71,16 +71,19 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const SectionHeader = ({ title, isExpanded, onToggle }) => (
-  <div className="flex justify-between items-center bg-[#717171] dark:bg-[#1F2937] text-gray-300 px-4 py-2 rounded-t text-sm border-b border-gray-700">
-    <span className="font-medium text-base">{title}</span>
-    <button
-      onClick={onToggle}
-      className="hover:text-white transition-colors text-xs uppercase tracking-wider opacity-75 hover:opacity-100"
-    >
-      {isExpanded ? '▲ Hide Section' : '▼ Show Section'}
-    </button>
-  </div>
+const Tab = ({ icon, label, isActive, onClick, tooltip }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${
+      isActive 
+        ? 'bg-white dark:bg-gray-800 text-primary border-t border-l border-r border-gray-300 dark:border-gray-600' 
+        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+    }`}
+    title={tooltip}
+  >
+    <i className={icon}></i>
+    <span className="hidden sm:inline">{label}</span>
+  </button>
 );
 
 const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onChangesPending }) => {
@@ -98,7 +101,7 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   const [isLoading, setIsLoading] = useState(true);
   const [isSourceMode, setIsSourceMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isPageDetailsExpanded, setIsPageDetailsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState('editor');
   const [fileStructure, setFileStructure] = useState([]);
   const editorRef = useRef(null);
 
@@ -114,7 +117,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
       hasSlugChanged || 
       hasPublicStateChanged;
 
-    // Pass both the change status and current editor state
     if (onChangesPending) {
       onChangesPending(hasChanges, hasChanges ? {
         content,
@@ -145,7 +147,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
             actualContent = parsed.content;
           }
         } catch (e) {
-          // If parsing fails, use the original content
           actualContent = fileContent;
         }
 
@@ -213,7 +214,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
         return;
       }
 
-      // First, update the file content
       const contentResponse = await fetch('/api/update-file', {
         method: 'POST',
         headers: {
@@ -246,7 +246,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
 
       await onSave(updatedFile);
       
-      // Update initial values after successful save
       setInitialContent(content);
       setInitialTitle(title);
       setInitialSlug(slug);
@@ -277,7 +276,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
     }
   };
 
-  // Only include officially supported languages
   const codeBlockLanguages = {
     'text': 'Plain Text',
     'c': 'C',
@@ -297,7 +295,6 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
     'markdown': 'Markdown'
   };
 
-  // Create a code block editor descriptor that uses CodeMirror for all languages
   const codeBlockEditorDescriptor = {
     match: () => true,
     priority: 1,
@@ -309,154 +306,166 @@ const MDXEditorComponent = ({ file, onSave, onCancel, refreshFileStructure, onCh
   }
 
   return (
-    <>
-      <div className="flex p-4 flex-col h-full">
-        <div className="flex flex-col gap-4 mb-4">
-          <div className="rounded-lg overflow-hidden border border-gray-700">
-            <SectionHeader 
-              title="Page Details"
-              isExpanded={isPageDetailsExpanded}
-              onToggle={() => setIsPageDetailsExpanded(!isPageDetailsExpanded)}
-            />
-            <div className={`transition-all duration-200 ${
-              isPageDetailsExpanded ? 'opacity-100 p-4' : 'h-0 opacity-0 overflow-hidden'
-            }`}>
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
-                  <input
-                    type="text"
-                    value={title || ''}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL Slug</label>
-                  <input
-                    type="text"
-                    value={slug || ''}
-                    onChange={(e) => setSlug(e.target.value)}
-                    className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between border-b border-gray-300 dark:border-gray-600 mt-1">
+        <div className="flex gap-2">
+          <Tab
+            icon="ri-file-settings-line"
+            label="Page Settings"
+            isActive={activeTab === 'settings'}
+            onClick={() => setActiveTab('settings')}
+            tooltip="Page Settings"
+          />
+          <Tab
+            icon="ri-edit-2-line"
+            label="Editor"
+            isActive={activeTab === 'editor'}
+            onClick={() => setActiveTab('editor')}
+            tooltip="Editor"
+          />
+        </div>
+        <div className="flex gap-2 p-2">
+          {activeTab === 'editor' && (
+            <button
+              onClick={() => setIsPreview(!isPreview)}
+              className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+              title={isPreview ? "Edit" : "Preview"}
+            >
+              <i className={isPreview ? "ri-pencil-line" : "ri-eye-fill"}></i>
+              <span className="hidden sm:inline">{isPreview ? "Edit" : "Preview"}</span>
+            </button>
+          )}
+          <button
+            onClick={handleCancel}
+            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+            title="Cancel"
+          >
+            <i className="ri-close-line"></i>
+            <span className="hidden sm:inline">Cancel</span>
+          </button>
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+            title="Save"
+          >
+            <i className="ri-save-line"></i>
+            <span className="hidden sm:inline">Save</span>
+          </button>
+        </div>
+      </div>
+
+      {errorMessage && (
+        <div className="text-red-500 p-4">{errorMessage}</div>
+      )}
+
+      <div className="flex-grow overflow-auto p-4">
+        {activeTab === 'settings' ? (
+          <div className="space-y-6">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
+                <input
+                  type="text"
+                  value={title || ''}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">URL Slug</label>
+                <input
+                  type="text"
+                  value={slug || ''}
+                  onChange={(e) => setSlug(e.target.value)}
+                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div>
+                <button
+                  onClick={() => setIsPublic(!isPublic)}
+                  className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  <i className={isPublic ? "ri-eye-line" : "ri-eye-off-line"}></i>
+                  <span className={isPublic ? "" : "text-gray-500"}>Public</span>
+                </button>
               </div>
             </div>
-          </div>
-          <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
-          <div className="flex items-center justify-between">
-            <div>
-              <button
-                onClick={() => setIsPublic(!isPublic)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-              >
-                <i className={isPublic ? "ri-eye-line" : "ri-eye-off-line"}></i>
-                <span className={isPublic ? "" : "text-gray-500"}>Public</span>
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsPreview(!isPreview)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-                title={isPreview ? "Edit" : "Preview"}
-              >
-                <i className={isPreview ? "ri-pencil-line" : "ri-eye-fill"}></i>
-                <span className="hidden sm:inline">{isPreview ? "Edit" : "Preview"}</span>
-              </button>
-              <button
-                onClick={handleCancel}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-                title="Cancel"
-              >
-                <i className="ri-close-line"></i>
-                <span className="hidden sm:inline">Cancel</span>
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600"
-                title="Save"
-              >
-                <i className="ri-save-line"></i>
-                <span className="hidden sm:inline">Save</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        {errorMessage && (
-          <div className="text-red-500 mb-2">{errorMessage}</div>
-        )}
-        {isPreview ? (
-          <div className="flex-grow overflow-auto">
-            <MarkdownRenderer 
-              content={content}
-              currentPage={file}
-              pages={fileStructure}
-              session={session}
-            />
+            <SortOrderEditor file={file} onSortOrderChange={handleSortOrderChange} />
           </div>
         ) : (
-          <ErrorBoundary>
-            <MDXEditor
-              ref={editorRef}
-              markdown={content}
-              onChange={handleEditorChange}
-              contentEditableClassName="mdxeditor-content-editable"
-              className={`${openSans.className} mdxeditor flex-grow overflow-auto p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
-              plugins={[
-                toolbarPlugin({
-                  toolbarContents: () => (
-                    <DiffSourceToggleWrapper>
-                      <UndoRedo />
-                      <Separator />
-                      <BoldItalicUnderlineToggles />
-                      <Separator />
-                      <ListsToggle />
-                      <Separator />
-                      <BlockTypeSelect />
-                      <Separator />
-                      <CreateLink />
-                      <InsertImage />
-                      <Separator />
-                      <InsertTable />
-                      <InsertThematicBreak />
-                      <Separator />
-                      <CodeToggle />
-                      <InsertCodeBlock />
-                      <Separator />
-                      <InsertAdmonition />
-                    </DiffSourceToggleWrapper>
-                  ),
-                }),
-                listsPlugin(),
-                quotePlugin(),
-                headingsPlugin({
-                  allowedHeadingLevels: [1, 2, 3, 4, 5, 6]
-                }),
-                linkPlugin({
-                  validateUrl: () => true, // Allow all URLs
-                }),
-                linkDialogPlugin(),
-                imagePlugin({
-                  imageUploadHandler: handleImageUpload
-                }),
-                tablePlugin(),
-                thematicBreakPlugin(),
-                frontmatterPlugin(),
-                codeBlockPlugin({
-                  defaultLanguage: 'js',
-                  codeBlockEditorDescriptors: [codeBlockEditorDescriptor]
-                }),
-                codeMirrorPlugin({ codeBlockLanguages }),
-                sandpackPlugin(),
-                diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
-                markdownShortcutPlugin(),
-                directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] })
-              ]}
-            />
-          </ErrorBoundary>
+          isPreview ? (
+            <div className="h-full overflow-auto">
+              <MarkdownRenderer 
+                content={content}
+                currentPage={file}
+                pages={fileStructure}
+                session={session}
+              />
+            </div>
+          ) : (
+            <ErrorBoundary>
+              <MDXEditor
+                ref={editorRef}
+                markdown={content}
+                onChange={handleEditorChange}
+                contentEditableClassName="mdxeditor-content-editable"
+                className={`${openSans.className} mdxeditor h-full overflow-auto p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded ${theme === 'dark' ? 'dark-theme' : ''}`}
+                plugins={[
+                  toolbarPlugin({
+                    toolbarContents: () => (
+                      <DiffSourceToggleWrapper>
+                        <UndoRedo />
+                        <Separator />
+                        <BoldItalicUnderlineToggles />
+                        <Separator />
+                        <ListsToggle />
+                        <Separator />
+                        <BlockTypeSelect />
+                        <Separator />
+                        <CreateLink />
+                        <InsertImage />
+                        <Separator />
+                        <InsertTable />
+                        <InsertThematicBreak />
+                        <Separator />
+                        <CodeToggle />
+                        <InsertCodeBlock />
+                        <Separator />
+                        <InsertAdmonition />
+                      </DiffSourceToggleWrapper>
+                    ),
+                  }),
+                  listsPlugin(),
+                  quotePlugin(),
+                  headingsPlugin({
+                    allowedHeadingLevels: [1, 2, 3, 4, 5, 6]
+                  }),
+                  linkPlugin({
+                    validateUrl: () => true,
+                  }),
+                  linkDialogPlugin(),
+                  imagePlugin({
+                    imageUploadHandler: handleImageUpload
+                  }),
+                  tablePlugin(),
+                  thematicBreakPlugin(),
+                  frontmatterPlugin(),
+                  codeBlockPlugin({
+                    defaultLanguage: 'js',
+                    codeBlockEditorDescriptors: [codeBlockEditorDescriptor]
+                  }),
+                  codeMirrorPlugin({ codeBlockLanguages }),
+                  sandpackPlugin(),
+                  diffSourcePlugin({ viewMode: isSourceMode ? 'source' : 'rich-text' }),
+                  markdownShortcutPlugin(),
+                  directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] })
+                ]}
+              />
+            </ErrorBoundary>
+          )
         )}
       </div>
-    </>
+    </div>
   );
 };
 
