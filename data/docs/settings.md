@@ -1,3 +1,0 @@
-# Settings
-
-Your content here.
