@@ -3,7 +3,8 @@ services:
     build:
       context: .
       args:
-        VERSION: ${VERSION:-$(cat VERSION)}
+        VERSION: ${VERSION}
+    image: yet-another-wiki-app:${VERSION}
     ports:
       - "3000:3000"
     volumes:

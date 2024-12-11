@@ -1,4 +1,4 @@
-import { PrismaClient, User as PrismaUser } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { NextResponse } from 'next/server';
 import { authOptions } from '../[...nextauth]/auth';
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
   try {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-    }) as PrismaUser | null;
+    });
 
     if (!user) {
       return NextResponse.json(

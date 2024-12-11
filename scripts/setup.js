@@ -7,15 +7,22 @@ async function generateNextAuthSecret() {
     return crypto.randomBytes(32).toString('base64');
 }
 
+async function getPackageVersion() {
+    const packageJson = JSON.parse(await fs.readFile('package.json', 'utf8'));
+    return packageJson.version;
+}
+
 async function createEnvFile() {
     try {
         await fs.access('.env');
         console.log('.env file already exists');
     } catch {
         const secret = await generateNextAuthSecret();
+        const version = await getPackageVersion();
         const envContent = `NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET="${secret}"
-DATABASE_URL="file:../db/yetanotherwiki.db"`;
+DATABASE_URL="file:../db/yetanotherwiki.db"
+VERSION="${version}"`;
         
         await fs.writeFile('.env', envContent);
         console.log('.env file created successfully');
