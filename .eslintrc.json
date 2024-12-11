@@ -1,0 +1,6 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "@emotion/unsafe-first-child": "off"
+  }
+}

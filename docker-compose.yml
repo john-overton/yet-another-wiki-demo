@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION}
+    image: yet-another-wiki-app:${VERSION}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - ./db:/db
+      - ./config:/config
+      - ./public:/public
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://localhost:3000
+      - DATABASE_URL=file:../db/yetanotherwiki.db
+    restart: unless-stopped

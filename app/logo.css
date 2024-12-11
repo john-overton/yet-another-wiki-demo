@@ -1,0 +1,26 @@
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 0.7s steps(1) infinite;
+  font-weight: bold;
+}
+
+.console-text {
+  font-family: monospace !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: #e5e7eb;
+}
+
+.console-text-light {
+  background-color: #717171;
+}
+
+.console-text-dark {
+  background-color: #2B2A33;
+  border-color: #4B5563;
+  border-width: 1px;
+}

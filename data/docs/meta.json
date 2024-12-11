@@ -1,0 +1,184 @@
+{
+  "pages": [
+    {
+      "id": "1",
+      "slug": "welcome",
+      "title": "Welcome",
+      "path": "welcome.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-12-10T21:18:50.896Z",
+      "sortOrder": 1,
+      "children": []
+    },
+    {
+      "id": "2",
+      "slug": "manual",
+      "title": "Manual",
+      "path": "manual.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-11-24T09:35:50.409Z",
+      "children": [
+        {
+          "id": "3",
+          "slug": "markdown-renderer-and-cheat-sheet",
+          "title": "Markdown Renderer and Cheat Sheet",
+          "path": "markdown-renderer-and-cheat-sheet.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-24T09:28:50.095Z",
+          "children": [],
+          "sortOrder": 1
+        },
+        {
+          "id": "4",
+          "slug": "editing-a-page",
+          "title": "Editing A Page",
+          "path": "editing-a-page.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-12-04T15:29:36.378Z",
+          "children": [],
+          "sortOrder": 2
+        },
+        {
+          "id": "5",
+          "slug": "importing-pages",
+          "title": "Importing Pages",
+          "path": "importing-pages.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-24T09:29:10.655Z",
+          "children": [],
+          "sortOrder": 3
+        },
+        {
+          "id": "6",
+          "slug": "trash-bin",
+          "title": "Trash Bin",
+          "path": "trash-bin.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-24T09:29:19.652Z",
+          "children": [],
+          "sortOrder": 4
+        },
+        {
+          "id": "8",
+          "slug": "app-settings",
+          "title": "App Settings",
+          "path": "app-settings.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-24T09:29:28.865Z",
+          "children": [
+            {
+              "id": "9",
+              "slug": "user-management",
+              "title": "User Management",
+              "path": "user-management.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-24T09:29:38.431Z",
+              "children": [],
+              "sortOrder": 1
+            },
+            {
+              "id": "10",
+              "slug": "theming",
+              "title": "Theming",
+              "path": "theming.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-24T09:29:48.583Z",
+              "children": [],
+              "sortOrder": 2
+            },
+            {
+              "id": "11",
+              "slug": "backup-and-restore",
+              "title": "Backup and Restore",
+              "path": "backup-and-restore.md",
+              "isPublic": true,
+              "version": 1,
+              "lastModified": "2024-11-24T09:29:58.793Z",
+              "children": [],
+              "sortOrder": 3
+            }
+          ],
+          "sortOrder": 6
+        },
+        {
+          "id": "12",
+          "slug": "application-updates",
+          "title": "Application Updates",
+          "path": "application-updates.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-12-03T17:47:58.037Z",
+          "children": [],
+          "sortOrder": 7
+        },
+        {
+          "id": "13",
+          "slug": "server-side-stuff",
+          "title": "Server Side Stuff",
+          "path": "server-side-stuff.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-11-24T09:30:17.203Z",
+          "children": [],
+          "sortOrder": 8
+        }
+      ],
+      "sortOrder": 6
+    },
+    {
+      "id": "17",
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "path": "getting-started.md",
+      "isPublic": true,
+      "version": 1,
+      "lastModified": "2024-12-04T20:02:34.468Z",
+      "children": [
+        {
+          "id": "18",
+          "slug": "manual-install-github",
+          "title": "Manual Install - Github",
+          "path": "manual-install-github.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-12-05T01:30:18.196Z",
+          "children": [],
+          "sortOrder": 1
+        },
+        {
+          "id": "19",
+          "slug": "automations-linux",
+          "title": "Automations - Linux",
+          "path": "automations.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-12-05T01:43:00.901Z",
+          "children": [],
+          "sortOrder": 2
+        },
+        {
+          "id": "20",
+          "slug": "automations-windows",
+          "title": "Automations - Windows",
+          "path": "automations-windows.md",
+          "isPublic": true,
+          "version": 1,
+          "lastModified": "2024-12-05T01:38:31.992Z",
+          "children": [],
+          "sortOrder": 3
+        }
+      ],
+      "sortOrder": 5
+    }
+  ],
+  "lastId": 20
+}
