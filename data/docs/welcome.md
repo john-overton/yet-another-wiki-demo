@@ -16,6 +16,6 @@ Here are 3 users to use:
 | ---------------------------------- | -------- | ----------- |
 | demoadmin@yetanotherwiki.com       | Demo!    | Admin       |
 | democontributor@yetanotherwiki.com | Demo!    | Contributor |
-| demuser@yetanotherwiki.com         | Demo!    | User        |
+| demouser@yetanotherwiki.com         | Demo!    | User        |
 
 ### Have fun!
