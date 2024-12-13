@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ThemingSettings from './settings.theming';
-import LicensingSettings from './settings.licensing';
 import UserManagementSettings from './settings.users';
 import BackupSettings from './settings.backup';
 import pkg from '../../package.json';
@@ -245,7 +244,7 @@ const Settings = () => {
           <div className={`transition-all duration-200 ${
             expandedSections.licensing ? 'opacity-100' : 'h-0 opacity-0 overflow-hidden'
           }`}>
-            <LicensingSettings />
+            <div className="p-6">This section is hidden in demo.</div>          
           </div>
         </div>
       </div>

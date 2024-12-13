@@ -1,9 +1,9 @@
 {
-  "email": "",
-  "key": "",
-  "isValid": false,
-  "token": "",
-  "licenseType": "",
-  "lastVerified": "",
-  "lastCheck": ""
+  "email": "demoadmin@yetanotherwiki.com",
+  "key": "V20ZB-4O919SVWP5K8MTZE7JW",
+  "isValid": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRlbW9hZG1pbkB5ZXRhbm90aGVyd2lraS5jb20iLCJsaWNlbnNlVHlwZSI6InBybyIsImlhdCI6MTczNDA0NjY1NiwiZXhwIjoxNzM0MTMzMDU2fQ.__dChmiwQp8GS_D3aU6P76P-GJisrJuS_zYcBMP6tPg",
+  "licenseType": "pro",
+  "lastVerified": "2024-12-12T23:37:38.718Z",
+  "lastCheck": "2024-12-12T23:37:38.718Z"
 }

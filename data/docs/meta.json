@@ -7,7 +7,7 @@
       "path": "welcome.md",
       "isPublic": true,
       "version": 1,
-      "lastModified": "2024-12-10T21:18:50.896Z",
+      "lastModified": "2024-12-13T01:33:02.970Z",
       "sortOrder": 1,
       "children": []
     },
@@ -178,7 +178,110 @@
         }
       ],
       "sortOrder": 5
+    },
+    {
+      "id": "21",
+      "slug": "hidden-treasure",
+      "title": "Hidden Treasure",
+      "path": "hidden-treasure.md",
+      "isPublic": false,
+      "version": 1,
+      "lastModified": "2024-12-12T23:39:15.430Z",
+      "children": [
+        {
+          "id": "22",
+          "slug": "books",
+          "title": "Books",
+          "path": "books.md",
+          "isPublic": false,
+          "version": 1,
+          "lastModified": "2024-12-13T00:08:16.100Z",
+          "children": [
+            {
+              "id": "27",
+              "slug": "the-great-gatsby",
+              "title": "The Great Gatsby",
+              "path": "the-great-gatsby.md",
+              "isPublic": false,
+              "version": 1,
+              "lastModified": "2024-12-13T00:09:33.976Z",
+              "children": [
+                {
+                  "id": "28",
+                  "slug": "tgg-chapter-1",
+                  "title": "Chapter 1",
+                  "path": "chapter-1.md",
+                  "isPublic": true,
+                  "version": 1,
+                  "lastModified": "2024-12-12T23:53:57.113Z",
+                  "children": [],
+                  "sortOrder": 1
+                },
+                {
+                  "id": "29",
+                  "slug": "tgg-chapter-2",
+                  "title": "Chapter 2",
+                  "path": "chapter-2.md",
+                  "isPublic": true,
+                  "version": 1,
+                  "lastModified": "2024-12-13T00:07:48.078Z",
+                  "children": [],
+                  "sortOrder": 2
+                }
+              ],
+              "sortOrder": 1
+            }
+          ],
+          "sortOrder": 1
+        },
+        {
+          "id": "23",
+          "slug": "it-deparment",
+          "title": "IT Deparment",
+          "path": "it-deparment.md",
+          "isPublic": false,
+          "version": 1,
+          "lastModified": "2024-12-12T23:41:33.663Z",
+          "children": [
+            {
+              "id": "24",
+              "slug": "equipment-list",
+              "title": "Equipment List",
+              "path": "equipment-list.md",
+              "isPublic": false,
+              "version": 1,
+              "lastModified": "2024-12-12T23:57:48.298Z",
+              "children": [],
+              "sortOrder": 1
+            },
+            {
+              "id": "25",
+              "slug": "onboarding",
+              "title": "Onboarding",
+              "path": "onboarding.md",
+              "isPublic": false,
+              "version": 1,
+              "lastModified": "2024-12-13T00:00:50.942Z",
+              "children": [],
+              "sortOrder": 2
+            },
+            {
+              "id": "26",
+              "slug": "security-sop",
+              "title": "Security SOP",
+              "path": "security-sop.md",
+              "isPublic": false,
+              "version": 1,
+              "lastModified": "2024-12-13T00:06:03.822Z",
+              "children": [],
+              "sortOrder": 3
+            }
+          ],
+          "sortOrder": 2
+        }
+      ],
+      "sortOrder": 7
     }
   ],
-  "lastId": 20
+  "lastId": 29
 }
